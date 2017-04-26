@@ -1,0 +1,19 @@
+.main-layer{
+  z-index: 100;
+}
+.sidebar-layer{
+  z-index: 200;
+}
+.pop-layer{
+  z-index: 300;
+}
+.mask-layer, .modal-layer{
+  /* override bootstrap */
+  z-index: 400!important;
+}
+.confirm-layer{
+  z-index: 500;
+}
+.notification-layer{
+  z-index: 600;
+}

@@ -33,29 +33,6 @@ export function initRouter(Router, Vue, store, config, routes) {
   return router
 }
 
-export async function beforeStart(Vue, store, config) {
-  const serverUrls = store.state.urls.server
-  // get CSRFToken if necessary
-  if (config.isCROS && config.CROS.CSRFTokenRequired) {
-    const updateCSRFToken = () => {
-      return new Promise(function(resolve, reject) {
-        Vue.http.get(serverUrls.CSRFToken).then(({data}) => {
-          Vue.http.defaults.headers.common['X-CSRF-TOKEN'] = data
-          resolve(data)
-        })
-        .catch((error) => { throw error })
-      })
-    }
-    window.setInterval(updateCSRFToken, config.CROS.updateCSRFTokenIn)
-    await updateCSRFToken()
-  }
-  // auth
-  await Vue.http.post(serverUrls.auth.user).then(({data}) => {
-    store.commit('authenticated', true)
-    store.commit('user', data)
-  })
-}
-
 export function axiosNamedPost(name, url, query) {
   if (!this._axiosNamedPostStore) {
     this._axiosNamedPostStore = {}

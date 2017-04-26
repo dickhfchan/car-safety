@@ -14,7 +14,7 @@ import config from '@/config.js'
 import App from './App'
 import store from './store/index.js'
 import routes from './routes/index.js'
-import { initAxios, initVDV, initRouter, beforeStart } from '@/utils.js'
+import { initAxios, initVDV, initRouter } from '@/utils.js'
 //
 Vue.config.productionTip = config.isDevelopment
 
@@ -29,22 +29,10 @@ const router = initRouter(Router, Vue, store, config, routes)
 
 // start
 /* eslint-disable no-new */
-beforeStart(Vue, store, config).then(() => {
-  Vue.http.post(store.state.urls.server.routes)
-  .then(({data}) => store.commit('serverPath', data))
-  .then(() => {
-    new Vue({
-      el: '#app',
-      store,
-      router,
-      template: '<App/>',
-      components: { App }
-    })
-  })
-}).catch((error) => {
-  if (error.response && error.response.status === 401) {
-    window.location.href = store.state.urls.client.base + store.state.urls.client.login
-  } else {
-    throw error
-  }
+new Vue({
+  el: '#app',
+  store,
+  router,
+  template: '<App/>',
+  components: { App }
 })

@@ -13,10 +13,21 @@
     "test": "npm run unit && npm run e2e"
   },
   "dependencies": {
+    "axios": "^0.15.3",
+    "babel-polyfill": "^6.23.0",
+    "helper-js": "^1.0.8",
+    "node-sass": "^4.5.2",
+    "pug": "^2.0.0-beta9",
+    "sass-loader": "^6.0.3",
     "vue": "^2.2.6",
-    "vue-router": "^2.3.1"
+    "vue-data-validator": "^2.1.2",
+    "vue-router": "^2.3.1",
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
+    "sass-loader": "^6.0.3",
+    "pug": "^2.0.0-beta11",
+    "node-sass": "^4.5.0",
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
