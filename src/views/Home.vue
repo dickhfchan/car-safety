@@ -1,0 +1,22 @@
+<template>
+  <div class="">
+    <h1>home</h1>
+    <router-link :to="{name: 'users'}">users</router-link>
+    <router-link :to="{name: 'gauge'}">gauge</router-link>
+    <router-link :to="{name: 'plotly'}">plotly</router-link>
+    <router-link :to="{name: 'baidu-map'}">baidu-map</router-link>
+  </div>
+</template>
+<script>
+// import ContentBase from '@/components/content/Base.vue'
+export default {
+  // components: { ContentBase },
+  data() {
+    return {
+      title: 'Dashboard'
+    }
+  }
+}
+</script>
+<style lang="scss">
+</style>

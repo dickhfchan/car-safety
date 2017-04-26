@@ -83,8 +83,9 @@
 
           </div>
       </md-sidenav>
-
-       <router-view></router-view>
+      <keep-alive>
+         <router-view></router-view>
+      </keep-alive>
   </div>
 </template>
 
@@ -97,27 +98,24 @@ export default {
   },
   methods: {
     toggleLeftSidenav() {
-      this.$refs.leftSidenav.toggle();
+      this.$refs.leftSidenav.toggle()
     },
     toggleRightSidenav() {
-      this.$refs.rightSidenav.toggle();
+      this.$refs.rightSidenav.toggle()
     },
     closeRightSidenav() {
-      this.$refs.rightSidenav.close();
+      this.$refs.rightSidenav.close()
     },
     open(ref) {
-      console.log('Opened: ' + ref);
+      console.log('Opened: ' + ref)
     },
     close(ref) {
-      console.log('Closed: ' + ref);
+      console.log('Closed: ' + ref)
     }
   }
 }
 
-
-
 </script>
 
-  <style src="vue-material/dist/vue-material.css">
-
-</style>
+<style src="vue-material/dist/vue-material.css"></style>
+<!-- the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue ) -->

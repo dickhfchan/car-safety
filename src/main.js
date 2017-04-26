@@ -5,6 +5,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios'
+import VueMaterial from 'vue-material'
 // vue-data-validator
 import VDVValidaotr from '../node_modules/vue-data-validator/dist/validator.esm.js'
 import VDVRules from '../node_modules/vue-data-validator/dist/rules.esm.js'
@@ -14,12 +15,17 @@ import config from '@/config.js'
 import App from './App'
 import store from './store/index.js'
 import routes from './routes/index.js'
-import { initAxios, initVDV, initRouter } from '@/utils.js'
+import { initAxios, initVDV, initRouter, initVueMaterial } from '@/utils.js'
 //
 Vue.config.productionTip = config.isDevelopment
+Vue.config.debug = config.isDevelopment
+Vue.config.devtools = config.isDevelopment
 
 // axios
 initAxios(axios, Vue, store, config)
+
+// VueMaterial
+initVueMaterial(VueMaterial, Vue)
 
 // VDV
 initVDV(VDVValidaotr, VDVRules, VDVEnMessages, Vue)

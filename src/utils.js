@@ -33,6 +33,31 @@ export function initRouter(Router, Vue, store, config, routes) {
   return router
 }
 
+export function initVueMaterial(VueMaterial, Vue) {
+  Vue.use(VueMaterial)
+  Vue.material.registerTheme({
+    default: {
+      primary: {
+        color: 'light-green',
+        hue: 700
+      },
+      accent: 'red'
+    },
+    blue: {
+      primary: 'blue',
+      accent: 'pink'
+    },
+    orange: {
+      primary: 'orange',
+      accent: 'purple'
+    },
+    green: {
+      primary: 'green',
+      accent: 'white'
+    }
+  })
+}
+
 export function axiosNamedPost(name, url, query) {
   if (!this._axiosNamedPostStore) {
     this._axiosNamedPostStore = {}
