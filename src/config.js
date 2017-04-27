@@ -10,8 +10,6 @@ const config = {
   clientBaseUrl: null,
   serverBaseUrl: null,
   clientLoginUrl: null,
-  //
-  brand: 'Green Safety'
 }
 switch (process.env.NODE_ENV) {
   case 'production':

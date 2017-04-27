@@ -7,7 +7,7 @@
           </md-button>
 
 
-          <h2 class="md-title" style="flex: 1">{{$store.state.brand}}</h2>
+          <h2 class="md-title" style="flex: 1">{{$t('brand')}}</h2>
 
           <md-button class="md-icon-button">
             <md-icon>view_module</md-icon>
@@ -16,7 +16,7 @@
           <md-button class="md-fab md-clean md-mini settings-bar-switch"
           @click.native="toggleRightSidenav">
            <md-icon>more_horiz</md-icon>
-           <md-tooltip md-direction="left">Settings</md-tooltip>
+           <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
          </md-button>
 
         </md-toolbar>
@@ -27,7 +27,7 @@
       <md-sidenav md-theme="blue" class="md-left" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
           <md-toolbar class="md-large">
             <div class="md-toolbar-container">
-              <h3 class="md-title">{{$store.state.brand}}</h3>
+              <h3 class="md-title">{{$t('brand')}}</h3>
             </div>
           </md-toolbar>
           <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
@@ -94,29 +94,29 @@
       <md-sidenav md-theme="blue" class="md-right" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
           <md-toolbar class="">
             <div class="md-toolbar-container">
-              <h3 class="md-title">Settings</h3>
+              <h3 class="md-title">{{$t('settings')}}</h3>
             </div>
           </md-toolbar>
 
-          <form novalidate @submit.stop.prevent="submit">
+          <form novalidate @submit.stop.prevent="updateSettings">
             <div style="padding:0 1em;">
               <md-input-container>
-                <label for="map_select">Map</label>
-                <md-select name="map" id="map_select" v-model="map">
-                  <md-option value="google">Google Map</md-option>
-                  <md-option value="baidu">Baidu Map</md-option>
+                <label for="mapSelect">{{$t('map')}}</label>
+                <md-select name="map" id="mapSelect" v-model="settings.map">
+                  <md-option value="googleMap">{{$t('googleMap')}}</md-option>
+                  <md-option value="baiduMap">{{$t('baiduMap')}}</md-option>
                 </md-select>
               </md-input-container>
               <md-input-container>
-                <label for="lang_select">Language</label>
-                <md-select name="lang" id="lang_select" v-model="lang">
-                  <md-option value="en">English</md-option>
-                  <md-option value="zh-cn">简体中文</md-option>
-                  <md-option value="zh-tw">繁体中文</md-option>
+                <label for="langSelect">{{$t('language')}}</label>
+                <md-select name="lang" id="langSelect" v-model="settings.lang">
+                  <md-option value="en">{{$t('Englsih')}}</md-option>
+                  <md-option value="zh-cn">{{$t('simplifiedChinese')}}</md-option>
+                  <md-option value="zh-tw">{{$t('traditionalChinese')}}</md-option>
                 </md-select>
               </md-input-container>
             </div>
-            <md-button class="md-raised md-primary" type="submit">Update</md-button>
+            <md-button class="md-raised md-primary" type="submit">{{$t('update')}}</md-button>
           </form>
 
       </md-sidenav>
@@ -128,12 +128,14 @@
 </template>
 
 <script>
-
 export default {
   data () {
+    const settings = this.$store.state.settings
     return {
-      map: null,
-      lang: null
+      settings: {
+        map: settings.map,
+        lang: settings.lang,
+      }
     }
   },
   methods: {
@@ -151,6 +153,9 @@ export default {
     },
     close(ref) {
       console.log('Closed: ' + ref)
+    },
+    updateSettings() {
+      this.$store.commit('settings', Object.assign({}, this.settings))
     }
   }
 }

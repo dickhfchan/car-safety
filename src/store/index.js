@@ -1,23 +1,31 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import config from '../config.js'
+import runtime from '../runtime.js'
 import urls from './modules/urls.js'
 import menu from './menu.js'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     urls
   },
   state: {
-    brand: config.brand,
+    settings: {
+      map: 'baiduMap',
+      lang: 'en',
+    },
     authenticated: false,
     user: {},
     menu
   },
   mutations: {
+    settings(state, val) {
+      state.settings = val
+      runtime.app.$i18n.locale = state.settings.lang
+    },
     authenticated (state, to) {
       state.authenticated = to
     },
@@ -28,3 +36,4 @@ export default new Vuex.Store({
   strict: config.isDevelopment
   // plugins: config.isDevelopment ? [createLogger()] : []
 })
+export default store
