@@ -1,55 +1,103 @@
 <template>
-  <div>
-    <div class="tile is-ancestor">
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Pie</h4>
-          <div ref="pie"></div>
-        </article>
-      </div>
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Doughnut</h4>
-          <div ref="doughnut"></div>
-        </article>
-      </div>
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Polar</h4>
-          <div ref="polar"></div>
-        </article>
-      </div>
-    </div>
+  <div style="width:100%;">
+    <br>
+    <md-layout md-row md-gutter>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Pie</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="pie"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Doughnut</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="doughnut"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Polar</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="polar"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+    </md-layout>
 
-    <div class="tile is-ancestor">
-      <div class="tile is-parent">
-        <article class="tile is-child box">
-          <h4 class="title">Map</h4>
-          <div ref="map"></div>
-        </article>
-      </div>
-    </div>
+    <br>
 
-    <div class="tile is-ancestor">
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Histogram</h4>
-          <div ref="histogram"></div>
-        </article>
-      </div>
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Line</h4>
-          <div ref="line"></div>
-        </article>
-      </div>
-      <div class="tile is-parent is-4">
-        <article class="tile is-child box">
-          <h4 class="title">Bar</h4>
-          <div ref="bar"></div>
-        </article>
-      </div>
-    </div>
+    <md-layout md-row md-gutter>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Map</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="map"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+    </md-layout>
+
+    <br>
+
+    <md-layout md-row md-gutter>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Histogram</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="histogram"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Line</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="line"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+      <md-layout md-flex>
+        <div class="p-x-1 w-100">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Bar</div>
+            </md-card-header>
+            <md-card-content>
+              <div ref="bar"></div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-layout>
+    </md-layout>
+    <br>
   </div>
 </template>
 
@@ -339,5 +387,14 @@ export default {
 <style scoped>
 .js-plotly-plot {
   max-width: 100%;
+}
+.md-card{
+  height: 100%;
+}
+.w-100{
+  width: 100%;
+}
+.p-x-1{
+  padding: 0 1em;
 }
 </style>
