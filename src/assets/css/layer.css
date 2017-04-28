@@ -1,4 +1,4 @@
-.main-layer{
+/*.main-layer{
   z-index: 100;
 }
 .sidebar-layer{
@@ -9,14 +9,9 @@
 }
 .pop-layer{
   z-index: 300;
-}
-.mask-layer, .modal-layer{
-  /* override bootstrap */
-  z-index: 400!important;
-}
-.confirm-layer{
-  z-index: 500;
-}
-.notification-layer{
-  z-index: 600;
+}*/
+
+/* note: the z-index of dropdown select of vue-metiral is 13. and the dropdown element is not the children of its parent */
+.menu-layer{
+  z-index: 2;
 }
