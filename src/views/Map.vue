@@ -35,12 +35,11 @@ export default {
   },
   data() {
     return {
-      points: examplePoints.filter(p => p.lat && p.lng).slice(0, 300).map(p => {
+      points: examplePoints.filter(p => p.lat && p.lng).map(p => {
         return { lat: parseFloat(p.lat), lng: parseFloat(p.lng) }
       })
     }
   }
-  // methods:
 }
 </script>
 
