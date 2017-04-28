@@ -44,3 +44,6 @@ config = {
 ```
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+## Changes
+[17/04/28 15:32] add ./src/components/GoogleMapTrackRender.vue

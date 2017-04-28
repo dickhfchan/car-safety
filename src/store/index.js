@@ -17,6 +17,8 @@ const store = new Vuex.Store({
       map: 'baiduMap',
       lang: 'en',
     },
+    baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
+    googleMapAK: 'AIzaSyD5L4t9qz0QOQBGK99Tsr7AQFlJvGZAHuU',
     authenticated: false,
     user: {},
     menu
