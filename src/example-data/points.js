@@ -1,4 +1,4 @@
-/* eslint-diabled */
+/* eslint-disable */
 export default [
   {
     "veh_trip_dtl_id": "26518302",

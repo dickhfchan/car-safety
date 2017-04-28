@@ -14,7 +14,7 @@ const result = lines.map(line => {
   }
   return row
 })
-fs.writeFile(path.resolve(__dirname, './points.js'), '/* eslint-diabled */\nexport default ' + JSON.stringify(result, null, 2), function(err) {
+fs.writeFile(path.resolve(__dirname, './points.js'), '/* eslint-disable */\nexport default ' + JSON.stringify(result, null, 2), function(err) {
   if (err) {
     return console.error(err)
   }
