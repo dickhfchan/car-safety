@@ -1,103 +1,83 @@
 <template>
   <div>
-    <md-layout md-row md-gutter>
+    <md-layout md-gutter>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Pie</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="pie"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Pie</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="pie"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Doughnut</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="doughnut"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Doughnut</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="doughnut"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Polar</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="polar"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Polar</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="polar"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
     </md-layout>
 
-    <br>
-
-    <md-layout md-row md-gutter>
+    <md-layout md-gutter>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Map</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="map"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Map</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="map"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
     </md-layout>
 
-    <br>
-
-    <md-layout md-row md-gutter>
+    <md-layout md-gutter>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Histogram</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="histogram"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Histogram</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="histogram"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Line</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="line"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Line</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="line"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
       <md-layout md-flex>
-        <div class="p-x-1 w-100">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Bar</div>
-            </md-card-header>
-            <md-card-content>
-              <div ref="bar"></div>
-            </md-card-content>
-          </md-card>
-        </div>
+        <md-card style="flex:1">
+          <md-card-header>
+            <div class="md-title">Bar</div>
+          </md-card-header>
+          <md-card-content>
+            <div ref="bar"></div>
+          </md-card-content>
+        </md-card>
       </md-layout>
     </md-layout>
-    <br>
-    <br>
   </div>
 </template>
 
@@ -389,12 +369,6 @@ export default {
   max-width: 100%;
 }
 .md-card{
-  height: 100%;
-}
-.w-100{
-  width: 100%;
-}
-.p-x-1{
-  padding: 0 1em;
+  margin: 1em;
 }
 </style>
