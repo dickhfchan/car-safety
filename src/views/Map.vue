@@ -6,7 +6,7 @@
           <div class="md-title">Baidu Map</div>
         </md-card-header>
         <md-card-content>
-          <BaiduMapTrackRender :ak="$store.state.baiduMapAK" :points="points"></BaiduMapTrackRender>
+          <!-- <BaiduMapTrackRender :ak="$store.state.baiduMapAK" :points="points"></BaiduMapTrackRender> -->
         </md-card-content>
       </md-card>
     </md-layout>
@@ -27,7 +27,7 @@
 <script>
 import BaiduMapTrackRender from 'baidu-map-track-render-vue/src/BaiduMapTrackRender.vue'
 import GoogleMapTrackRender from '../components/GoogleMapTrackRender.vue'
-
+import examplePoints from '../example-data/points.js'
 export default {
   components: {
     BaiduMapTrackRender,
@@ -35,11 +35,9 @@ export default {
   },
   data() {
     return {
-      points: [
-        [116.399, 39.910],
-        [116.405, 39.920],
-        [116.423493, 39.907445]
-      ]
+      points: examplePoints.filter(p => p.lat && p.lng).slice(0, 300).map(p => {
+        return { lat: parseFloat(p.lat), lng: parseFloat(p.lng) }
+      })
     }
   }
   // methods:

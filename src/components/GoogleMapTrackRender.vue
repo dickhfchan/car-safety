@@ -7,6 +7,9 @@
 import {windowLoaded, unset} from 'helper-js'
 //
 function loadGoogleMap(ak) {
+  if (window.google && window.google.map) {
+    return Promise.resolve(window.google.map)
+  }
   const fun = loadGoogleMap
   return windowLoaded().then(() => {
     if (fun.loaded) {
@@ -39,21 +42,10 @@ export default {
       id: 'GoogleMapTrackRender' + this._uid
     }
   },
-  computed: {
-    computedPoints() {
-      if (this.points) {
-        return this.points.map(p => {
-          return {lat: p[1], lng: p[0]}
-        })
-      } else {
-        return []
-      }
-    }
-  },
   mounted() {
     this.$nextTick(() => {
       loadGoogleMap(this.ak).then((google) => {
-        const points = this.computedPoints
+        const points = this.points
         if (points) {
           var map = new google.maps.Map(document.getElementById(this.id), {
             zoom: 14,
