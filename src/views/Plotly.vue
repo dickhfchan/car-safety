@@ -1,6 +1,5 @@
 <template>
-  <div style="width:100%;">
-    <br>
+  <div>
     <md-layout md-row md-gutter>
       <md-layout md-flex>
         <div class="p-x-1 w-100">
@@ -98,6 +97,7 @@
       </md-layout>
     </md-layout>
     <br>
+    <br>
   </div>
 </template>
 
@@ -105,12 +105,12 @@
 import Plotly from '../../node_modules/plotly.js/dist/plotly.js'
 
 export default {
-
   created () {
     this.fetchData()
   },
 
   mounted () {
+    document.title = 'Plotly'
     Plotly.plot(
       this.$refs.pie,
       [{

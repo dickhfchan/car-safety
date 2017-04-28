@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container">
-    <md-whiteframe>
+    <md-whiteframe class="menu-layer">
       <md-toolbar md-theme="blue">
         <md-button class="md-icon-button" @click.native="toggleLeftSidenav">
           <md-icon>menu</md-icon>
@@ -22,7 +22,7 @@
       </md-toolbar>
     </md-whiteframe>
 
-    <md-sidenav md-theme="blue" class="md-left" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
+    <md-sidenav md-theme="blue" class="md-left sidebar-layer" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
         <md-toolbar class="md-large">
           <div class="md-toolbar-container">
             <h3 class="md-title">{{$t('brand')}}</h3>
@@ -89,7 +89,7 @@
         </div>
     </md-sidenav>
 
-    <md-sidenav md-theme="blue" class="md-right" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
+    <md-sidenav md-theme="blue" class="md-right sidebar-layer" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
         <md-toolbar class="">
           <div class="md-toolbar-container">
             <h3 class="md-title">{{$t('settings')}}</h3>
@@ -119,12 +119,10 @@
 
     </md-sidenav>
 
-    <div class="page-content">
-      <div class="main-content">
-        <keep-alive>
-           <router-view></router-view>
-        </keep-alive>
-      </div>
+    <div class="page-content main-layer">
+      <keep-alive>
+         <router-view></router-view>
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -167,39 +165,32 @@ export default {
 <style src="vue-material/dist/vue-material.css"></style>
 <!-- the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue ) -->
 
+<style src="./assets/css/layer.css"></style>
+<!-- base -->
 <style lang="scss">
-body, html {
-    height: 100%;
-    overflow: hidden;
+body, html{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.container, body {
-    display: -ms-flexbox;
-    display: flex;
-}
-.container {
-  min-height: 100%;
-  -ms-flex-flow: column nowrap;
-  flex-flow: column nowrap;
-  -ms-flex: 1;
-  flex: 1;
+</style>
+
+<!-- layout -->
+<style lang="scss" scoped>
+.container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction:column;
 }
 .page-content {
-  min-height: 100%;
-  max-height: 100%;
-  -ms-flex: 1;
-  flex: 1;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-flow: column;
-  flex-flow: column;
-}
-.main-content {
-  padding: 16px;
-  -ms-flex: 1;
   flex: 1;
   overflow: auto;
-  background-color: #fff;
 }
+</style>
+
+<!-- other -->
+<style lang="scss">
 .settings-bar-switch{
   position: absolute;
   right: 10px;

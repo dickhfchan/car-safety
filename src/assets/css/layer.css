@@ -4,6 +4,9 @@
 .sidebar-layer{
   z-index: 200;
 }
+.menu-layer{
+  z-index: 200;
+}
 .pop-layer{
   z-index: 300;
 }
