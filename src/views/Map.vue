@@ -3,7 +3,7 @@
     <md-layout md-flex>
       <md-card style="flex:1">
         <md-card-header>
-          <div class="md-title">Baidu Map</div>
+          <div class="md-title">Baidu Map<fullscreen-button></fullscreen-button></div>
         </md-card-header>
         <md-card-content>
           <!-- <BaiduMapTrackRender
@@ -17,8 +17,9 @@
     <md-layout md-flex>
       <md-card style="flex:1">
         <md-card-header>
-          <div class="md-title">Google Map</div>
+          <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>
         </md-card-header>
+
         <md-card-content>
           <GoogleMapTrackRender :ak="$store.state.googleMapAK" :points="points"></GoogleMapTrackRender>
         </md-card-content>

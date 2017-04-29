@@ -11,6 +11,8 @@ import VueI18n from 'vue-i18n'
 import VDVValidaotr from '../node_modules/vue-data-validator/dist/validator.esm.js'
 import VDVRules from '../node_modules/vue-data-validator/dist/rules.esm.js'
 import VDVEnMessages from '../node_modules/vue-data-validator/dist/messages/en.esm.js'
+// components
+import FullscreenButton from './components/FullscreenButton.vue'
 // files
 import config from '@/config.js'
 import runtime from '@/runtime.js'
@@ -38,6 +40,9 @@ initVDV(VDVValidaotr, VDVRules, VDVEnMessages, Vue)
 
 // router
 const router = initRouter(Router, Vue, store, config, routes)
+
+// register custom component
+Vue.component('FullscreenButton', FullscreenButton)
 
 // start
 /* eslint-disable no-new */
