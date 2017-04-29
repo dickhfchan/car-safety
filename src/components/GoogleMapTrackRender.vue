@@ -47,6 +47,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       loadGoogleMap(this.ak)
+      // 1 point at least
       .then((google) => {
         if (this.points && this.points.length > 0) {
           return {google, points: this.points}
@@ -54,6 +55,7 @@ export default {
           return Promise.reject(new Error('no point'))
         }
       })
+      // convert points to snappedPoints
       .then(({google, points}) => {
         if (this.snap) {
           const clonedPoints = points.slice(0)
@@ -83,6 +85,7 @@ export default {
           return {google, points: this.points}
         }
       })
+      // init map and render track
       .then(({google, points}) => {
         const map = new google.maps.Map(document.getElementById(this.id), {
           zoom: 14,

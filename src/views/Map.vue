@@ -6,10 +6,10 @@
           <div class="md-title">Baidu Map</div>
         </md-card-header>
         <md-card-content>
-          <BaiduMapTrackRender
+          <!-- <BaiduMapTrackRender
           :ak="$store.state.baiduMapAK"
           :service-id="$store.state.baiduMapServiceId"
-          :points="points"></BaiduMapTrackRender>
+          :points="points"></BaiduMapTrackRender> -->
         </md-card-content>
       </md-card>
     </md-layout>
@@ -38,6 +38,7 @@ export default {
   },
   data() {
     return {
+      // take valid points from examplePoints and format them to {lat, lng}
       points: examplePoints.filter(p => p.lat && p.lng).map(p => {
         return { lat: parseFloat(p.lat), lng: parseFloat(p.lng) }
       })
