@@ -9,4 +9,11 @@ export default {
   simplifiedChinese: '簡體中文',
   traditionalChinese: '繁體中文',
   update: '更新',
+  menu: {
+    dashboard: '仪表盘',
+    users: '用户',
+    gauge: '测量',
+    plotly: 'Plotly',
+    map: '地图',
+  }
 }

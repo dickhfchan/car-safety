@@ -28,65 +28,17 @@
             <h3 class="md-title">{{$t('brand')}}</h3>
           </div>
         </md-toolbar>
-        <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
 
         <md-list>
-          <md-list-item href="localhost:8080/#/Users">
-            <md-icon>move_to_inbox</md-icon> <span>Inbox</span>
-          </md-list-item>
-
-          <md-list-item>
-            <md-icon>send</md-icon> <span>Sent Mail</span>
-          </md-list-item>
-
-          <md-list-item>
-            <md-icon>delete</md-icon> <span>Trash</span>
-          </md-list-item>
-
-          <md-list-item>
-            <md-icon>error</md-icon> <span>Spam</span>
-
-            <md-divider class="md-inset"></md-divider>
-          </md-list-item>
-
-          <md-list-item>
-            <md-avatar>
-              <img src="https://placeimg.com/40/40/people/5" alt="People">
-            </md-avatar>
-
-            <span>Abbey Christansen</span>
-
-            <md-button class="md-icon-button md-list-action">
-              <md-icon class="md-primary">chat_bubble</md-icon>
-            </md-button>
-          </md-list-item>
-
-          <md-list-item>
-            <md-avatar>
-              <img src="https://placeimg.com/40/40/people/1" alt="People">
-            </md-avatar>
-
-            <span>Alex Nelson</span>
-
-            <md-button class="md-icon-button md-list-action">
-              <md-icon class="md-primary">chat_bubble</md-icon>
-            </md-button>
-          </md-list-item>
-
-          <md-list-item>
-            <md-avatar>
-              <img src="https://placeimg.com/40/40/people/6" alt="People">
-            </md-avatar>
-
-            <span>Mary Johnson</span>
-
-            <md-button class="md-icon-button md-list-action">
-              <md-icon>chat_bubble</md-icon>
-            </md-button>
+          <md-list-item v-for="(item, index) in $store.state.menu"
+          :key="index"
+          :href="$router.resolve({name:item.routeName}).href"
+          @click.native.prevent="$router.push({name:item.routeName})"
+          >
+            <md-icon>{{item.icon}}</md-icon> <span>{{$t('menu.'+item.text)}}</span>
           </md-list-item>
         </md-list>
 
-        </div>
     </md-sidenav>
 
     <md-sidenav md-theme="blue" class="md-right sidebar-layer" ref="rightSidenav" @open="open('Right')" @close="close('Right')">

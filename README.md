@@ -47,3 +47,4 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## Changes
 [17/04/28 15:32] add ./src/components/GoogleMapTrackRender.vue
+[17/04/29 16:13] Left sidebar menu is ok. First, define the menu item text in dir 'lang', then define menu items in store/menu.js
