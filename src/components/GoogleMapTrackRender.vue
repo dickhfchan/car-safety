@@ -5,7 +5,6 @@
 </template>
 <script>
 import {windowLoaded, unset} from 'helper-js'
-import axios from 'axios'
 //
 function loadGoogleMap(ak) {
   if (window.google && window.google.maps) {
@@ -37,71 +36,37 @@ export default {
   props: {
     points: {}, //
     ak: {},
-    snap: { default: true }, // snap to roads
   },
   data() {
     return {
-      id: 'GoogleMapTrackRender' + this._uid
+      id: 'GoogleMapTrackRender' + this._uid,
+      map: null,
+      pathPolyline: null
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      loadGoogleMap(this.ak)
-      // 1 point at least
-      .then((google) => {
-        if (this.points && this.points.length > 0) {
-          return {google, points: this.points}
-        } else {
-          return Promise.reject(new Error('no point'))
+  watch: {
+    points: {
+      immediate: true,
+      handler(points) {
+        if (this.pathPolyline) {
+          this.pathPolyline.setMap(null)
+          this.pathPolyline = null
         }
-      })
-      // convert points to snappedPoints
-      .then(({google, points}) => {
-        if (this.snap) {
-          const clonedPoints = points.slice(0)
-          const n = 100 // coordinate to snapped points limit
-          const promises = []
-          while (clonedPoints.length > 0) {
-            const pointsSlice = clonedPoints.splice(0, n)
-            const path = pointsSlice.map(p => `${p.lat},${p.lng}`).join('|')
-            const url = `https://roads.googleapis.com/v1/snapToRoads?path=${path}&interpolate=true&key=${this.ak}`
-            promises.push(axios.get(url).then((response) => {
-              const points = response.data.snappedPoints.map(p => {
-                return { lng: p.location.longitude, lat: p.location.latitude }
-              })
-              return {response, points}
-            }))
-          }
-          return Promise.all(promises).then((datas) => {
-            const resultPoints = []
-            for (const data of datas) {
-              for (const point of data.points) {
-                resultPoints.push(point)
-              }
-            }
-            return { google, points: resultPoints, dataArr: datas }
+        if (points && points.length > 0) {
+          this.mapReady().then(({google, map}) => {
+            map.setCenter(this.getCenter(points))
+            this.pathPolyline = new google.maps.Polyline({
+              path: points,
+              geodesic: true,
+              strokeColor: '#FF0000',
+              strokeOpacity: 1.0,
+              strokeWeight: 2
+            })
+            this.pathPolyline.setMap(map)
           })
-        } else {
-          return {google, points: this.points}
         }
-      })
-      // init map and render track
-      .then(({google, points}) => {
-        const map = new google.maps.Map(document.getElementById(this.id), {
-          zoom: 14,
-          center: this.getCenter(points),
-          mapTypeId: 'terrain'
-        })
-        const pathPolyline = new google.maps.Polyline({
-          path: points,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        })
-        pathPolyline.setMap(map)
-      })
-    })
+      }
+    }
   },
   methods: {
     getCenter(points) {
@@ -125,6 +90,17 @@ export default {
       }
       return {lat: (maxY + minY) / 2, lng: (maxX + minX) / 2}
     },
+    mapReady() {
+      return loadGoogleMap(this.ak).then(google => {
+        if (!this.map) {
+          this.map = new google.maps.Map(document.getElementById(this.id), {
+            zoom: 15,
+            mapTypeId: 'terrain'
+          })
+        }
+        return Promise.resolve({google, map: this.map})
+      })
+    }
   }
 }
 </script>

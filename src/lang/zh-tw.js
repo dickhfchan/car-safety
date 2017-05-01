@@ -15,5 +15,6 @@ export default {
     gauge: '测量',
     plotly: 'Plotly',
     map: '地图',
+    datepicker: '日期选择器'
   }
 }

@@ -114,12 +114,15 @@ export default {
 
 </script>
 
-<style src="vue-material/dist/vue-material.css"></style>
-<!-- the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue ) -->
-
-<style src="./assets/css/layer.css"></style>
 <!-- base -->
 <style lang="scss">
+@import "../node_modules/css-spacing-helper/css-spacing-helper.css";
+// the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue )
+@import "../node_modules/vue-material/dist/vue-material.css";
+// layer.css should after vue-material.css
+@import "./assets/css/layer.css";
+@import "./assets/css/helper.css";
+
 body, html{
   width: 100%;
   height: 100%;

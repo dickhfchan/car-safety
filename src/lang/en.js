@@ -15,5 +15,6 @@ export default {
     gauge: 'Gauge',
     plotly: 'Plotly',
     map: 'Map',
+    datepicker: 'Datepicker'
   }
 }
