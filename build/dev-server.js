@@ -1,4 +1,5 @@
 require('./check-versions')()
+const apiProxyies = require('../src/api-proxies/index.js')
 
 var config = require('../config')
 if (!process.env.NODE_ENV) {
@@ -23,6 +24,8 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+// register api proxyies
+apiProxyies(app)
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
