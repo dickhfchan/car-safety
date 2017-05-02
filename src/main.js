@@ -8,9 +8,7 @@ import axios from 'axios'
 import VueMaterial from 'vue-material'
 import VueI18n from 'vue-i18n'
 // vue-data-validator
-import VDVValidaotr from '../node_modules/vue-data-validator/dist/validator.esm.js'
-import VDVRules from '../node_modules/vue-data-validator/dist/rules.esm.js'
-import VDVEnMessages from '../node_modules/vue-data-validator/dist/messages/en.esm.js'
+import * as VueDataValidator from 'vue-data-validator'
 // components
 import FullscreenButton from './components/FullscreenButton.vue'
 // files
@@ -36,7 +34,7 @@ initVueMaterial(VueMaterial, Vue)
 const i18n = initI18n(VueI18n, lang, store, Vue)
 
 // VDV
-initVDV(VDVValidaotr, VDVRules, VDVEnMessages, Vue)
+initVDV(VueDataValidator, store, Vue)
 
 // router
 const router = initRouter(Router, Vue, store, config, routes)
