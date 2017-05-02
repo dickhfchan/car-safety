@@ -1,5 +1,6 @@
 export default {
   brand: 'Green Safety',
+  // settings
   settings: 'Settings',
   map: 'Map',
   googleMap: 'Google Map',
@@ -9,12 +10,15 @@ export default {
   simplifiedChinese: 'Simplified Chinese',
   traditionalChinese: 'Traditional Chinese',
   update: 'Update',
-  menu: {
-    dashboard: 'Dashboard',
-    users: 'Users',
-    gauge: 'Gauge',
-    plotly: 'Plotly',
-    map: 'Map',
-    datepicker: 'Datepicker'
-  }
+  // login
+  email: 'Email',
+  password: 'Password',
+  signIn: 'Sign In',
+  loginSubtitle: 'Sign in to start your session',
+  // menu
+  dashboard: 'Dashboard',
+  users: 'Users',
+  gauge: 'Gauge',
+  plotly: 'Plotly',
+  datepicker: 'Datepicker'
 }

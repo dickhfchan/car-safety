@@ -21,6 +21,8 @@ export function initVDV(validator, rules, messages, Vue) {
   Vue.use(validator)
   Object.assign(Vue.validator.rules, rules)
   Object.assign(Vue.validator.messages, messages)
+  Vue.validator.validClass = 'valid'
+  Vue.validator.invalidClass = 'md-input-invalid'
 }
 
 export function initRouter(Router, Vue, store, config, routes) {
@@ -59,9 +61,15 @@ export function initVueMaterial(VueMaterial, Vue) {
 }
 
 export function initI18n(VueI18n, messages, store, Vue) {
+  // reload when other page change lang
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'lang') {
+      window.location.reload()
+    }
+  })
   Vue.use(VueI18n)
   return new VueI18n({
-    locale: store.state.settings.lang, // set locale
+    locale: store.state.lang, // set locale
     messages, // set locale messages
   })
 }

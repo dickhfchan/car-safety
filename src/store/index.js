@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import config from '../config.js'
-import runtime from '../runtime.js'
 import urls from './modules/urls.js'
 import menu from './menu.js'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
@@ -13,21 +12,23 @@ const store = new Vuex.Store({
     urls
   },
   state: {
-    settings: {
-      map: 'baiduMap',
-      lang: 'en',
-    },
+    map: 'baiduMap',
+    lang: window.localStorage.getItem('lang') || 'en',
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
     googleMapAK: 'AIzaSyD5L4t9qz0QOQBGK99Tsr7AQFlJvGZAHuU',
     authenticated: false,
     user: {},
-    menu
+    menu,
   },
   mutations: {
-    settings(state, val) {
-      state.settings = val
-      runtime.app.$i18n.locale = state.settings.lang
+    map(state, val) { state.map = val },
+    lang(state, val) {
+      if (state.lang !== val) {
+        state.lang = val
+        window.localStorage.setItem('lang', val)
+        window.location.reload()
+      }
     },
     authenticated (state, to) {
       state.authenticated = to
