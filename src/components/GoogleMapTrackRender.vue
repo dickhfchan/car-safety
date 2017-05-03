@@ -54,13 +54,13 @@ export default {
         }
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
-            map.setCenter(this.getCenter(points))
+            this.autoCenterAndZoom(map, points, google)
             this.pathPolyline = new google.maps.Polyline({
               path: points,
               geodesic: true,
-              strokeColor: '#FF0000',
+              strokeColor: '#2196f3',
               strokeOpacity: 1.0,
-              strokeWeight: 2
+              strokeWeight: 3
             })
             this.pathPolyline.setMap(map)
           })
@@ -69,26 +69,30 @@ export default {
     }
   },
   methods: {
-    getCenter(points) {
-      let maxX = points[0].lng
-      let maxY = points[0].lat
-      let minX = points[0].lng
-      let minY = points[0].lat
-      for (const p of points) {
-        if (p.lng < minX) {
-          minX = p.lng
+    autoCenterAndZoom(map, points, google) {
+      const bounds = new google.maps.LatLngBounds()
+      let minLat = points[0].lat
+      let maxLat = points[0].lat
+      let minLng = points[0].lng
+      let maxLng = points[0].lng
+      points.forEach(point => {
+        if (point.lat < minLat) {
+          minLat = point.lat
+        } else if (point.lat > maxLat) {
+          maxLat = point.lat
         }
-        if (p.lng > maxX) {
-          maxX = p.lng
+        if (point.lng < minLng) {
+          minLng = point.lng
+        } else if (point.lng > maxLng) {
+          maxLng = point.lng
         }
-        if (p.lat < minY) {
-          minY = p.lat
-        }
-        if (p.lat > maxY) {
-          maxY = p.lat
-        }
-      }
-      return {lat: (maxY + minY) / 2, lng: (maxX + minX) / 2}
+      })
+      const loc1 = new google.maps.LatLng(minLat, minLng)
+      const loc2 = new google.maps.LatLng(maxLat, maxLng)
+      bounds.extend(loc1)
+      bounds.extend(loc2)
+      map.fitBounds(bounds)
+      map.panToBounds(bounds)
     },
     mapReady() {
       return loadGoogleMap(this.ak).then(google => {

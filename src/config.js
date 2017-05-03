@@ -7,26 +7,18 @@ const config = {
     updateCSRFTokenIn: 5 * 60 * 1000 // ms
   },
   //
-  clientBaseUrl: null,
-  serverBaseUrl: null,
+  clientBaseUrl: '/',
+  serverBaseUrl: 'http://54.255.227.246:8080/api/',
   clientLoginUrl: null,
 }
 switch (process.env.NODE_ENV) {
   case 'production':
     Object.assign(config, {
-      isCROS: false,
-      clientBaseUrl: '/',
-      serverBaseUrl: 'http://xxx.xx/',
-      clientLoginUrl: 'login'
     })
     break
   case 'development':
     Object.assign(config, {
       isDevelopment: true,
-      isCROS: true,
-      clientBaseUrl: '/',
-      serverBaseUrl: 'http://xxx.xx/',
-      clientLoginUrl: 'login.html'
     })
     break
 }

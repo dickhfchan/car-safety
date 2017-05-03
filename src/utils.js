@@ -1,7 +1,7 @@
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
     baseURL: store.state.urls.server.base,
-    withCredentials: config.isCROS
+    // withCredentials: config.isCROS
   })
   Vue.Axios = axios
   Vue.http = Vue.prototype.$http = axiosInstance
