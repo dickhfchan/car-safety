@@ -7,6 +7,7 @@ import Router from 'vue-router'
 import axios from 'axios'
 import VueMaterial from 'vue-material'
 import VueI18n from 'vue-i18n'
+import vuetiful from 'vuetiful/src/main.js'
 // vue-data-validator
 import * as VueDataValidator from 'vue-data-validator'
 // components
@@ -23,7 +24,7 @@ import { initAxios, initVDV, initRouter, initVueMaterial, initI18n } from '@/uti
 Vue.config.productionTip = config.isDevelopment
 Vue.config.debug = config.isDevelopment
 Vue.config.devtools = config.isDevelopment
-
+Vue.use(vuetiful)
 // axios
 initAxios(axios, Vue, store, config)
 
