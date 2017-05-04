@@ -2,14 +2,16 @@
   <div>
     <md-layout md-gutter>
       <md-layout md-flex-medium="100" md-flex-large="50">
-        <md-card class="flex-1 m-a">
-          <md-card-header>
-            <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>
-          </md-card-header>
-          <md-card-content>
-            <GoogleMapTrackRender :ak="$store.state.googleMapAK" :points="points" style="width:100%;"></GoogleMapTrackRender>
-          </md-card-content>
-        </md-card>
+        <div class="flex-1 m-a">
+          <md-card>
+            <md-card-header>
+              <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>
+            </md-card-header>
+            <md-card-content>
+              <GoogleMapTrackRender :ak="$store.state.googleMapAK" :points="points" style="width:100%;"></GoogleMapTrackRender>
+            </md-card-content>
+          </md-card>
+        </div>
       </md-layout>
 
       <md-layout md-flex-medium="100" md-flex-large="50">
