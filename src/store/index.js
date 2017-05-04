@@ -16,7 +16,7 @@ const store = new Vuex.Store({
     lang: window.localStorage.getItem('lang') || 'en',
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
-    googleMapAK: 'AIzaSyD5L4t9qz0QOQBGK99Tsr7AQFlJvGZAHuU',
+    googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
     authenticated: true,
     user: {},
     menu,

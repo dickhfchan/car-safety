@@ -99,7 +99,14 @@ export default {
         if (!this.map) {
           this.map = new google.maps.Map(document.getElementById(this.id), {
             zoom: 15,
-            mapTypeId: 'terrain'
+            mapTypeId: 'roadmap',
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+              mapTypeIds: [
+                google.maps.MapTypeId.ROADMAP,
+                google.maps.MapTypeId.SATELLITE
+              ]
+            }
           })
         }
         return Promise.resolve({google, map: this.map})

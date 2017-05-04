@@ -167,7 +167,7 @@ export default {
   },
   created() {
     // get google map points
-    this.$http.get('google/349').then(({data}) => {
+    this.$http.get('google/23307').then(({data}) => {
       this.points = data.JSON.map(point => {
         return { lat: point.location.latitude, lng: point.location.longitude }
       })
