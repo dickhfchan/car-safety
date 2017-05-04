@@ -20,6 +20,7 @@ const store = new Vuex.Store({
     authenticated: true,
     user: {},
     menu,
+    dateRange: ['2017-05-05', '2017-06-05'],
   },
   mutations: {
     map(state, val) { state.map = val },
@@ -35,7 +36,8 @@ const store = new Vuex.Store({
     },
     user(state, data) {
       state.user = data
-    }
+    },
+    dateRange(state, val) { state.dateRange = val },
   },
   strict: config.isDevelopment
   // plugins: config.isDevelopment ? [createLogger()] : []

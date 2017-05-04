@@ -11,15 +11,15 @@
 
           <h2 class="md-title" style="flex: 1">{{$t('brand')}}</h2>
 
-          <md-button class="md-icon-button">
-            <md-icon>view_module</md-icon>
-          </md-button>
-
-          <md-button class="md-fab md-clean md-mini settings-bar-switch"
-          @click.native="toggleRightSidenav">
+          <md-button class="md-fab md-clean md-mini settings-bar-switch" @click.native="toggleRightSidenav">
            <md-icon>more_horiz</md-icon>
            <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
          </md-button>
+
+        <div class="date-range">
+         <label>Date Range</label>
+         <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
+        </div>
 
         </md-toolbar>
       </md-whiteframe>
@@ -84,8 +84,9 @@
 
 <script>
 import Login from '@/components/Login.vue'
+import DatePicker from '@/components/DatePicker.vue'
 export default {
-  components: { Login },
+  components: { Login, DatePicker },
   data () {
     const state = this.$store.state
     return {
@@ -93,6 +94,12 @@ export default {
         map: state.map,
         lang: state.lang,
       }
+    }
+  },
+  computed: {
+    dateRange: {
+      get() { return this.$store.state.dateRange },
+      set(value) { this.$store.commit('dateRange', value) }
     }
   },
   methods: {
@@ -157,5 +164,25 @@ body, html{
   right: 10px;
   bottom: -20px;
   margin: 0;
+}
+.date-range{
+  display: flex;
+  align-items: center;
+  label{
+    white-space: nowrap;
+  }
+}
+.date-picker{
+  color: #000;
+  input{
+    width: auto;
+    border: none;
+    background: none;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+  }
+  ul.weeks li{
+    margin-top: 0;
+  }
 }
 </style>

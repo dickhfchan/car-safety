@@ -125,6 +125,12 @@ export default {
       }
     }
   },
+  watch: {
+    '$store.state.dateRange': {
+      deep: true,
+      handler() { this.getData() }
+    }
+  },
   created() {
     // auto generate column display name
     for (const col of this.columns) {
@@ -133,11 +139,15 @@ export default {
       }
     }
     // get rows
-    this.$http.get('dao/log_data/21?start_time=2001-08-15+00%3A00%3A00&end_time=2016-08-16+00%3A00%3A00').then(({data}) => {
-      this.rows = data.JSON
-    })
+    this.getData()
   },
-  // methods:
+  methods: {
+    getData() {
+      return this.$http.get(`dao/log_data/21?start_time=${this.$store.state.dateRange[0]}+00%3A00%3A00&end_time=${this.$store.state.dateRange[1]}+00%3A00%3A00`).then(({data}) => {
+        this.rows = data.JSON
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
