@@ -1,19 +1,22 @@
 <template>
-  <datatable>
-      <datatable-column v-for="col in columns" :id="'col_'+_uid+'_'+col.name" :label="col.text"></datatable-column>
-  </datatable>
+  <md-table>
+    <md-table-header>
+      <md-table-row>
+        <md-table-head v-for="col in columns" :key="col.name">{{col.text}}</md-table-head>
+      </md-table-row>
+    </md-table-header>
 
+    <md-table-body>
+      <md-table-row v-for="row in rows" :key="row.log_id">
+        <md-table-cell v-for="col in columns" :key="col.name">{{row[col.name]}}</md-table-cell>
+      </md-table-row>
+    </md-table-body>
+  </md-table>
 </template>
 <script>
-import Datatable from 'vuetiful/src/components/datatable/datatable.vue'
-import DatatableColumn from 'vuetiful/src/components/datatable/datatable-column.vue'
-
 import { titleCase } from 'helper-js'
+import { format } from 'date-functions'
 export default {
-  components: {
-    Datatable,
-    DatatableColumn
-  },
   data() {
     return {
       columns: [
@@ -22,10 +25,12 @@ export default {
           'text': 'Warning Type'
         },
         {
-          'name': 'start_time'
+          'name': 'start_time',
+          valueProcessor: ({value}) => format(new Date(value))
         },
         {
-          'name': 'end_time'
+          'name': 'end_time',
+          valueProcessor: ({value}) => format(new Date(value))
         },
         {
           'name': 'duration'
@@ -102,12 +107,21 @@ export default {
           'name': 'warning_vdo_ready'
         }
       ],
-      rows: [],
-      page: 1,
-      pageSize: 5,
-      onPagination: (e) => {
-        this.page = e.page
-        this.alertInfomation.pageSize = e.size
+      cache: {
+        rows: []
+      },
+    }
+  },
+  computed: {
+    rows: {
+      get() { return this.cache.rows },
+      set(rows) {
+        this.columns
+        .filter(col => col.valueProcessor)
+        .forEach(col => {
+          rows.forEach(row => { row[col.name] = col.valueProcessor({value: row[col.name], col, rows}) })
+        })
+        this.cache.rows = rows
       }
     }
   },

@@ -65,10 +65,7 @@ export default {
   created() {
     // get google map points
     this.$http.get('google/23307').then(({data}) => {
-      const points = data.JSON.map(point => {
-        return { lat: point.location.latitude, lng: point.location.longitude }
-      })
-      this.points = points
+      this.points = data.JSON
     })
   }
 }
