@@ -26,6 +26,7 @@
                               v-text="item"
                               :class="{selected: isSelected('year', item), invalid: validateYear(item)}"
                               @click="selectYear(item)"
+                              style="margin-top:2px;"
                           >
                           </li>
                       </ul>
@@ -35,6 +36,7 @@
                           <li v-for="(item, index) in monthList"
                               :class="{selected: isSelected('month', index), invalid: validateMonth(index)}"
                               @click="selectMonth(index)"
+                              style="margin-top:2px;"
                           >
                               {{item | month(language)}}
                           </li>
