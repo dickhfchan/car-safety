@@ -41,7 +41,8 @@ export default {
     return {
       id: 'GoogleMapTrackRender' + this._uid,
       map: null,
-      pathPolyline: null
+      pathPolyline: null,
+      googleApiLoading: true,
     }
   },
   watch: {
@@ -54,6 +55,7 @@ export default {
         }
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
+            this.googleApiLoading = false
             this.autoCenterAndZoom(map, points, google)
             this.pathPolyline = new google.maps.Polyline({
               path: points,
@@ -117,8 +119,9 @@ export default {
 </script>
 <style>
 .google-map-track-render{
-  width: 680px;
-  height: 480px;
+  width: 100%;
+  height:100%;
+  min-height: 50px;
 }
 .google-map-track-render__map{
   width: 100%;

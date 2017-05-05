@@ -29,7 +29,10 @@ const store = new Vuex.Store({
     menu,
     dateRange: [firstDayThisWeek, today],
     vehicle: null,
-    trip_id: null,
+    tripId: null,
+    trips: [],
+    tripsLoading: true,
+    pointsLoading: true,
   },
   mutations: {
     map(state, val) { state.map = val },
@@ -48,6 +51,10 @@ const store = new Vuex.Store({
     },
     dateRange(state, val) { state.dateRange = val },
     vehicle(state, val) { state.vehicle = val },
+    tripId(state, val) { state.tripId = val },
+    trips(state, val) { state.trips = val },
+    tripsLoading(state, val) { state.tripsLoading = val },
+    pointsLoading(state, val) { state.pointsLoading = val },
   },
   strict: config.isDevelopment
   // plugins: config.isDevelopment ? [createLogger()] : []

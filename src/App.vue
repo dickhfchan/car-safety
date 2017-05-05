@@ -117,6 +117,21 @@ export default {
       set(value) { this.$store.commit('vehicle', value) }
     }
   },
+  watch: {
+    dateRange: {
+      deep: true,
+      immediate: true,
+      handler() {
+        if (this._allTrips) {
+          this.updateTrips(this.getTripsInDateRange())
+        }
+      }
+    },
+    vehicle: {
+      immediate: true,
+      handler() { this.getTrips() }
+    }
+  },
   methods: {
     toggleLeftSidenav() {
       this.$refs.leftSidenav.toggle()
@@ -136,6 +151,46 @@ export default {
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
+    },
+    getTrips() {
+      const vehicle = this.vehicle
+      if (vehicle != null) {
+        // cancel prev request
+        this._cancelPrevgetTripsRequest && this._cancelPrevgetTripsRequest()
+        const Axios = this.$root.constructor.Axios
+        const CancelToken = Axios.CancelToken
+        this.$store.commit('tripsLoading', true)
+        // http
+        this.$http.get('dao/veh_trip/' + vehicle, {
+          cancelToken: new CancelToken((c) => { this._cancelPrevgetTripsRequest = c })
+        }).then(({data}) => {
+          this._allTrips = data.JSON
+          this.updateTrips(this.getTripsInDateRange())
+          this.$store.commit('tripsLoading', false)
+        })
+      }
+    },
+    getTripsInDateRange() {
+      const start = new Date(`${this.dateRange[0]} 00:00:00`).getTime()
+      const end = new Date(`${this.dateRange[1]} 23:59:59`).getTime()
+      const trips = this._allTrips
+      // filter by date range
+      .filter(v => start <= v.start_time && v.start_time <= end)
+      // sort by start_time desc
+      .sort((a, b) => b.start_time - a.start_time)
+      return trips
+    },
+    // update trips and auto set value of trip id
+    updateTrips(trips) {
+      this.$store.commit('trips', trips)
+      const state = this.$store.state
+      if (state.trips.length === 0) {
+        this.$store.commit('tripId', null)
+      }
+      // trip dont exists in trips list
+      else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
+        this.$store.commit('tripId', state.trips[0].veh_trip_id)
+      }
     }
   },
   created() {
@@ -143,6 +198,7 @@ export default {
     this.$http.get('dao/veh_reg_mark').then(({data}) => {
       this.vehicles = data.JSON
       this.vehicle = this.vehicles[0].vrm_id
+      this.getTrips()
     })
   }
 }
