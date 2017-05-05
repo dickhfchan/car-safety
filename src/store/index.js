@@ -3,9 +3,16 @@ import Vuex from 'vuex'
 import config from '../config.js'
 import urls from './modules/urls.js'
 import menu from './menu.js'
+import * as dateFunctions from 'date-functions'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 
 Vue.use(Vuex)
+
+const dateFormat = 'yyyy-MM-dd'
+const now = new Date()
+const today = dateFunctions.format(now, dateFormat)
+now.setDate(now.getDate() - now.getDay())
+const firstDayThisWeek = dateFunctions.format(now, dateFormat)
 
 const store = new Vuex.Store({
   modules: {
@@ -20,7 +27,9 @@ const store = new Vuex.Store({
     authenticated: true,
     user: {},
     menu,
-    dateRange: ['2017-05-05', '2017-06-05'],
+    dateRange: [firstDayThisWeek, today],
+    vehicle: null,
+    trip_id: null,
   },
   mutations: {
     map(state, val) { state.map = val },
@@ -38,6 +47,7 @@ const store = new Vuex.Store({
       state.user = data
     },
     dateRange(state, val) { state.dateRange = val },
+    vehicle(state, val) { state.vehicle = val },
   },
   strict: config.isDevelopment
   // plugins: config.isDevelopment ? [createLogger()] : []

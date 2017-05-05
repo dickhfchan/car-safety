@@ -16,10 +16,20 @@
            <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
          </md-button>
 
-        <div class="date-range">
-         <label>Date Range</label>
-         <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
-        </div>
+         <div class="map-filters">
+           <label for="vehicle_select" class="m-r-sm">Vehicle</label>
+           <md-input-container md-inline class="vehicle-select-container m-r">
+             <md-select name="vehicle_select" id="vehicle_select" v-model="vehicle">
+               <md-option v-for="item in vehicles" :key="item.vrm_id" :value="item.vrm_id">{{item.vrm_mark_code}}</md-option>
+             </md-select>
+           </md-input-container>
+
+           <div class="date-range">
+             <label class="m-r-sm">Date Range</label>
+             <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
+           </div>
+         </div>
+
 
         </md-toolbar>
       </md-whiteframe>
@@ -93,13 +103,18 @@ export default {
       settings: {
         map: state.map,
         lang: state.lang,
-      }
+      },
+      vehicles: []
     }
   },
   computed: {
     dateRange: {
       get() { return this.$store.state.dateRange },
       set(value) { this.$store.commit('dateRange', value) }
+    },
+    vehicle: {
+      get() { return this.$store.state.vehicle },
+      set(value) { this.$store.commit('vehicle', value) }
     }
   },
   methods: {
@@ -122,6 +137,13 @@ export default {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
     }
+  },
+  created() {
+    // get vehicles
+    this.$http.get('dao/veh_reg_mark').then(({data}) => {
+      this.vehicles = data.JSON
+      this.vehicle = this.vehicles[0].vrm_id
+    })
   }
 }
 
@@ -164,6 +186,17 @@ body, html{
   right: 10px;
   bottom: -20px;
   margin: 0;
+}
+.map-filters{
+  display: flex;
+  align-items: center;
+}
+.vehicle-select-container{
+  width: auto;
+  min-height: initial;
+  height: 31px;
+  padding: 0px;
+  margin-bottom: 15px;
 }
 .date-range{
   display: flex;
