@@ -129,6 +129,14 @@ export default {
     vehicle: {
       immediate: true,
       handler() { this.getTrips() }
+    },
+    '$store.state.authenticated': {
+      immediate: true,
+      handler(authed) {
+        if (authed) {
+          this.getVehicles()
+        }
+      }
     }
   },
   methods: {
@@ -190,15 +198,15 @@ export default {
       else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
         this.$store.commit('tripId', state.trips[0].veh_trip_id)
       }
+    },
+    getVehicles() {
+      this.$http.get('dao/veh_reg_mark').then(({data}) => {
+        // sort by create_ts desc
+        this.vehicles = data.JSON.sort((a, b) => b.create_ts - a.create_ts)
+        this.vehicle = this.vehicles[0].vrm_id
+        this.getTrips()
+      })
     }
-  },
-  created() {
-    // get vehicles
-    this.$http.get('dao/veh_reg_mark').then(({data}) => {
-      this.vehicles = data.JSON
-      this.vehicle = this.vehicles[0].vrm_id
-      this.getTrips()
-    })
   }
 }
 
@@ -248,6 +256,12 @@ body, html{
   justify-content: center;
   flex: 1;
   padding-right: 150px;
+  .md-select-value{
+    height: auto;
+    font-size: inherit;
+    line-height: inherit;
+    top: 10px;
+  }
 }
 @media (max-width:960px) {
   .map-filters{

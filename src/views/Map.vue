@@ -110,7 +110,7 @@ export default {
       }
     },
     tripDisplayText(trip) {
-      return `${format(new Date(trip.start_time), 'yy-MM-dd')}  ${(trip.drv_distance / 1000).toFixed(2)} KM`
+      return `${format(new Date(trip.start_time), 'yy-MM-dd')}  ${Math.round(trip.drv_distance / 1000)} KM`
     }
   }
 }
