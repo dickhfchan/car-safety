@@ -84,10 +84,10 @@
         <div class="md-title">Baidu Map<fullscreen-button></fullscreen-button></div>
       </md-card-header>
       <md-card-content>
-        <!-- <BaiduMapTrackRender
+        <BaiduMapTrackRender
         :ak="$store.state.baiduMapAK"
         :service-id="$store.state.baiduMapServiceId"
-        :points="points"></BaiduMapTrackRender> -->
+        :points="points"></BaiduMapTrackRender>
       </md-card-content>
     </md-card> -->
   </div>
@@ -112,7 +112,7 @@ export default {
   computed: {
     noTripsFoundVisible() {
       const state = this.$store.state
-      return !state.tripsLoading && state.trips.length === 0 && state.vehicle
+      return !state.tripsLoading && !state.tripsFailed && state.trips.length === 0 && state.vehicle
     },
     tripsListVisible() {
       const state = this.$store.state
@@ -148,9 +148,9 @@ export default {
           })
           this.$store.commit('pointsLoading', false)
         }).catch((e) => {
-          this.$store.commit('pointsLoading', false)
-          this.$store.commit('pointsFailed', true)
           if (e.toString() !== 'Cancel') {
+            this.$store.commit('pointsLoading', false)
+            this.$store.commit('pointsFailed', true)
             window.alert('get points failed')
             throw e
           }

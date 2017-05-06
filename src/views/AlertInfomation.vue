@@ -22,6 +22,11 @@ export default {
       warningTypes: null,
       columns: [
         {
+          name: 'sequence',
+          text: '#',
+          valueProcessor: ({row, rows}) => rows.indexOf(row) + 1
+        },
+        {
           'name': 'Warning',
           'text': 'Warning',
           valueProcessor: ({row}) => this.warningTypes[row.wt]
@@ -126,6 +131,13 @@ export default {
       }
     }
   },
+  watch: {
+    // get rows
+    '$store.state.tripId': {
+      immediate: true,
+      handler() { this.getData() }
+    }
+  },
   created() {
     // auto generate column display name
     for (const col of this.columns) {
@@ -133,20 +145,24 @@ export default {
         this.$set(col, 'text', titleCase(col.name))
       }
     }
-    // get rows
-    this.getData()
   },
   methods: {
     getData() {
-      const getWarningTypes = this.warningTypes == null ? this.getWarningTypes() : Promise.resolve()
-      const getLogData = retry(() => this.$http.get(`dao/log_data/21?start_time=2005-01-01+00%3A00%3A00&end_time=2016-01-30+00%3A00%3A00`))
-      return Promise.all([getWarningTypes, getLogData()]).then((data) => {
-        const response = data[1]
-        this.rows = response.data.JSON
-      }).catch((e) => {
-        window.alert('get alert infomation failed')
-        throw e
-      })
+      const state = this.$store.state
+      const currentTrip = state.allTrips.find(v => v.veh_trip_id === state.tripId)
+      if (currentTrip) {
+        const start = window.encodeURI(format(new Date(currentTrip.start_time), 'yyyy-MM-dd HH:mm:ss'))
+        const end = window.encodeURI(format(new Date(currentTrip.end_time), 'yyyy-MM-dd HH:mm:ss'))
+        const getWarningTypes = this.warningTypes == null ? this.getWarningTypes() : Promise.resolve()
+        const getLogData = retry(() => this.$http.get(`dao/log_data/${currentTrip.vrm_id}?start_time=${start}&end_time=${end}`))
+        return Promise.all([getWarningTypes, getLogData()]).then((data) => {
+          const response = data[1]
+          this.rows = response.data.JSON
+        }).catch((e) => {
+          window.alert('get alert infomation failed')
+          throw e
+        })
+      }
     },
     getWarningTypes() {
       const func = retry(() => this.$http.get('dao/warning_type'))

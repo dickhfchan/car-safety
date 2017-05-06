@@ -91,8 +91,8 @@ const store = new Vuex.Store({
           })
           context.commit('tripsLoading', false)
         }).catch((e) => {
-          context.commit('tripsLoading', false)
           if (e.toString() !== 'Cancel') {
+            context.commit('tripsLoading', false)
             context.commit('tripsFailed', true)
             window.alert('get trips failed')
             throw e
