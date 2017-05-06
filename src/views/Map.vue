@@ -1,53 +1,50 @@
 <template>
   <div>
-    <md-layout md-gutter>
-      <md-layout md-flex-medium="100" md-flex-large="50">
-        <div class="flex-1 m-a">
-          <md-card>
-            <md-card-header>
-              <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>
-            </md-card-header>
-            <md-card-content class="flex">
-                <div class="center-wrapper flex-1 relative">
-                  <GoogleMapTrackRender ref="gmtr" :ak="$store.state.googleMapAK" :points="points" class="w-100 h-100"></GoogleMapTrackRender>
-                  <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || $refs.gmtr.googleApiLoading">
-                    <md-spinner md-indeterminate></md-spinner>
-                  </div>
-                </div>
+    <div class="flex-1 m-a">
+      <md-card>
+        <md-card-header>
+          <div class="md-title">Google Map<fullscreen-button @click.native="$refs.gmtr.checkSize()"></fullscreen-button></div>
+        </md-card-header>
 
-                <div class="trips m-l">
-                  <h4 class="md-title trips-not-found">Trips</h4>
-                  <div class="center-wrapper flex-1" v-if="$store.state.tripsLoading">
-                    <md-spinner md-indeterminate></md-spinner>
-                  </div>
-                  <div v-if="!$store.state.tripsLoading && $store.state.trips.length === 0 && $store.state.vehicle" class="m-t">
-                    <span class="md-subheading">No Trips Found</span>
-                  </div>
-                  <md-list class="trips-list" v-show="!$store.state.tripsLoading">
-                    <md-list-item v-for="trip in $store.state.trips" :key="trip.veh_trip_id">
-                      <md-button :class="{'md-raised md-primary': trip.veh_trip_id === $store.state.tripId}"
-                        @click.native="$store.commit('tripId', trip.veh_trip_id)">{{tripDisplayText(trip)}}</md-button>
-                    </md-list-item>
-                  </md-list>
-                </div>
+        <md-card-content class="flex">
+          <div class="center-wrapper flex-1 relative">
+            <GoogleMapTrackRender ref="gmtr" :ak="$store.state.googleMapAK" :points="points" class="w-100 h-100"></GoogleMapTrackRender>
+            <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || $refs.gmtr.googleApiLoading">
+              <md-spinner md-indeterminate></md-spinner>
+            </div>
+          </div>
 
-            </md-card-content>
-          </md-card>
-        </div>
-      </md-layout>
+          <div class="trips m-l">
+            <h4 class="md-title trips-not-found">Trips</h4>
+            <div class="center-wrapper flex-1" v-if="$store.state.tripsLoading">
+              <md-spinner md-indeterminate></md-spinner>
+            </div>
+            <div v-if="!$store.state.tripsLoading && $store.state.trips.length === 0 && $store.state.vehicle" class="m-t">
+              <span class="md-subheading">No Trips Found</span>
+            </div>
+            <md-list class="trips-list" v-show="!$store.state.tripsLoading">
+              <md-list-item v-for="trip in $store.state.trips" :key="trip.veh_trip_id">
+                <md-button :class="{'md-raised md-primary': trip.veh_trip_id === $store.state.tripId}"
+                  @click.native="$store.commit('tripId', trip.veh_trip_id)">{{tripDisplayText(trip)}}</md-button>
+              </md-list-item>
+            </md-list>
+          </div>
 
-      <md-layout md-flex-medium="100" md-flex-large="50">
-        <md-card  class="flex-1 m-a">
+        </md-card-content>
+      </md-card>
+    </div>
 
-            <md-card-header>
-              <div class="md-title">Alert Information<fullscreen-button></fullscreen-button></div>
-            </md-card-header>
-            <md-card-content>
-              <AlertInfomation></AlertInfomation>
-            </md-card-content>
+    <md-layout>
+      <md-card  class="flex-1 m-a">
 
-        </md-card>
-      </md-layout>
+          <md-card-header>
+            <div class="md-title">Alert Information<fullscreen-button></fullscreen-button></div>
+          </md-card-header>
+          <md-card-content>
+            <AlertInfomation></AlertInfomation>
+          </md-card-content>
+
+      </md-card>
     </md-layout>
 
     <md-card class="m-a">
@@ -119,12 +116,22 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.md-card-header{
+  padding-top: 0;
+  padding-bottom: 0;
+  .md-title{
+    font-size: 20px;
+  }
+}
 .trips{
   display: flex;
   flex-direction: column;
-  height: 480px;
+  height: 600px;
   width: 180px;
+}
+.fullscreen .trips{
+  height: 100%;
 }
 .trips-list{
   flex:1;

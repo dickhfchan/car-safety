@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       id: 'GoogleMapTrackRender' + this._uid,
+      google: null,
       map: null,
       pathPolyline: null,
       googleApiLoading: true,
@@ -55,7 +56,6 @@ export default {
         }
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
-            this.googleApiLoading = false
             this.autoCenterAndZoom(map, points, google)
             this.pathPolyline = new google.maps.Polyline({
               path: points,
@@ -100,6 +100,7 @@ export default {
       return loadGoogleMap(this.ak).then(google => {
         if (!this.map) {
           this.map = new google.maps.Map(document.getElementById(this.id), {
+            center: this.$store.state.initialPoint,
             zoom: 15,
             mapTypeId: 'roadmap',
             mapTypeControl: true,
@@ -113,7 +114,18 @@ export default {
         }
         return Promise.resolve({google, map: this.map})
       })
+    },
+    checkSize() {
+      if (this.google && this.google.maps && this.map) {
+        this.google.maps.event.trigger(this.map, 'resize')
+      }
     }
+  },
+  created() {
+    this.mapReady().then(({google, map}) => {
+      this.google = google
+      this.googleApiLoading = false
+    })
   }
 }
 </script>

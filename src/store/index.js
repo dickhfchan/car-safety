@@ -27,6 +27,7 @@ const store = new Vuex.Store({
     authenticated: true,
     user: {},
     menu,
+    initialPoint: { lat: 39.914271, lng: 116.405706 },
     dateRange: [firstDayThisWeek, today],
     vehicle: null,
     tripId: null,

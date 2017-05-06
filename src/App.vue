@@ -8,15 +8,9 @@
             <md-icon>menu</md-icon>
           </md-button>
 
+          <h2 class="md-title">{{$t('brand')}}</h2>
 
-          <h2 class="md-title" style="flex: 1">{{$t('brand')}}</h2>
-
-          <md-button class="md-fab md-clean md-mini settings-bar-switch" @click.native="toggleRightSidenav">
-           <md-icon>more_horiz</md-icon>
-           <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
-         </md-button>
-
-         <div class="map-filters">
+          <div class="map-filters">
            <label for="vehicle_select" class="m-r-sm">Vehicle</label>
            <md-input-container md-inline class="vehicle-select-container m-r">
              <md-select name="vehicle_select" id="vehicle_select" v-model="vehicle">
@@ -28,7 +22,12 @@
              <label class="m-r-sm">Date Range</label>
              <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
            </div>
-         </div>
+          </div>
+
+          <md-button class="md-fab md-clean md-mini settings-bar-switch" @click.native="toggleRightSidenav">
+           <md-icon>more_horiz</md-icon>
+           <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
+          </md-button>
 
 
         </md-toolbar>
@@ -246,6 +245,15 @@ body, html{
 .map-filters{
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding-right: 150px;
+}
+@media (max-width:960px) {
+  .map-filters{
+    justify-content: flex-end;
+    padding-right: 0;
+  }
 }
 .vehicle-select-container{
   width: auto;
