@@ -100,7 +100,6 @@ export default {
       return loadGoogleMap(this.ak).then(google => {
         if (!this.map) {
           this.map = new google.maps.Map(document.getElementById(this.id), {
-            center: this.$store.state.initialPoint,
             zoom: 15,
             mapTypeId: 'roadmap',
             mapTypeControl: true,

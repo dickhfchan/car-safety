@@ -26,13 +26,6 @@ export default {
       isFullscreen: false,
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      // add class to parentElement
-      const parent = this.$el.parentElement
-      parent && addClass(parent, 'fullscreen-button-wrapper')
-    })
-  },
   methods: {
     toggleFullscreen() {
       // get card and content
@@ -56,11 +49,6 @@ export default {
 </script>
 
 <style lang="scss">
-.fullscreen-button-wrapper{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .fullscreen{
   position: fixed!important;
   top: 0;

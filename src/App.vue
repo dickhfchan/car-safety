@@ -10,21 +10,9 @@
 
           <h2 class="md-title">{{$t('brand')}}</h2>
 
-          <div class="map-filters">
-           <label for="vehicle_select" class="m-r-sm">Vehicle</label>
-           <md-input-container md-inline class="vehicle-select-container m-r">
-             <md-select name="vehicle_select" id="vehicle_select" v-model="vehicle">
-               <md-option v-for="item in vehicles" :key="item.vrm_id" :value="item.vrm_id">{{item.vrm_mark_code}}</md-option>
-             </md-select>
-           </md-input-container>
+          <MapFilters v-if="$route.name === 'map'"></MapFilters>
 
-           <div class="date-range">
-             <label class="m-r-sm">Date Range</label>
-             <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
-           </div>
-          </div>
-
-          <md-button class="md-fab md-clean md-mini settings-bar-switch" @click.native="toggleRightSidenav">
+          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
            <md-icon>more_horiz</md-icon>
            <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
           </md-button>
@@ -93,9 +81,9 @@
 
 <script>
 import Login from '@/components/Login.vue'
-import DatePicker from '@/components/DatePicker.vue'
+import MapFilters from '@/components/MapFilters.vue'
 export default {
-  components: { Login, DatePicker },
+  components: { Login, MapFilters },
   data () {
     const state = this.$store.state
     return {
@@ -103,40 +91,6 @@ export default {
         map: state.map,
         lang: state.lang,
       },
-      vehicles: []
-    }
-  },
-  computed: {
-    dateRange: {
-      get() { return this.$store.state.dateRange },
-      set(value) { this.$store.commit('dateRange', value) }
-    },
-    vehicle: {
-      get() { return this.$store.state.vehicle },
-      set(value) { this.$store.commit('vehicle', value) }
-    }
-  },
-  watch: {
-    dateRange: {
-      deep: true,
-      immediate: true,
-      handler() {
-        if (this._allTrips) {
-          this.updateTrips(this.getTripsInDateRange())
-        }
-      }
-    },
-    vehicle: {
-      immediate: true,
-      handler() { this.getTrips() }
-    },
-    '$store.state.authenticated': {
-      immediate: true,
-      handler(authed) {
-        if (authed) {
-          this.getVehicles()
-        }
-      }
     }
   },
   methods: {
@@ -158,54 +112,6 @@ export default {
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
-    },
-    getTrips() {
-      const vehicle = this.vehicle
-      if (vehicle != null) {
-        // cancel prev request
-        this._cancelPrevgetTripsRequest && this._cancelPrevgetTripsRequest()
-        const Axios = this.$root.constructor.Axios
-        const CancelToken = Axios.CancelToken
-        this.$store.commit('tripsLoading', true)
-        // http
-        this.$http.get('dao/veh_trip/' + vehicle, {
-          cancelToken: new CancelToken((c) => { this._cancelPrevgetTripsRequest = c })
-        }).then(({data}) => {
-          this._allTrips = data.JSON
-          this.updateTrips(this.getTripsInDateRange())
-          this.$store.commit('tripsLoading', false)
-        })
-      }
-    },
-    getTripsInDateRange() {
-      const start = new Date(`${this.dateRange[0]} 00:00:00`).getTime()
-      const end = new Date(`${this.dateRange[1]} 23:59:59`).getTime()
-      const trips = this._allTrips
-      // filter by date range
-      .filter(v => start <= v.start_time && v.start_time <= end)
-      // sort by start_time desc
-      .sort((a, b) => b.start_time - a.start_time)
-      return trips
-    },
-    // update trips and auto set value of trip id
-    updateTrips(trips) {
-      this.$store.commit('trips', trips)
-      const state = this.$store.state
-      if (state.trips.length === 0) {
-        this.$store.commit('tripId', null)
-      }
-      // trip dont exists in trips list
-      else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
-        this.$store.commit('tripId', state.trips[0].veh_trip_id)
-      }
-    },
-    getVehicles() {
-      this.$http.get('dao/veh_reg_mark').then(({data}) => {
-        // sort by create_ts desc
-        this.vehicles = data.JSON.sort((a, b) => b.create_ts - a.create_ts)
-        this.vehicle = this.vehicles[0].vrm_id
-        this.getTrips()
-      })
     }
   }
 }
@@ -244,56 +150,4 @@ body, html{
 
 <!-- other -->
 <style lang="scss">
-.settings-bar-switch{
-  position: absolute;
-  right: 10px;
-  bottom: -20px;
-  margin: 0;
-}
-.map-filters{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  padding-right: 150px;
-  .md-select-value{
-    height: auto;
-    font-size: inherit;
-    line-height: inherit;
-    top: 10px;
-  }
-}
-@media (max-width:960px) {
-  .map-filters{
-    justify-content: flex-end;
-    padding-right: 0;
-  }
-}
-.vehicle-select-container{
-  width: auto;
-  min-height: initial;
-  height: 31px;
-  padding: 0px;
-  margin-bottom: 15px;
-}
-.date-range{
-  display: flex;
-  align-items: center;
-  label{
-    white-space: nowrap;
-  }
-}
-.date-picker{
-  color: #000;
-  input{
-    width: auto;
-    border: none;
-    background: none;
-    color: #fff;
-    border-bottom: 1px solid #fff;
-  }
-  ul.weeks li{
-    margin-top: 0;
-  }
-}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="date-picker">
           <div class="input-wrapper" style="border:none;" @mouseenter="showCancel = true" @mouseleave="showCancel = false">
-              <input class="input" @click="togglePanel" :value="range ? value[0] + ' -- ' + value[1] : value" readonly="readonly" style="width:165px;" />
+              <input class="input" @click="togglePanel" :value="range ? value[0] + ' -- ' + value[1] : value" readonly="readonly" style="width:auto;" />
           </div>
           <transition name="toggle">
               <div class="date-panel" v-show="panelState" style="right: 0;">
@@ -68,3 +68,26 @@ export default {
 }
 
 </script>
+
+<style lang="scss">
+.date-range{
+  display: flex;
+  align-items: center;
+  label{
+    white-space: nowrap;
+  }
+}
+.date-picker{
+  color: #000;
+  input{
+    width: auto;
+    border: none;
+    background: none;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+  }
+  ul.weeks li{
+    margin-top: 0;
+  }
+}
+</style>

@@ -10,6 +10,9 @@
 .flex-1{
   flex: 1;
 }
+.flex-col{
+  flex-direction: column;
+}
 .center-wrapper{
   display: flex;
   justify-content: center;
@@ -26,4 +29,10 @@
 }
 .absolute{
   position: absolute;
+}
+
+.fullscreen-button-wrapper{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
