@@ -105,7 +105,6 @@
 import BaiduMapTrackRender from '../components/BaiduMapTrackRender.vue'
 import GoogleMapTrackRender from '../components/GoogleMapTrackRender.vue'
 import AlertInfomation from './AlertInfomation.vue'
-import { retry } from 'helper-js'
 import { format } from 'date-functions'
 import { mapActions } from 'vuex'
 export default {
@@ -129,31 +128,12 @@ export default {
     }
   },
   watch: {
-    '$store.state.tripId'() {
-      this.getPoints()
-      this.getPointsFromTripDetail()
-    },
+    '$store.state.tripId'() { this.getPoints() },
   },
   methods: {
     ...mapActions(['getPoints']),
     tripDate(trip) { return format(new Date(trip.start_time), 'MM-dd HH:mm') },
     tripDistance(trip) { return (trip.drv_distance / 100000).toFixed(1) },
-    getPointsFromTripDetail() {
-      const state = this.$store.state
-      const commit = this.$store.commit
-      commit('pointsFromTripDetailExpired', true)
-      retry(() => this.$http.get(`dao/veh_trip_detail/${state.tripId}`))()
-      .then(({data}) => {
-        // sort by time asc
-        commit('pointsFromTripDetail', data.JSON.sort((a, b) => {
-          return a.time - b.time
-        }))
-        commit('pointsFromTripDetailExpired', false)
-      }).catch((e) => {
-        window.alert('get vehicle trip detail failed')
-        throw e
-      })
-    },
   }
 }
 </script>

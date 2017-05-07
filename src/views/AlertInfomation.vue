@@ -203,7 +203,7 @@ export default {
       overLays.length = 0
       //
       const state = this.$store.state
-      if (!this.rowsExpired && !state.pointsExpired && !state.pointsFromTripDetailExpired) {
+      if (!this.rowsExpired && !state.pointsExpired) {
         waitFor('googleMapReady', () => runtime.gmtr && runtime.gmtr.map)
         .then(() => {
           const gmtr = runtime.gmtr
