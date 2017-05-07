@@ -129,7 +129,10 @@ export default {
     }
   },
   watch: {
-    '$store.state.tripId'() { this.getPoints() },
+    '$store.state.tripId'() {
+      this.getPoints()
+      this.getPointsFromTripDetail()
+    },
   },
   methods: {
     ...mapActions(['getPoints']),
