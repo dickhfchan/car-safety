@@ -38,8 +38,10 @@ const store = new Vuex.Store({
     trips: [], // filtered trips
     tripsLoading: true,
     tripsFailed: false,
+    points: [],
     pointsLoading: false,
     pointsFailed: false,
+    pointsExpired: true, // points belongs to tripId, a new request start, the points expire
   },
   mutations: {
     map(state, val) { state.map = val },
@@ -67,8 +69,10 @@ const store = new Vuex.Store({
     trips(state, val) { state.trips = val },
     tripsLoading(state, val) { state.tripsLoading = val },
     tripsFailed(state, val) { state.tripsFailed = val },
+    points(state, val) { state.points = val },
     pointsLoading(state, val) { state.pointsLoading = val },
     pointsFailed(state, val) { state.pointsFailed = val },
+    pointsExpired(state, val) { state.pointsExpired = val },
   },
   actions: {
     getTrips (context) {
@@ -121,6 +125,42 @@ const store = new Vuex.Store({
       // trip dont exists in trips list
       else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
         commit('tripId', state.trips[0].veh_trip_id)
+      }
+    },
+    // get map points
+    getPoints({state, commit}) {
+      const tripId = state.tripId
+      if (tripId != null) {
+        // cancel prev request
+        if (local.cancelPrevgetPointsRequest) {
+          local.cancelPrevgetPointsRequest()
+          local.cancelPrevgetPointsRequest = null
+        }
+        const CancelToken = Vue.Axios.CancelToken
+        const http = Vue.http
+        commit('pointsLoading', true)
+        commit('pointsFailed', false)
+        commit('pointsExpired', true)
+        // http
+        http.get('google/' + tripId, {
+          cancelToken: new CancelToken((c) => { local.cancelPrevgetPointsRequest = c })
+        }).then(({data}) => {
+          // convert result point format and store
+          commit('points', data.JSON.map(v => {
+            return { lat: v.location.latitude, lng: v.location.longitude }
+          }))
+          commit('pointsLoading', false)
+          commit('pointsExpired', false)
+        }).catch((e) => {
+          if (e.toString() !== 'Cancel') {
+            commit('pointsLoading', false)
+            commit('pointsFailed', true)
+            window.alert('get points failed')
+            throw e
+          }
+        })
+      } else {
+        commit('points', [])
       }
     },
   },

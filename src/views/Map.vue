@@ -6,12 +6,12 @@
           <div class="flex flex-1 flex-col">
             <h2 class="md-title">Google Map</h2>
             <div class="center-wrapper relative w-100 flex-1">
-              <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="points" class="w-100 h-100"></Google-Map-Track-Render>
+              <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="$store.state.points" class="w-100 h-100"></Google-Map-Track-Render>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || ($refs && $refs.gmtr && $refs.gmtr.googleApiLoading)">
                 <md-spinner md-indeterminate></md-spinner>
               </div>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsFailed">
-                <md-button class="md-icon-button md-raised md-primary" @click.native="getData()">
+                <md-button class="md-icon-button md-raised md-primary" @click.native="getPoints()">
                   <md-icon>refresh</md-icon>
                   <md-tooltip md-direction="bottom">Reload</md-tooltip>
                 </md-button>
@@ -19,7 +19,7 @@
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId == null && !$store.state.tripsLoading">
                 <span class="md-title">No Trip Selected</span>
               </div>
-              <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId != null && points.length === 0 && !$store.state.pointsLoading && !$store.state.pointsFailed">
+              <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId != null && $store.state.points.length === 0 && !$store.state.pointsLoading && !$store.state.pointsFailed">
                 <span class="md-title">No Data</span>
               </div>
             </div>
@@ -106,6 +106,7 @@ import BaiduMapTrackRender from '../components/BaiduMapTrackRender.vue'
 import GoogleMapTrackRender from '../components/GoogleMapTrackRender.vue'
 import AlertInfomation from './AlertInfomation.vue'
 import { format } from 'date-functions'
+import { mapActions } from 'vuex'
 export default {
   components: {
     BaiduMapTrackRender,
@@ -114,7 +115,6 @@ export default {
   },
   data() {
     return {
-      points: [],
     }
   },
   computed: {
@@ -128,45 +128,15 @@ export default {
     }
   },
   watch: {
-    '$store.state.tripId'() { this.getData() },
+    '$store.state.tripId'() { this.getPoints() },
     '$store.state.dateRange': {
       deep: true,
       immediate: true,
-      handler() { this.getData() }
+      handler() { this.getPoints() }
     },
   },
   methods: {
-    // get map points
-    getData() {
-      const tripId = this.$store.state.tripId
-      if (tripId != null) {
-        // cancel prev request
-        this._cancelPrevGetDataRequest && this._cancelPrevGetDataRequest()
-        const Axios = this.$root.constructor.Axios
-        const CancelToken = Axios.CancelToken
-        this.$store.commit('pointsLoading', true)
-        this.$store.commit('pointsFailed', false)
-        // http
-        this.$http.get('google/' + tripId, {
-          cancelToken: new CancelToken((c) => { this._cancelPrevGetDataRequest = c })
-        }).then(({data}) => {
-          // convert result point format and store
-          this.points = data.JSON.map(v => {
-            return { lat: v.location.latitude, lng: v.location.longitude }
-          })
-          this.$store.commit('pointsLoading', false)
-        }).catch((e) => {
-          if (e.toString() !== 'Cancel') {
-            this.$store.commit('pointsLoading', false)
-            this.$store.commit('pointsFailed', true)
-            window.alert('get points failed')
-            throw e
-          }
-        })
-      } else {
-        this.points = []
-      }
-    },
+    ...mapActions(['getPoints']),
     tripDate(trip) { return format(new Date(trip.start_time), 'MM-dd HH:mm') },
     tripDistance(trip) { return (trip.drv_distance / 100000).toFixed(1) }
   }
