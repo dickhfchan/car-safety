@@ -70,7 +70,6 @@ export default {
           return 0
         })
         this.$store.commit('vehicles', vehicles)
-        this.vehicle = this.$store.state.vehicles[0].vrm_id
         this.getTrips()
       }).catch((e) => {
         window.alert('get vehicles failed')
@@ -95,11 +94,26 @@ export default {
   .md-select{
     min-width: initial;
   }
+  // change caret color
+  .md-select:not(.md-disabled):after, .md-input-container.md-has-select:hover .md-select:not(.md-disabled):after{
+    color: #fff;
+  }
   .md-select-value{
     height: auto;
-    font-size: inherit;
+    font-size: 14px;
     line-height: inherit;
-    top: 10px;
+    top: 11px;
+    color: #fff;
+  }
+  .date-range{
+    display: flex;
+    align-items: center;
+    label{
+      white-space: nowrap;
+    }
+  }
+  .date-picker{
+    width: 180px;
   }
 }
 @media (max-width:960px) {

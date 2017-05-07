@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="flex-1 m-a">
-      <md-card class="map-card">
+    <div class="flex-1 m-a m-b-0">
+      <md-card class="map-card card-1">
         <md-card-content class="flex relative">
           <div class="flex flex-1 flex-col">
-            <h4 class="md-subheading p-b-sm">Google Map</h4>
+            <h2 class="md-title">Google Map</h2>
             <div class="center-wrapper relative w-100 flex-1">
               <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="points" class="w-100 h-100"></Google-Map-Track-Render>
-              <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || $refs.gmtr.googleApiLoading">
+              <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || ($refs && $refs.gmtr && $refs.gmtr.googleApiLoading)">
                 <md-spinner md-indeterminate></md-spinner>
               </div>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsFailed">
@@ -16,11 +16,17 @@
                   <md-tooltip md-direction="bottom">Reload</md-tooltip>
                 </md-button>
               </div>
+              <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId == null && !$store.state.tripsLoading">
+                <span class="md-title">No Trip Selected</span>
+              </div>
+              <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId != null && points.length === 0 && !$store.state.pointsLoading && !$store.state.pointsFailed">
+                <span class="md-title">No Data</span>
+              </div>
             </div>
           </div>
 
-          <div class="trips m-l">
-            <h4 class="md-subheading p-b-sm">Trips</h4>
+          <div class="trips">
+            <h2 class="md-title">Trips</h2>
             <div class="center-wrapper flex-1" v-if="$store.state.tripsLoading">
               <md-spinner md-indeterminate></md-spinner>
             </div>
@@ -30,22 +36,20 @@
                 <md-tooltip md-direction="bottom">Reload</md-tooltip>
               </md-button>
             </div>
-            <div v-if="noTripsFoundVisible" class="m-t">
-              <span class="md-subheading">No Trips Found</span>
-            </div>
+            <div v-if="noTripsFoundVisible" class="md-subheading no-trips-found">No Trips Found</div>
             <!-- don't use md-list component here, use native html. Or the page will stop responding for a while -->
-            <ul class="md-list trips-list md-theme-default" v-show="tripsListVisible">
-              <li class="md-list-item" v-for="trip in $store.state.trips">
-                <div class="md-list-item-container">
-                  <button type="button" :class="['md-button md-theme-default', {'md-raised md-primary': trip.veh_trip_id === $store.state.tripId}]"
-                    @click="$store.commit('tripId', trip.veh_trip_id)">
-                    {{tripDate(trip)}}
-                    <br />
-                    {{tripDistance(trip)}} KM
-                </button>
-                </div>
-              </li>
-            </ul>
+            <!-- don't add <md-ink-ripple /> to button, it will effect performance -->
+            <div class="trips-list" v-show="tripsListVisible">
+              <button type="button"
+                v-for="trip in $store.state.trips"
+                :class="['md-button md-theme-default', {'md-raised md-primary': trip.veh_trip_id === $store.state.tripId}]"
+                @click="$store.commit('tripId', trip.veh_trip_id)"
+              >
+                <span class="time">{{tripDate(trip)}}</span>
+                <br />
+                <span class="distance">{{tripDistance(trip)}} KM</span>
+              </button>
+            </div>
 
             <!-- issue code -->
             <!-- <md-list class="trips-list" v-show="tripsListVisible">
@@ -60,22 +64,26 @@
             </md-list> -->
 
           </div>
-
-          <fullscreen-button @click.native="$refs.gmtr.checkSize()"></fullscreen-button>
+          <div class="card-buttons">
+            <fullscreen-button @click.native="$refs.gmtr.checkSize()"></fullscreen-button>
+          </div>
         </md-card-content>
       </md-card>
     </div>
 
     <md-layout>
-      <md-card  class="flex-1 m-a">
-
-          <md-card-header>
-            <div class="md-title fullscreen-button-wrapper">Alert Information<fullscreen-button></fullscreen-button></div>
-          </md-card-header>
-          <md-card-content>
-            <Alert-Infomation></Alert-Infomation>
-          </md-card-content>
-
+      <md-card  class="flex-1 m-x m-b card-1">
+        <md-card-content>
+          <h2 class="md-title">Alert Information</h2>
+          <Alert-Infomation ref="alertInfomation"></Alert-Infomation>
+          <div class="card-buttons">
+            <md-button class="md-icon-button fullscreen-button" @click.native="$refs.alertInfomation.getData()">
+              <md-icon>refresh</md-icon>
+              <md-tooltip md-direction="bottom">Reload</md-tooltip>
+            </md-button>
+            <fullscreen-button></fullscreen-button>
+          </div>
+        </md-card-content>
       </md-card>
     </md-layout>
 
@@ -116,7 +124,7 @@ export default {
     },
     tripsListVisible() {
       const state = this.$store.state
-      return !state.tripsLoading && !state.tripsFailed
+      return !state.tripsLoading && !state.tripsFailed && !this.noTripsFoundVisible
     }
   },
   watch: {
@@ -160,31 +168,31 @@ export default {
       }
     },
     tripDate(trip) { return format(new Date(trip.start_time), 'MM-dd HH:mm') },
-    tripDistance(trip) { return Math.round(trip.drv_distance / 1000) }
+    tripDistance(trip) { return (trip.drv_distance / 100000).toFixed(1) }
   }
 }
 </script>
 
 <style lang="scss">
 .map-card{
-  .fullscreen-button{
-    position: absolute;
-    right: 0;
-    top: 6px;
-    color: rgba(0, 0, 0, .54);
-  }
   .trips{
     display: flex;
     flex-direction: column;
     height: 500px;
     width: 120px;
   }
-  .fullscreen .trips{
+  &.fullscreen .trips{
     height: 100%;
+  }
+  .no-trips-found{
+    font-size: 15px;
+    color: #5c5c5c;
+    text-align: center;
   }
   .trips-list{
     flex:1;
     overflow: auto;
+    border-top: 1px solid #e9e9e9;
     .md-list{
       padding: 0;
     }
@@ -206,6 +214,18 @@ export default {
       font-weight: normal;
       width: 100%;
       line-height: 24px;
+      padding: 0 3px;
+      .distance{
+        font-size: 12px;
+      }
+    }
+    .md-button:not(.md-primary){
+      .time{
+
+      }
+      .distance{
+        color: rgba(0,0,0,.54);
+      }
     }
   }
 }

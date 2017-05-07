@@ -9,10 +9,10 @@ import * as dateFunctions from 'date-functions'
 Vue.use(Vuex)
 
 const dateFormat = 'yyyy-MM-dd'
-const now = new Date()
-const today = dateFunctions.format(now, dateFormat)
-now.setDate(now.getDate() - now.getDay())
-const firstDayThisWeek = dateFunctions.format(now, dateFormat)
+const tempDate = new Date()
+const today = dateFunctions.format(tempDate, dateFormat)
+const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(tempDate, 10), dateFormat)
+const storagedVehicleOrDefault = window.localStorage.getItem('vehicle') == null ? 45 : parseInt(window.localStorage.getItem('vehicle'))
 
 // store local data
 const local = {}
@@ -30,16 +30,15 @@ const store = new Vuex.Store({
     authenticated: true,
     user: {},
     menu,
-    // dateRange: [firstDayThisWeek, today],
-    dateRange: ['2005-05-01', today],
-    vehicle: null,
+    dateRange: [tenDaysBefore, today],
+    vehicle: storagedVehicleOrDefault,
     vehicles: null,
     tripId: null,
     allTrips: [],
     trips: [], // filtered trips
     tripsLoading: true,
     tripsFailed: false,
-    pointsLoading: true,
+    pointsLoading: false,
     pointsFailed: false,
   },
   mutations: {
@@ -58,7 +57,10 @@ const store = new Vuex.Store({
       state.user = data
     },
     dateRange(state, val) { state.dateRange = val },
-    vehicle(state, val) { state.vehicle = val },
+    vehicle(state, val) {
+      window.localStorage.setItem('vehicle', val)
+      state.vehicle = val
+    },
     vehicles(state, val) { state.vehicles = val },
     tripId(state, val) { state.tripId = val },
     allTrips(state, val) { state.allTrips = val },

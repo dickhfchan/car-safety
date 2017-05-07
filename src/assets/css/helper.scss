@@ -36,3 +36,21 @@
   justify-content: space-between;
   align-items: center;
 }
+.card-1.md-card{
+  .md-card-content{
+    padding: 0;
+  }
+  .md-title{
+    font-size: 20px;
+    padding: 5px;
+  }
+  .card-buttons{
+    position: absolute;
+    right: 0;
+    top: 2px;
+    color: rgba(0, 0, 0, .54);
+    .md-button{
+      margin: 0;
+    }
+  }
+}

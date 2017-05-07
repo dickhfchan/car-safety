@@ -1,6 +1,8 @@
 <template>
-  <md-button class="md-icon-button fullscreen-button" @click.native="toggleFullscreen">
-    <md-icon>fullscreen</md-icon>
+  <md-button class="md-icon-button fullscreen-button" @click.native="toggleFullscreen()">
+    <md-icon>{{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}}</md-icon>
+    <md-tooltip v-if="isFullscreen" md-direction="bottom">Exit Fullscreen</md-tooltip>
+    <md-tooltip v-else md-direction="bottom">Fullscreen</md-tooltip>
   </md-button>
 </template>
 <script>
@@ -23,16 +25,16 @@ function removeClass(el, className) {
 export default {
   data() {
     return {
-      isFullscreen: false,
+      isFullscreen: false
     }
   },
   methods: {
-    toggleFullscreen() {
+    toggleFullscreen(to) {
       // get card and content
       const card = findParent(this.$el, el => hasClass(el, 'md-card'))
       const cardContent = card && card.querySelector('.md-card-content')
       if (card) {
-        this.isFullscreen = !this.isFullscreen
+        this.isFullscreen = to == null ? !this.isFullscreen : to
         if (this.isFullscreen) {
           addClass(card, 'fullscreen')
           addClass(card, 'fullscreen-layer')

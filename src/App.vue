@@ -11,12 +11,26 @@
           <h2 class="md-title">{{$t('brand')}}</h2>
 
           <MapFilters v-if="$route.name === 'map'"></MapFilters>
+          <span v-else class="flex-1"></span>
 
           <md-button class="md-icon-button" @click.native="toggleRightSidenav">
-           <md-icon>more_horiz</md-icon>
-           <md-tooltip md-direction="left">{{$t('settings')}}</md-tooltip>
+           <md-icon>apps</md-icon>
+           <md-tooltip md-direction="bottom">unknow</md-tooltip>
           </md-button>
 
+          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
+           <md-icon>notifications</md-icon>
+           <md-tooltip md-direction="bottom">Notifications</md-tooltip>
+          </md-button>
+
+          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
+           <md-icon>settings</md-icon>
+           <md-tooltip md-direction="bottom">{{$t('settings')}}</md-tooltip>
+          </md-button>
+
+          <md-avatar>
+            <img src="./assets/img/avatar.png" alt="Avatar">
+          </md-avatar>
 
         </md-toolbar>
       </md-whiteframe>
@@ -122,10 +136,10 @@ export default {
 <style lang="scss">
 // the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue )
 @import "../node_modules/vue-material/dist/vue-material.css";
-// layer.css should after vue-material.css
-@import "./assets/css/layer.css";
+// layer.scss should after vue-material.css
+@import "./assets/css/layer.scss";
 @import "../node_modules/css-spacing-helper/css-spacing-helper.css";
-@import "./assets/css/helper.css";
+@import "./assets/css/helper.scss";
 
 body, html{
   width: 100%;
