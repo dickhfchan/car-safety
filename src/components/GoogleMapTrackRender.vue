@@ -5,6 +5,7 @@
 </template>
 <script>
 import {windowLoaded, unset, arrayLast} from 'helper-js'
+import runtime from '@/runtime.js'
 //
 function loadGoogleMap(ak) {
   if (window.google && window.google.maps) {
@@ -142,6 +143,7 @@ export default {
       this.google = google
       this.googleApiLoading = false
     })
+    runtime.gmtr = this
   }
 }
 </script>

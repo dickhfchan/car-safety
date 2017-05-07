@@ -14,8 +14,10 @@
   </md-table>
 </template>
 <script>
-import { titleCase, retry } from 'helper-js'
+import { titleCase, retry, waitFor } from 'helper-js'
 import { format, subHours } from 'date-functions'
+import runtime from '@/runtime.js'
+
 export default {
   data() {
     return {
@@ -116,6 +118,8 @@ export default {
       cache: {
         rows: []
       },
+      rowsExpired: false, // be turned to expired when request start
+      overLays: [], // store alert markers
     }
   },
   computed: {
@@ -136,7 +140,19 @@ export default {
     '$store.state.tripId': {
       immediate: true,
       handler() { this.getData() }
-    }
+    },
+    '$store.state.points': {
+      immediate: true,
+      handler() { this.renderAlertPoint() }
+    },
+    '$store.state.pointsFromTripDetail': {
+      immediate: true,
+      handler() { this.renderAlertPoint() }
+    },
+    'rows': {
+      immediate: true,
+      handler() { this.renderAlertPoint() }
+    },
   },
   created() {
     // auto generate column display name
@@ -157,9 +173,12 @@ export default {
         const getWarningTypes = this.warningTypes == null ? this.getWarningTypes() : Promise.resolve()
         const getLogData = retry(() => this.$http.get(`dao/log_data/${currentTrip.vrm_id}?start_time=${start}&end_time=${end}`))
         // const getLogData = retry(() => this.$http.get(`dao/log_data/45?start_time=2017-04-27+00%3A00%3A00&end_time=2017-04-28+00%3A00%3A00`))
+        this.rowsExpired = true
         return Promise.all([getWarningTypes, getLogData()]).then((data) => {
           const response = data[1]
           this.rows = response.data.JSON
+          this.rowsExpired = false
+          return this.rows
         }).catch((e) => {
           window.alert('get alert infomation failed')
           throw e
@@ -176,7 +195,32 @@ export default {
         window.alert('get warning types failed')
         throw e
       })
-    }
+    },
+    renderAlertPoint() {
+      // clear
+      const overLays = this.overLays
+      overLays.forEach(v => v.setMap(null))
+      overLays.length = 0
+      //
+      const state = this.$store.state
+      if (!this.rowsExpired && !state.pointsExpired && !state.pointsFromTripDetailExpired) {
+        waitFor('googleMapReady', () => runtime.gmtr && runtime.gmtr.map)
+        .then(() => {
+          const gmtr = runtime.gmtr
+          const google = gmtr.google
+          const map = gmtr.map
+          const rows = this.rows
+          rows.forEach(row => {
+            const point = new google.maps.Marker({
+              position: { lat: row.lat, lng: row.lng },
+              label: row.sequence + ''
+            })
+            overLays.push(point)
+          })
+          overLays.forEach(v => v.setMap(map))
+        })
+      }
+    },
   }
 }
 

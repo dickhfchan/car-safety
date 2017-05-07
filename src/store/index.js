@@ -42,6 +42,8 @@ const store = new Vuex.Store({
     pointsLoading: false,
     pointsFailed: false,
     pointsExpired: true, // points belongs to tripId, a new request start, the points expire
+    pointsFromTripDetail: [],
+    pointsFromTripDetailExpired: [], // be turned to expired when request start
   },
   mutations: {
     map(state, val) { state.map = val },
@@ -73,6 +75,8 @@ const store = new Vuex.Store({
     pointsLoading(state, val) { state.pointsLoading = val },
     pointsFailed(state, val) { state.pointsFailed = val },
     pointsExpired(state, val) { state.pointsExpired = val },
+    pointsFromTripDetail(state, val) { state.pointsFromTripDetail = val },
+    pointsFromTripDetailExpired(state, val) { state.pointsFromTripDetailExpired = val },
   },
   actions: {
     getTrips (context) {
