@@ -39,7 +39,7 @@ export default {
       deep: true,
       immediate: true,
       handler() {
-        if (this._allTrips) {
+        if (this.$store.state.allTrips) {
           this.getTripsInDateRange().then((trips) => {
             this.updateTrips(trips)
           })

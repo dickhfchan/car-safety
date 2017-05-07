@@ -129,11 +129,6 @@ export default {
   },
   watch: {
     '$store.state.tripId'() { this.getPoints() },
-    '$store.state.dateRange': {
-      deep: true,
-      immediate: true,
-      handler() { this.getPoints() }
-    },
   },
   methods: {
     ...mapActions(['getPoints']),
