@@ -33,11 +33,11 @@ export default {
         },
         {
           'name': 'start_time',
-          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
+          valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
         },
         {
           'name': 'end_time',
-          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
+          valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
         },
         {
           'name': 'duration'
