@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import {windowLoaded, unset} from 'helper-js'
+import {windowLoaded, unset, arrayLast} from 'helper-js'
 //
 function loadGoogleMap(ak) {
   if (window.google && window.google.maps) {
@@ -44,27 +44,44 @@ export default {
       map: null,
       pathPolyline: null,
       googleApiLoading: true,
+      overLays: []
     }
   },
   watch: {
     points: {
       immediate: true,
       handler(points) {
-        if (this.pathPolyline) {
-          this.pathPolyline.setMap(null)
-          this.pathPolyline = null
-        }
+        // clear overlays
+        const overLays = this.overLays
+        overLays.forEach(v => { v.setMap(null) })
+        overLays.length = 0
+        //
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
             this.autoCenterAndZoom(map, points, google)
-            this.pathPolyline = new google.maps.Polyline({
+            // track
+            const pathPolyline = new google.maps.Polyline({
               path: points,
               geodesic: true,
-              strokeColor: '#2196f3',
+              strokeColor: '#FF0000',
               strokeOpacity: 1.0,
-              strokeWeight: 3
+              strokeWeight: 3,
             })
-            this.pathPolyline.setMap(map)
+            overLays.push(pathPolyline)
+            //
+            const startPoint = new google.maps.Marker({
+              position: points[0],
+              label: 'A'
+            })
+            overLays.push(startPoint)
+            //
+            const endPoint = new google.maps.Marker({
+              position: arrayLast(points),
+              label: 'B'
+            })
+            overLays.push(endPoint)
+            //
+            overLays.forEach(v => { v.setMap(map) })
           })
         }
       }
