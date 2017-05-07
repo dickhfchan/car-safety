@@ -1,5 +1,5 @@
 <template>
-  <md-table>
+  <md-table class="alert-information">
     <md-table-header>
       <md-table-row>
         <md-table-head v-for="col in columns" :key="col.name">{{col.text}}</md-table-head>
@@ -7,7 +7,7 @@
     </md-table-header>
 
     <md-table-body>
-      <md-table-row v-for="row in rows" :key="row.log_id">
+      <md-table-row v-for="row in rows" :key="row.log_id" :class="{active: row.active}">
         <md-table-cell v-for="col in columns" :key="col.name">{{row[col.name]}}</md-table-cell>
       </md-table-row>
     </md-table-body>
@@ -45,7 +45,7 @@ export default {
           'name': 'duration'
         },
         {
-          'name': 'alt',
+          'name': 'lat',
           'text': 'Latitude'
         },
         {
@@ -112,7 +112,7 @@ export default {
           'name': 'warning_vdo_ready'
         },
         {
-          'name': 'lat',
+          'name': 'alt',
         },
       ],
       cache: {
@@ -131,6 +131,7 @@ export default {
         .forEach(col => {
           rows.forEach(row => { row[col.name] = col.valueProcessor({value: row[col.name], col, row, rows}) })
         })
+        rows.forEach(row => { row.active = false })
         this.cache.rows = rows
       }
     }
@@ -180,7 +181,7 @@ export default {
           this.rowsExpired = false
           return this.rows
         }).catch((e) => {
-          window.alert('get alert infomation failed')
+          window.alert('get alert information failed')
           throw e
         })
       }
@@ -210,12 +211,36 @@ export default {
           const google = gmtr.google
           const map = gmtr.map
           const rows = this.rows
+          let prevOpenedInfoWindow = null
+          let prevRowOfOpenedInfoWindow = null
           rows.forEach(row => {
-            const point = new google.maps.Marker({
+            const marker = new google.maps.Marker({
               position: { lat: row.lat, lng: row.lng },
               label: row.sequence + ''
             })
-            overLays.push(point)
+            const infowindow = new google.maps.InfoWindow({
+              content: `
+<pre>
+Duration:     ${row.duration} seconds
+Top Speed:    ${row.top_spd} KM/h
+Start Speed:  ${row.start_spd} KM/h
+End Speed:    ${row.end_spd} KM/h
+</pre>`
+            })
+            marker.addListener('click', () => {
+              if (prevOpenedInfoWindow) {
+                prevOpenedInfoWindow.close()
+                prevRowOfOpenedInfoWindow.active = false
+              }
+              prevOpenedInfoWindow = infowindow
+              prevRowOfOpenedInfoWindow = row
+              row.active = true
+              infowindow.open(map, marker)
+            })
+            infowindow.addListener('closeclick', () => {
+              row.active = false
+            })
+            overLays.push(marker)
           })
           overLays.forEach(v => v.setMap(map))
         })
@@ -226,4 +251,12 @@ export default {
 
 </script>
 <style lang="scss">
+.alert-information{
+  .md-table-row.active, .md-table-row.active:hover{
+    .md-table-cell{
+      background-color: #689f38;
+      color: #fff;
+    }
+  }
+}
 </style>

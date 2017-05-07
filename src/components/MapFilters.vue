@@ -78,9 +78,7 @@ export default {
     }
   },
   created() {
-    if (this.$store.state.vehicles == null) {
-      this.getVehicles()
-    }
+    this.getVehicles()
   }
 }
 </script>

@@ -7,7 +7,7 @@
             <h2 class="md-title">Google Map</h2>
             <div class="center-wrapper relative w-100 flex-1">
               <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="$store.state.points" class="w-100 h-100"></Google-Map-Track-Render>
-              <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading || ($refs && $refs.gmtr && $refs.gmtr.googleApiLoading)">
+              <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading">
                 <md-spinner md-indeterminate></md-spinner>
               </div>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsFailed">
@@ -75,9 +75,9 @@
       <md-card  class="flex-1 m-x m-b card-1">
         <md-card-content>
           <h2 class="md-title">Alert Information</h2>
-          <Alert-Infomation ref="alertInfomation"></Alert-Infomation>
+          <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
-            <md-button class="md-icon-button fullscreen-button" @click.native="$refs.alertInfomation.getData()">
+            <md-button class="md-icon-button fullscreen-button" @click.native="$refs.alertInformation.getData()">
               <md-icon>refresh</md-icon>
               <md-tooltip md-direction="bottom">Reload</md-tooltip>
             </md-button>
@@ -104,14 +104,14 @@
 <script>
 import BaiduMapTrackRender from '../components/BaiduMapTrackRender.vue'
 import GoogleMapTrackRender from '../components/GoogleMapTrackRender.vue'
-import AlertInfomation from './AlertInfomation.vue'
+import AlertInformation from './AlertInformation.vue'
 import { format } from 'date-functions'
 import { mapActions } from 'vuex'
 export default {
   components: {
     BaiduMapTrackRender,
     GoogleMapTrackRender,
-    AlertInfomation
+    AlertInformation
   },
   data() {
     return {

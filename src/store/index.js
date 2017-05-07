@@ -12,7 +12,8 @@ const dateFormat = 'yyyy-MM-dd'
 const tempDate = new Date()
 const today = dateFunctions.format(tempDate, dateFormat)
 const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(tempDate, 10), dateFormat)
-const storagedVehicleOrDefault = window.localStorage.getItem('vehicle') == null ? 45 : parseInt(window.localStorage.getItem('vehicle'))
+let storagedDefaultVehicles = window.localStorage.getItem('defaultVehicles')
+storagedDefaultVehicles = storagedDefaultVehicles == null ? [{vrm_id: 45, vrm_mark_code: 'RC6558'}] : JSON.parse(storagedDefaultVehicles)
 
 // store local data
 const local = {}
@@ -31,8 +32,8 @@ const store = new Vuex.Store({
     user: {},
     menu,
     dateRange: [tenDaysBefore, today],
-    vehicle: storagedVehicleOrDefault,
-    vehicles: null,
+    vehicle: storagedDefaultVehicles[0].vrm_id,
+    vehicles: storagedDefaultVehicles,
     tripId: null,
     allTrips: [],
     trips: [], // filtered trips
@@ -60,7 +61,7 @@ const store = new Vuex.Store({
     },
     dateRange(state, val) { state.dateRange = val },
     vehicle(state, val) {
-      window.localStorage.setItem('vehicle', val)
+      window.localStorage.setItem('defaultVehicles', JSON.stringify([state.vehicles.find(v => v.vrm_id === val)]))
       state.vehicle = val
     },
     vehicles(state, val) { state.vehicles = val },
