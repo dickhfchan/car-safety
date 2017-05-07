@@ -95,6 +95,7 @@ export default {
   // change caret color
   .md-select:not(.md-disabled):after, .md-input-container.md-has-select:hover .md-select:not(.md-disabled):after{
     color: #fff;
+    top: 18px;
   }
   .md-select-value{
     height: auto;

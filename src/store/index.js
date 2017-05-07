@@ -160,8 +160,6 @@ const store = new Vuex.Store({
             throw e
           }
         })
-      } else {
-        commit('points', [])
       }
     },
   },
