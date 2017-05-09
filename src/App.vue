@@ -140,6 +140,7 @@ export default {
 @import "./assets/css/layer.scss";
 @import "../node_modules/css-spacing-helper/css-spacing-helper.css";
 @import "./assets/css/helper.scss";
+@import "../node_modules/flex-layout-attribute/sass/flex-layout-attribute.scss"; // for vuetiful datatable
 
 body, html{
   width: 100%;

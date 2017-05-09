@@ -18,6 +18,7 @@
     "baidu-map-track-render-vue": "^1.0.10",
     "css-spacing-helper": "^1.0.1",
     "date-functions": "^1.0.8",
+    "flex-layout-attribute": "^1.0.3",
     "helper-js": "^1.0.12",
     "node-sass": "^4.5.2",
     "plotly.js": "^1.26.1",
@@ -31,6 +32,7 @@
     "vue-i18n": "^6.1.1",
     "vue-material": "^0.7.1",
     "vue-router": "^2.3.1",
+    "vuetiful": "git+https://github.com/andrewcourtice/vuetiful.git",
     "vuex": "^2.3.1"
   },
   "devDependencies": {
