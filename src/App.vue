@@ -36,10 +36,10 @@
       </md-whiteframe>
 
       <md-sidenav md-theme="blue" class="md-left sidebar-layer" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
-          <md-toolbar class="md-large">
-            <div class="md-toolbar-container">
-              <h3 class="md-title">{{$t('brand')}}</h3>
-            </div>
+          <md-toolbar class="md-large logo-wrapper" md-theme="white">
+            <router-link :to="{name: 'dashboard'}">
+              <img src="./assets/img/webwxgetmsgimgg.jpg" alt="Vue">
+            </router-link>
           </md-toolbar>
 
           <md-list>
@@ -165,4 +165,10 @@ body, html{
 
 <!-- other -->
 <style lang="scss">
+.logo-wrapper{
+  display: block;
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0,0,0,.12);
+}
 </style>
