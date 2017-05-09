@@ -5,7 +5,7 @@
     <router-link :to="{name: 'gauge'}">gauge</router-link>
     <router-link :to="{name: 'plotly'}">plotly</router-link>
     <router-link :to="{name: 'map'}">map</router-link>
-    <datatable id="data-table-main"
+    <datatable
         :source="customers.rows"
         :striped="customers.striped"
         :editable="customers.editable"
