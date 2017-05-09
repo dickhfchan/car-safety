@@ -79,7 +79,7 @@
           <div class="card-buttons">
             <md-button class="md-icon-button fullscreen-button" @click.native="$refs.alertInformation.getData()">
               <md-icon>refresh</md-icon>
-              <md-tooltip md-direction="bottom">Reload</md-tooltip>
+              <md-tooltip md-direction="bottom">Refresh</md-tooltip>
             </md-button>
             <fullscreen-button></fullscreen-button>
           </div>

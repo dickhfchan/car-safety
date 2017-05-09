@@ -104,8 +104,17 @@ $color-table-row-alt: #FAFAFA;
           }
       }
   }
-  // important
+  // other
   .datatable-group{
     padding: 0;
   }
+  &{
+    display: flex;
+    flex-flow: column wrap;
+    overflow-x: auto;
+  }
+  th{
+    white-space: nowrap;
+  }
+
 }

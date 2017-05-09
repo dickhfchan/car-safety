@@ -25,8 +25,8 @@ export default [
     routeName: 'map'
   },
   {
-    text: 'datepicker',
-    icon: 'calendar',
-    routeName: 'datepicker'
+    text: 'Analysis',
+    icon: 'analysis',
+    routeName: 'analysis'
   },
 ]
