@@ -17,6 +17,7 @@
 import { titleCase, retry, waitFor } from 'helper-js'
 import { format, subHours } from 'date-functions'
 import runtime from '@/runtime.js'
+import mapIcons from '../map-icons.js'
 
 export default {
   data() {
@@ -214,9 +215,10 @@ export default {
           let prevOpenedInfoWindow = null
           let prevRowOfOpenedInfoWindow = null
           rows.forEach(row => {
+            const icon = mapIcons[row.Warning]
             const marker = new google.maps.Marker({
               position: { lat: row.lat, lng: row.lng },
-              label: row.sequence + ''
+              icon,
             })
             const infowindow = new google.maps.InfoWindow({
               content: `
