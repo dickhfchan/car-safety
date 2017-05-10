@@ -28,6 +28,10 @@
 
       <div class="card-buttons">
         <md-switch class="md-primary" v-model="scoreColumnVisible">Score Column</md-switch>
+        <md-button class="md-icon-button" @click.native="exportExcel">
+          <md-icon>get_app</md-icon>
+          <md-tooltip md-direction="bottom">Export</md-tooltip>
+        </md-button>
         <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
@@ -42,6 +46,7 @@ import { Datatable, DatatableColumn } from '@/components/datatable'
 import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
 import { titleCase, retry } from 'helper-js'
 import { format } from 'date-functions'
+import { generateExcel } from '../utils.js'
 
 export default {
   components: { Datatable, DatatableColumn, Paginator },
@@ -186,6 +191,19 @@ export default {
         window.alert('load failed')
         throw e
       })
+    },
+    exportExcel() {
+      const cols = this.columns
+      const data = this.rows.map(row => {
+        const r = []
+        cols.forEach(col => {
+          const val = row[col.name]
+          r.push(col.formatter ? col.formatter(val) : val)
+        })
+        return r
+      })
+      const titleLabels = cols.map(col => col.text)
+      generateExcel(data, 'Analysis', titleLabels)
     }
   }
 }
