@@ -14,6 +14,7 @@
                 >
                 <datatable-column
                     v-for="column in columns"
+                    v-if="column.visible"
                     :id="column.name"
                     :label="column.text"
                     :width="column.width"
@@ -26,6 +27,7 @@
       </Paginator>
 
       <div class="card-buttons">
+        <md-switch class="md-primary" v-model="scoreColumnVisible">Score Column</md-switch>
         <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
@@ -46,60 +48,124 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'aaw' },
-        { name: 'aaw_score' },
-        { name: 'abw' },
-        { name: 'abw_score' },
-        { name: 'atw' },
-        { name: 'atw_score' },
-        { name: 'avg_warn_id' },
-        {
-          name: 'create_ts',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+        { name: 'vrm_id' },
+        { name: 'total_score',
+          text: 'Total',
         },
-        { name: 'create_user' },
-        { name: 'drv_distance' },
-        { name: 'drv_duration' },
-        { name: 'end_date' },
-        { name: 'fcw' },
-        { name: 'fcw_score' },
-        { name: 'fuel_usage' },
-        { name: 'hmw_h' },
-        { name: 'hmw_h_score' },
-        { name: 'hmw_l' },
-        { name: 'hmw_l_score' },
-        { name: 'hmw_m' },
-        { name: 'hmw_m_score' },
-        { name: 'idle_duration_non_trf' },
-        { name: 'idle_duration_trf' },
-        { name: 'lldw' },
-        { name: 'lldw_score' },
-        { name: 'pcw' },
-        { name: 'pcw_score' },
-        { name: 'rldw' },
-        { name: 'rldw_score' },
-        { name: 'spw' },
-        { name: 'spw_score' },
+        { name: 'pcw_score',
+          text: 'PCW S',
+        },
+        { name: 'ufcw_score',
+          text: 'UFCW S',
+        },
+        { name: 'fcw_score',
+          text: 'FCW S'},
+        { name: 'hmw_h_score',
+          text: 'HMW_H S'},
+        { name: 'hmw_m_score',
+          text: 'HMW_M S'},
+        { name: 'hmw_l_score',
+          text: 'HMW_L S'},
+        { name: 'lldw_score',
+          text: 'LLDW S'},
+        { name: 'rldw_score',
+          text: 'RLDW S'},
+        { name: 'spw_score',
+          text: 'SPW S',
+        },
+        { name: 'vb_score',
+          text: 'VB S',
+        },
+        { name: 'aaw_score',
+          text: 'AAW S',
+        },
+        { name: 'abw_score',
+          text: 'ABW S',
+        },
+        { name: 'atw_score',
+          text: 'ATW S',
+        },
+        { name: 'drv_distance',
+          text: 'Distance',
+        },
+        { name: 'drv_duration',
+          text: 'Duration',
+        },
+        { name: 'pcw',
+          text: 'PCW',
+        },
+        { name: 'ufcw',
+          text: 'UFCW',
+        },
+        { name: 'fcw',
+          text: 'FCW',
+        },
+        { name: 'hmw_h',
+          text: 'HMW_H',
+        },
+        { name: 'hmw_m',
+          text: 'HMW_M',
+        },
+        { name: 'hmw_l',
+          text: 'HMW_L',
+        },
+        { name: 'lldw',
+          text: 'LLDW',
+        },
+        { name: 'rldw',
+          text: 'RLDW',
+        },
+        { name: 'spw',
+          text: 'SPW',
+        },
+        { name: 'vb',
+          text: 'VB',
+        },
+        { name: 'aaw',
+          text: 'AAW',
+        },
+        { name: 'abw',
+          text: 'ABW',
+        },
+        { name: 'atw',
+          text: 'ATW',
+        },
         {
           name: 'start_date',
           formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
         },
-        { name: 'total_score' },
+        { name: 'end_date',
+          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+        },
         { name: 'type' },
-        { name: 'ufcw' },
-        { name: 'ufcw_score' },
-        { name: 'vb' },
-        { name: 'vb_score' },
-        { name: 'version' },
-        { name: 'vrm_id' },
+        { name: 'avg_warn_id' },
       ],
       rows: [],
-      pageSize: 50,
+      pageSize: 20,
+      cache: {
+        scoreColumnVisible: false,
+      }
+    }
+  },
+  computed: {
+    scoreColumnVisible: {
+      get() { return this.cache.scoreColumnVisible },
+      set() {
+        this.cache.scoreColumnVisible = !this.cache.scoreColumnVisible
+        this.columns.forEach(col => {
+          if (col.name.indexOf('_score') > -1) {
+            col.visible = this.scoreColumnVisible
+          }
+        })
+      }
     }
   },
   created() {
     // auto generate column display name
     for (const col of this.columns) {
+      if (col.visible == null) {
+        this.$set(col, 'visible', true)
+      }
       if (!col.text) {
         this.$set(col, 'text', titleCase(col.name))
       }
