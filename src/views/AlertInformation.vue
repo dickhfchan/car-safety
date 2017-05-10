@@ -18,6 +18,7 @@ import { titleCase, retry, waitFor } from 'helper-js'
 import { format, subHours } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
+import { generateExcel } from '../utils.js'
 
 export default {
   data() {
@@ -248,6 +249,18 @@ End Speed:    ${row.end_spd} KM/h
         })
       }
     },
+    exportExcel() {
+      const cols = this.columns.filter(col => col.name !== 'sequence')
+      const data = this.rows.map(row => {
+        const r = []
+        cols.forEach(col => {
+          r.push(row[col.name])
+        })
+        return r
+      })
+      const titleLabels = cols.map(col => col.text)
+      generateExcel(data, 'Alert Information', titleLabels)
+    }
   }
 }
 

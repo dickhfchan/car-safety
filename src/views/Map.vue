@@ -77,7 +77,11 @@
           <h2 class="md-title">Alert Information</h2>
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
-            <md-button class="md-icon-button fullscreen-button" @click.native="$refs.alertInformation.getData()">
+            <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
+              <md-icon>get_app</md-icon>
+              <md-tooltip md-direction="bottom">Export</md-tooltip>
+            </md-button>
+            <md-button class="md-icon-button" @click.native="$refs.alertInformation.getData()">
               <md-icon>refresh</md-icon>
               <md-tooltip md-direction="bottom">Refresh</md-tooltip>
             </md-button>

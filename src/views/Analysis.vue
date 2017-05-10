@@ -26,7 +26,7 @@
       </Paginator>
 
       <div class="card-buttons">
-        <md-button class="md-icon-button fullscreen-button" @click.native="getData()">
+        <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
         </md-button>
