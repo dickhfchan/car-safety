@@ -29,4 +29,9 @@ export default [
     icon: 'analysis',
     routeName: 'analysis'
   },
+  {
+    text: 'Analysis Group',
+    icon: 'analysis',
+    routeName: 'analysisGroup'
+  },
 ]

@@ -1,7 +1,7 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <h2 class="md-title">Analysis</h2>
+      <h2 class="md-title">Analysis Group</h2>
 
       <Paginator :source="rows" :page-size="pageSize">
           <template scope="page">
@@ -10,7 +10,7 @@
                 :editable="false"
                 :line-numbers="true"
                 :filterable="false"
-                class="analysis-table"
+                class="analysis-group-table"
                 >
                 <datatable-column
                     v-for="column in columns"
@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'vrm_id' },
+        { name: 'vrm_grp_id' },
         { name: 'total_score',
           text: 'Total',
         },
@@ -172,7 +172,7 @@ export default {
   },
   methods: {
     getData() {
-      retry(() => this.$http.get('dao/avg_warning_vrm'))()
+      retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
       .then(({data}) => {
         this.rows = data.JSON
       }).catch((e) => {
@@ -191,13 +191,13 @@ export default {
         return r
       })
       const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'Analysis', titleLabels)
+      generateExcel(data, 'Analysis Group', titleLabels)
     }
   }
 }
 </script>
 <style lang="scss">
-.analysis-table{
+.analysis-group-table{
   &.table-wrapper{
     border: none;
   }

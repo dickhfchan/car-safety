@@ -1,3 +1,4 @@
+import { titleCase } from 'helper-js'
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
     baseURL: store.state.urls.server.base,
@@ -91,6 +92,22 @@ export function axiosNamedPost(name, url, query) {
       this._axiosNamedPostStore[name] = c
     })
   })
+}
+
+export function initColumns(vm, columns) {
+  // auto generate column display name
+  for (const col of columns) {
+    if (col.visible == null) {
+      vm.$set(col, 'visible', true)
+    }
+    if (!col.text) {
+      vm.$set(col, 'text', titleCase(col.name))
+    }
+    if (!col.width) {
+      const len = col.text.length
+      vm.$set(col, 'width', `${len > 3 ? (100 + (len - 6) * 5) : '60'}px`)
+    }
+  }
 }
 
 export function generateExcel(JSONData, FileName, ShowLabel) {
