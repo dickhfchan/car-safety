@@ -1,0 +1,58 @@
+To start server: "python run.py"
+
+
+IMPORTANT: 
+- Before starting server, please make changes to DATABASE CONNECTION PARAMETERS in config.py
+- This server is made thread-safe
+
+# Updates 2/5/2017 00:00 :
+
+Routes to use:
+    Retrieve table without key: localhost:8080/api/dao/<tablename>
+    Retrieve table with key: localhost:8080/api/dao/<tablename>/<key>
+    Retrieve table with key and other params: localhost:8080/api/dao/<tablename>/<key>?<start_time>&<end_time>
+        Eg: http://54.255.227.246:8080/api/dao/log_data/<key>?start_time=<YYYY>-<MM>-<DD>+<HH>%3A<MM>%3A<SS>&end_time=<YYYY>-<MM>-<DD>+<HH>%3A<MM>%3A<SS>
+    Google API: http://54.255.227.246:8080/api/google/<veh_trip_id>
+
+middleware.py:
+    1) Split return_JSON function into return_veh_trip_table and retrieve_json_from_google
+    2) Added new function: retrieve_table, capable of returning both pandas df and JSON, depends on parameter 'json_format'
+    3) Enabled error handling
+
+run.py:
+    1) Added new Restful class: Tables JSON
+    2) Improved GET reponse with default HTTP headers
+
+
+#Updates 2/5/2017 21:00:00 
+-Added Python Calls to functions in middleware are still very clunky. They will be improved upon.
+-More Rounds of testing
+
+
+
+
+
+########################################################################################################################################
+#Update 4/5/2017 12:16:
+
+Google API: 
+-Resolved 'originalIndex' issue
+-Return from google_snap_gps table if veh_trip_id is found on google_snap_gps
+-New veh_trip_id will be fed to Google Snap API, and inserted into google_snap_gps table
+-Added function to catch Error 429 upon reaching daily limit for Google Snap API
+-Prevention of "50 requests per second" Rule on the API" by pausing the program for 1 sec every 5000 lng/lng pairs
+
+***Potential Issue: Longer time to return API results if the data contains > 5000 lat/lng pairs
+
+***GOOGLE API JSON is in a different format than google_snap_gps generated JSON
+
+Test Cases:
+http://localhost:8080/api/google/382 (first try: Google API -> database insertion)
+http://localhost:8080/api/google/382 (second try: database retrieval MUCH FASTER)
+http://localhost:8080/api/google/383 (first try: Google API -> database insertion)
+http://localhost:8080/api/google/383 (second try: database retrieval MUCH FASTER)
+http://localhost:8080/api/google/400 (Empty, lat lng all zeros on local machine)
+http://localhost:8080/api/google/394 (first try: Success)
+http://localhost:8080/api/google/394 (second try: Retrieval Success)
+http://localhost:8080/api/google/392 (first try: Success)
+http://localhost:8080/api/google/392 (second try: Success)
