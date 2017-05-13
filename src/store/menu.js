@@ -34,4 +34,9 @@ export default [
     icon: 'analysis',
     routeName: 'analysisGroup'
   },
+  {
+    text: 'Datatables',
+    icon: 'analysis',
+    routeName: 'datatables'
+  },
 ]

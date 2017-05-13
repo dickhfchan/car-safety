@@ -8,6 +8,7 @@ export default [
   { path: '/map', name: 'map', component: (resolve) => require(['../views/Map.vue'], resolve) },
   { path: '/analysis', name: 'analysis', component: (resolve) => require(['../views/Analysis.vue'], resolve) },
   { path: '/analysis-group', name: 'analysisGroup', component: (resolve) => require(['../views/AnalysisGroup.vue'], resolve) },
+  { path: '/datatables', name: 'datatables', component: (resolve) => require(['../views/Datatables.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]
