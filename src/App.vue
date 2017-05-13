@@ -159,7 +159,7 @@ export default {
         }
       } else if (type === 'cancel') {
         if (this.confirm.reject) {
-          this.confirm.reject()
+          this.confirm.reject(new Error('cancel'))
         }
       }
     }

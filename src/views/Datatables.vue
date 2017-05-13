@@ -1,12 +1,13 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <md-input-container md-inline class="datatables-select">
-        <label for="datatableSelect">Movie</label>
-        <md-select name="datatableSelect" id="datatableSelect" v-model="current">
+      <h2 v-if="modified" class="md-title">{{datatables[current].text}} - <small class="unsaved">Unsaved</small></h2>
+      <md-input-container v-else md-inline class="datatables-select">
+        <md-select name="datatableSelect" v-model="current">
           <md-option :value="dt.name" v-for="dt in datatables">{{dt.text}}</md-option>
         </md-select>
       </md-input-container>
+
       <Paginator :source="rows" :page-size="pageSize">
           <template scope="page">
             <datatable
@@ -39,7 +40,21 @@
       </Paginator>
 
       <div class="card-buttons">
-        <md-button class="md-icon-button" @click.native="getData()">
+        <template v-if="modified">
+          <md-button class="md-icon-button" @click.native="discard()">
+            <md-icon>clear</md-icon>
+            <md-tooltip md-direction="bottom">Discard</md-tooltip>
+          </md-button>
+          <md-button class="md-icon-button" @click.native="save()">
+            <md-icon>check</md-icon>
+            <md-tooltip md-direction="bottom">Save</md-tooltip>
+          </md-button>
+        </template>
+        <md-button class="md-icon-button" @click.native="add()">
+          <md-icon>add</md-icon>
+          <md-tooltip md-direction="bottom">New</md-tooltip>
+        </md-button>
+        <md-button class="md-icon-button" @click.native="discard()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
         </md-button>
@@ -522,6 +537,10 @@ export default {
       rows: [],
       pageSize: 20,
       current: 'company',
+      modified: false,
+      newRow: null,
+      _beforeunloadListenning: false,
+      leaveConfirm: 'Data have been modified. Do you want to save before you continue?',
     }
   },
   computed: {
@@ -529,9 +548,20 @@ export default {
   watch: {
     current: {
       immediate: true,
-      handler() {
+      handler(val, oldVal) {
         this.rows = []
         this.getData()
+      }
+    },
+    rows: {
+      deep: true,
+      handler(val, oldVal) {
+        if (val === oldVal) {
+          this.modified = true
+          if (!this._beforeunloadListenning) {
+            this.listenBeforeunload()
+          }
+        }
       }
     }
   },
@@ -548,6 +578,25 @@ export default {
       initColumns(this, dt.columns)
     }
   },
+  beforeDestroy() {
+    this.unlistenBeforeunload()
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.modified) {
+      this.$confirm(this.leaveConfirm).then(() => {
+        this.save()
+      }).catch(e => {
+        if (e.message === 'cancel') {
+          this.discard()
+          next()
+        } else {
+          throw e
+        }
+      })
+    } else {
+      next()
+    }
+  },
   methods: {
     getData(table) {
       retry(() => this.$http.get(`dao/${this.current}`))()
@@ -558,10 +607,51 @@ export default {
         throw e
       })
     },
+    add() {
+      if (!this.newRow) {
+        const newRow = {}
+        this.datatables[this.current].columns.forEach(col => {
+          newRow[col.name] = null
+        })
+        this.rows.splice(0, 0, newRow)
+        this.newRow = newRow
+        console.log(this)
+      }
+    },
     remove(row) {
       this.$confirm('Are you sure to remove specified item?').then(() => {
         console.log(row)
+      }).catch(e => {
+        if (e.message !== 'cancel') {
+          throw e
+        }
       })
+    },
+    save() {
+      // this.modified = false
+      // this.newRow = null
+    },
+    discard() {
+      this.modified = false
+      this.unlistenBeforeunload()
+      this.getData()
+    },
+    saved() {
+      this.modified = true
+      this.unlistenBeforeunload()
+    },
+    beforeunload(e) {
+      var confirmationMessage = this.leaveConfirm
+      e.returnValue = confirmationMessage     // Gecko, Trident, Chrome 34+
+      return confirmationMessage              // Gecko, WebKit, Chrome <34
+    },
+    listenBeforeunload() {
+      this._beforeunloadListenning = true
+      window.addEventListener('beforeunload', this.beforeunload)
+    },
+    unlistenBeforeunload() {
+      this._beforeunloadListenning = false
+      window.removeEventListener('beforeunload', this.beforeunload)
     }
   }
 }
@@ -584,5 +674,8 @@ export default {
   &.table-wrapper{
     border: none;
   }
+}
+.unsaved{
+  color: #565656;
 }
 </style>
