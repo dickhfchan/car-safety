@@ -9,6 +9,8 @@ export default [
   { path: '/analysis', name: 'analysis', component: (resolve) => require(['../views/Analysis.vue'], resolve) },
   { path: '/analysis-group', name: 'analysisGroup', component: (resolve) => require(['../views/AnalysisGroup.vue'], resolve) },
   { path: '/datatables', name: 'datatables', component: (resolve) => require(['../views/Datatables.vue'], resolve) },
+  { path: '/d1', name: 'd1', component: (resolve) => require(['../views/D1.vue'], resolve) },
+  { path: '/d2', name: 'd2', component: (resolve) => require(['../views/D2.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]

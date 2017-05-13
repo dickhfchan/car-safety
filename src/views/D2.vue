@@ -1,16 +1,17 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <h2 class="md-title">Analysis</h2>
+      <h2 class="md-title">D2</h2>
+
       <div class="relative">
         <Paginator :source="rows" :page-size="pageSize">
             <template scope="page">
               <datatable
                   :source="page.data"
                   :editable="false"
-                  :line-numbers="true"
+                  :line-numbers="false"
                   :filterable="false"
-                  class="analysis-table"
+                  class="table1"
                   >
                   <datatable-column
                       v-for="column in columns"
@@ -32,7 +33,6 @@
       </div>
 
       <div class="card-buttons">
-        <md-switch class="md-primary" v-model="scoreColumnVisible">Score Column</md-switch>
         <md-button class="md-icon-button" @click.native="exportExcel">
           <md-icon>get_app</md-icon>
           <md-tooltip md-direction="bottom">Export</md-tooltip>
@@ -50,7 +50,6 @@
 import { Datatable, DatatableColumn } from '@/components/datatable'
 import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
 import { retry } from 'helper-js'
-import { format } from 'date-functions'
 import { initColumns, generateExcel } from '../utils.js'
 
 export default {
@@ -58,57 +57,12 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'vrm_id' },
+        { name: 'vrm_grp_id', text: 'Group' },
         { name: 'total_score',
           text: 'Total',
         },
-        { name: 'pcw_score',
-          text: 'PCW S',
-        },
-        { name: 'ufcw_score',
-          text: 'UFCW S',
-        },
-        { name: 'fcw_score',
-          text: 'FCW S'},
-        { name: 'hmw_h_score',
-          text: 'HMW_H S'},
-        { name: 'hmw_m_score',
-          text: 'HMW_M S'},
-        { name: 'hmw_l_score',
-          text: 'HMW_L S'},
-        { name: 'lldw_score',
-          text: 'LLDW S'},
-        { name: 'rldw_score',
-          text: 'RLDW S'},
-        { name: 'spw_score',
-          text: 'SPW S',
-        },
-        { name: 'vb_score',
-          text: 'VB S',
-        },
-        { name: 'aaw_score',
-          text: 'AAW S',
-        },
-        { name: 'abw_score',
-          text: 'ABW S',
-        },
-        { name: 'atw_score',
-          text: 'ATW S',
-        },
-        { name: 'drv_distance',
-          text: 'Distance',
-        },
-        { name: 'drv_duration',
-          text: 'Duration',
-        },
         { name: 'pcw',
           text: 'PCW',
-        },
-        { name: 'ufcw',
-          text: 'UFCW',
-        },
-        { name: 'fcw',
-          text: 'FCW',
         },
         { name: 'hmw_h',
           text: 'HMW_H',
@@ -119,6 +73,12 @@ export default {
         { name: 'hmw_l',
           text: 'HMW_L',
         },
+        { name: 'fcw',
+          text: 'FCW',
+        },
+        { name: 'ufcw',
+          text: 'UFCW',
+        },
         { name: 'lldw',
           text: 'LLDW',
         },
@@ -127,9 +87,6 @@ export default {
         },
         { name: 'spw',
           text: 'SPW',
-        },
-        { name: 'vb',
-          text: 'VB',
         },
         { name: 'aaw',
           text: 'AAW',
@@ -140,35 +97,12 @@ export default {
         { name: 'atw',
           text: 'ATW',
         },
-        {
-          name: 'start_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+        { name: 'drv_distance',
+          text: 'Distance Travelled',
         },
-        { name: 'end_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
-        },
-        { name: 'type' },
-        { name: 'avg_warn_id' },
       ],
       rows: [],
       pageSize: 20,
-      cache: {
-        scoreColumnVisible: false,
-      },
-      loading: false,
-    }
-  },
-  computed: {
-    scoreColumnVisible: {
-      get() { return this.cache.scoreColumnVisible },
-      set() {
-        this.cache.scoreColumnVisible = !this.cache.scoreColumnVisible
-        this.columns.forEach(col => {
-          if (col.name.indexOf('_score') > -1) {
-            col.visible = this.scoreColumnVisible
-          }
-        })
-      }
     }
   },
   created() {
@@ -179,10 +113,10 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/avg_warning_vrm'))()
+      retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
       .then(({data}) => {
-        this.rows = data.JSON
         this.loading = false
+        this.rows = data.JSON
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
@@ -200,13 +134,13 @@ export default {
         return r
       })
       const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'Analysis', titleLabels)
+      generateExcel(data, 'D2', titleLabels)
     }
   }
 }
 </script>
 <style lang="scss">
-.analysis-table{
+.table1{
   &.table-wrapper{
     border: none;
   }

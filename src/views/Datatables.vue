@@ -8,36 +8,41 @@
         </md-select>
       </md-input-container>
 
-      <Paginator :source="rows" :page-size="pageSize">
-          <template scope="page">
-            <datatable
-                :source="page.data"
-                :editable="true"
-                :line-numbers="false"
-                :filterable="false"
-                class="datatables-table"
-                >
-                <datatable-column
-                    v-for="column in datatables[current].columns"
-                    :key="column.name"
-                    v-if="column.visible"
-                    :id="column.name"
-                    :label="column.text"
-                    :width="column.width"
-                    :sortable="column.sortable"
-                    :groupable="column.groupable"
-                    :formatter="column.formatter">
-                </datatable-column>
-                <datatable-column id="actions" label="Actions" width="100px"  :sortable="false" :groupable="false"></datatable-column>
-                <template slot="actions" scope="cell">
-                  <md-button class="md-icon-button md-accent md-dense" @click.native="remove(cell.row)">
-                    <md-icon>remove_circle</md-icon>
-                    <md-tooltip md-direction="bottom">Remove</md-tooltip>
-                  </md-button>
-                </template>
-            </datatable>
-          </template>
-      </Paginator>
+      <div class="relative">
+        <Paginator :source="rows" :page-size="pageSize">
+            <template scope="page">
+              <datatable
+                  :source="page.data"
+                  :editable="true"
+                  :line-numbers="false"
+                  :filterable="false"
+                  class="datatables-table"
+                  >
+                  <datatable-column
+                      v-for="column in datatables[current].columns"
+                      :key="column.name"
+                      v-if="column.visible"
+                      :id="column.name"
+                      :label="column.text"
+                      :width="column.width"
+                      :sortable="column.sortable"
+                      :groupable="column.groupable"
+                      :formatter="column.formatter">
+                  </datatable-column>
+                  <datatable-column id="actions" label="Actions" width="100px"  :sortable="false" :groupable="false"></datatable-column>
+                  <template slot="actions" scope="cell">
+                    <md-button class="md-icon-button md-accent md-dense" @click.native="remove(cell.row)">
+                      <md-icon>remove_circle</md-icon>
+                      <md-tooltip md-direction="bottom">Remove</md-tooltip>
+                    </md-button>
+                  </template>
+              </datatable>
+            </template>
+        </Paginator>
+        <div class="absolute-backdrop center-wrapper" v-show="loading">
+          <md-spinner md-indeterminate></md-spinner>
+        </div>
+      </div>
 
       <div class="card-buttons">
         <template v-if="modified">
@@ -541,6 +546,7 @@ export default {
       newRow: null,
       _beforeunloadListenning: false,
       leaveConfirm: 'Data have been modified. Do you want to save before you continue?',
+      loading: false,
     }
   },
   computed: {
@@ -599,10 +605,13 @@ export default {
   },
   methods: {
     getData(table) {
+      this.loading = true
       retry(() => this.$http.get(`dao/${this.current}`))()
       .then(({data}) => {
+        this.loading = false
         this.rows = data.JSON
       }).catch((e) => {
+        this.loading = false
         this.$alert('load data failed')
         throw e
       })

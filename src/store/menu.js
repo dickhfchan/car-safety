@@ -39,4 +39,14 @@ export default [
     icon: 'analysis',
     routeName: 'datatables'
   },
+  {
+    text: 'D1',
+    icon: 'analysis',
+    routeName: 'd1'
+  },
+  {
+    text: 'D2',
+    icon: 'analysis',
+    routeName: 'd2'
+  },
 ]
