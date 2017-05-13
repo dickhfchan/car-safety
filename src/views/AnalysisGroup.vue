@@ -176,7 +176,7 @@ export default {
       .then(({data}) => {
         this.rows = data.JSON
       }).catch((e) => {
-        window.alert('load failed')
+        this.$alert('load failed')
         throw e
       })
     },

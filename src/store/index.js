@@ -101,7 +101,7 @@ const store = new Vuex.Store({
           if (e.toString() !== 'Cancel') {
             context.commit('tripsLoading', false)
             context.commit('tripsFailed', true)
-            window.alert('get trips failed')
+            Vue.alert('get trips failed')
             throw e
           }
         })
@@ -156,7 +156,7 @@ const store = new Vuex.Store({
           if (e.toString() !== 'Cancel') {
             commit('pointsLoading', false)
             commit('pointsFailed', true)
-            window.alert('get points failed')
+            Vue.alert('get points failed')
             throw e
           }
         })

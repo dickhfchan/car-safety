@@ -1,8 +1,12 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <h2 class="md-title">Analysis Group</h2>
-
+      <md-input-container md-inline class="datatables-select">
+        <label for="datatableSelect">Movie</label>
+        <md-select name="datatableSelect" id="datatableSelect" v-model="current">
+          <md-option :value="dt.name" v-for="dt in datatables">{{dt.text}}</md-option>
+        </md-select>
+      </md-input-container>
       <Paginator :source="rows" :page-size="pageSize">
           <template scope="page">
             <datatable
@@ -10,10 +14,10 @@
                 :editable="false"
                 :line-numbers="true"
                 :filterable="false"
-                class="analysis-group-table"
+                class="datatables-table"
                 >
                 <datatable-column
-                    v-for="column in columns"
+                    v-for="column in datatables[current].columns"
                     v-if="column.visible"
                     :id="column.name"
                     :label="column.text"
@@ -27,11 +31,6 @@
       </Paginator>
 
       <div class="card-buttons">
-        <md-switch class="md-primary" v-model="scoreColumnVisible">Score Column</md-switch>
-        <md-button class="md-icon-button" @click.native="exportExcel">
-          <md-icon>get_app</md-icon>
-          <md-tooltip md-direction="bottom">Export</md-tooltip>
-        </md-button>
         <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
@@ -44,7 +43,7 @@
 <script>
 import { Datatable, DatatableColumn } from '@/components/datatable'
 import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
-import { retry } from 'helper-js'
+import { retry, titleCase } from 'helper-js'
 import { format } from 'date-functions'
 import { initColumns, generateExcel } from '../utils.js'
 
@@ -52,152 +51,523 @@ export default {
   components: { Datatable, DatatableColumn, Paginator },
   data() {
     return {
-      columns: [
-        { name: 'vrm_grp_id' },
-        { name: 'total_score',
-          text: 'Total',
+      datatables: {
+        'company': {
+          'columns': [
+            {
+              'name': 'company_code'
+            },
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'company_key'
+            },
+            {
+              'name': 'company_name'
+            },
+            {
+              'name': 'contact_name'
+            },
+            {
+              'name': 'contact_phone_no'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'status'
+            },
+            {
+              'name': 'timezone'
+            },
+            {
+              'name': 'version'
+            }
+          ]
         },
-        { name: 'pcw_score',
-          text: 'PCW S',
+        'driver': {
+          'columns': [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'dob'
+            },
+            {
+              'name': 'driver_code'
+            },
+            {
+              'name': 'driver_id'
+            },
+            {
+              'name': 'is_default'
+            },
+            {
+              'name': 'name'
+            },
+            {
+              'name': 'phone_home'
+            },
+            {
+              'name': 'phone_mobile'
+            },
+            {
+              'name': 'phone_office'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            }
+          ]
         },
-        { name: 'ufcw_score',
-          text: 'UFCW S',
+        driver_group: {
+          columns: [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'drv_grp_id'
+            },
+            {
+              'name': 'grp_alias'
+            },
+            {
+              'name': 'grp_descpt'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            }
+          ],
         },
-        { name: 'fcw_score',
-          text: 'FCW S'},
-        { name: 'hmw_h_score',
-          text: 'HMW_H S'},
-        { name: 'hmw_m_score',
-          text: 'HMW_M S'},
-        { name: 'hmw_l_score',
-          text: 'HMW_L S'},
-        { name: 'lldw_score',
-          text: 'LLDW S'},
-        { name: 'rldw_score',
-          text: 'RLDW S'},
-        { name: 'spw_score',
-          text: 'SPW S',
+        'driver_group_dtl': {
+          'columns': [
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'driver_id'
+            },
+            {
+              'name': 'drv_grp_dtl_id'
+            },
+            {
+              'name': 'drv_grp_id'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            }
+          ]
         },
-        { name: 'vb_score',
-          text: 'VB S',
+        mob_device: {
+          columns: [
+            {
+              'name': 'active_end_date'
+            },
+            {
+              'name': 'active_start_date'
+            },
+            {
+              'name': 'apps_id'
+            },
+            {
+              'name': 'apps_timezone'
+            },
+            {
+              'name': 'apps_ts'
+            },
+            {
+              'name': 'apps_ver_no'
+            },
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'last_access_ts'
+            },
+            {
+              'name': 'last_loc_update_ts'
+            },
+            {
+              'name': 'lat'
+            },
+            {
+              'name': 'lng'
+            },
+            {
+              'name': 'md_id'
+            },
+            {
+              'name': 'md_sn'
+            },
+            {
+              'name': 'status'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            },
+            {
+              'name': 'vrm_id'
+            }
+          ]
         },
-        { name: 'aaw_score',
-          text: 'AAW S',
+        'user_account': {
+          'columns': [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'fullname'
+            },
+            {
+              'name': 'group_id'
+            },
+            {
+              'name': 'lang'
+            },
+            {
+              'name': 'last_login_ts'
+            },
+            {
+              'name': 'password'
+            },
+            {
+              'name': 'retry_count'
+            },
+            {
+              'name': 'status'
+            },
+            {
+              'name': 'user_id'
+            },
+            {
+              'name': 'username'
+            },
+            {
+              'name': 'version'
+            }
+          ]
         },
-        { name: 'abw_score',
-          text: 'ABW S',
+        'user_group': {
+          'columns': [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'group_id'
+            },
+            {
+              'name': 'group_name'
+            }
+          ]
         },
-        { name: 'atw_score',
-          text: 'ATW S',
+        'user_group_func': {
+          'columns': [
+            {
+              'name': 'func_code'
+            },
+            {
+              'name': 'group_func_id'
+            },
+            {
+              'name': 'group_id'
+            }
+          ]
         },
-        { name: 'drv_distance',
-          text: 'Distance',
+        users: {
+          columns: [
+            {
+              'name': 'company'
+            },
+            {
+              'name': 'def_lang'
+            },
+            {
+              'name': 'def_map'
+            },
+            {
+              'name': 'first_name'
+            },
+            {
+              'name': 'id'
+            },
+            {
+              'name': 'last_name'
+            },
+            {
+              'name': 'login_name'
+            },
+            {
+              'name': 'password'
+            }
+          ]
         },
-        { name: 'drv_duration',
-          text: 'Duration',
+        'vehicle': {
+          'columns': [
+            {
+              'name': 'brand'
+            },
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'fuel_usage'
+            },
+            {
+              'name': 'idle_duration_non-trf'
+            },
+            {
+              'name': 'idle_duration_trf'
+            },
+            {
+              'name': 'latest_trip_distance'
+            },
+            {
+              'name': 'latest_trip_duration'
+            },
+            {
+              'name': 'model'
+            },
+            {
+              'name': 'run_distance'
+            },
+            {
+              'name': 'run_duration'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'vehicle_id'
+            },
+            {
+              'name': 'version'
+            },
+            {
+              'name': 'year'
+            }
+          ]
         },
-        { name: 'pcw',
-          text: 'PCW',
+        'veh_reg_mark': {
+          'columns': [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'def_drv_id'
+            },
+            {
+              'name': 'status'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'vehicle_id'
+            },
+            {
+              'name': 'version'
+            },
+            {
+              'name': 'vrm_id'
+            },
+            {
+              'name': 'vrm_mark_code'
+            }
+          ]
         },
-        { name: 'ufcw',
-          text: 'UFCW',
+        'veh_reg_mark_group': {
+          'columns': [
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'grp_alias'
+            },
+            {
+              'name': 'grp_descpt'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            },
+            {
+              'name': 'vrm_grp_id'
+            }
+          ]
         },
-        { name: 'fcw',
-          text: 'FCW',
+        'veh_reg_mark_group_dtl': {
+          'columns': [
+            {
+              'name': 'create_ts'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'update_ts'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version'
+            },
+            {
+              'name': 'vrm_grp_dtl_id'
+            },
+            {
+              'name': 'vrm_grp_id'
+            },
+            {
+              'name': 'vrm_id'
+            }
+          ]
         },
-        { name: 'hmw_h',
-          text: 'HMW_H',
-        },
-        { name: 'hmw_m',
-          text: 'HMW_M',
-        },
-        { name: 'hmw_l',
-          text: 'HMW_L',
-        },
-        { name: 'lldw',
-          text: 'LLDW',
-        },
-        { name: 'rldw',
-          text: 'RLDW',
-        },
-        { name: 'spw',
-          text: 'SPW',
-        },
-        { name: 'vb',
-          text: 'VB',
-        },
-        { name: 'aaw',
-          text: 'AAW',
-        },
-        { name: 'abw',
-          text: 'ABW',
-        },
-        { name: 'atw',
-          text: 'ATW',
-        },
-        {
-          name: 'start_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
-        },
-        { name: 'end_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
-        },
-        { name: 'type' },
-        { name: 'avg_warn_id' },
-      ],
+        'warning_type': {
+          'columns': [
+            {
+              'name': 'warn_type_code'
+            },
+            {
+              'name': 'warn_type_id'
+            }
+          ]
+        }
+      },
       rows: [],
       pageSize: 20,
-      cache: {
-        scoreColumnVisible: false,
-      }
+      current: 'company',
     }
   },
   computed: {
-    scoreColumnVisible: {
-      get() { return this.cache.scoreColumnVisible },
-      set() {
-        this.cache.scoreColumnVisible = !this.cache.scoreColumnVisible
-        this.columns.forEach(col => {
-          if (col.name.indexOf('_score') > -1) {
-            col.visible = this.scoreColumnVisible
-          }
-        })
+  },
+  watch: {
+    current: {
+      immediate: true,
+      handler() {
+        this.rows = []
+        this.getData()
       }
     }
   },
   created() {
     //
-    initColumns(this, this.columns)
-    this.getData()
+    for (const key in this.datatables) {
+      const dt = this.datatables[key]
+      if (!dt.name) {
+        this.$set(dt, 'name', key)
+      }
+      if (!dt.text) {
+        this.$set(dt, 'text', titleCase(dt.name))
+      }
+      initColumns(this, dt.columns)
+    }
   },
   methods: {
-    getData() {
-      retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
+    getData(table) {
+      retry(() => this.$http.get(`dao/${this.current}`))()
       .then(({data}) => {
         this.rows = data.JSON
       }).catch((e) => {
-        window.alert('load failed')
+        this.$alert('load data failed')
         throw e
       })
-    },
-    exportExcel() {
-      const cols = this.columns
-      const data = this.rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          const val = row[col.name]
-          r.push(col.formatter ? col.formatter(val) : val)
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'Analysis Group', titleLabels)
     }
   }
 }
 </script>
 <style lang="scss">
-.analysis-group-table{
+.datatables-select{
+  width: auto;
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  height: 41px;
+  min-height: initial;
+  padding-left: 5px;
+  align-items: center;
+  .md-select-value{
+    font-size: 20px;
+  }
+}
+.datatables-table{
   &.table-wrapper{
     border: none;
   }

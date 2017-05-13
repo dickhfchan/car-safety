@@ -90,12 +90,17 @@
         </keep-alive>
       </div>
     </template>
+
+    <!-- global alert -->
+    <md-dialog-alert :md-content="alert.content" md-ok-text="OK" ref="alert"></md-dialog-alert>
   </div>
 </template>
 
 <script>
 import Login from '@/components/Login.vue'
 import MapFilters from '@/components/MapFilters.vue'
+// import Confirm from '@/components/Confirm.vue'
+
 export default {
   components: { Login, MapFilters },
   data () {
@@ -105,6 +110,9 @@ export default {
         map: state.map,
         lang: state.lang,
       },
+      alert: {
+        content: ' '
+      }
     }
   },
   methods: {
@@ -126,6 +134,13 @@ export default {
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
+    }
+  },
+  created() {
+    const Vue = this.$root.constructor
+    Vue.alert = Vue.prototype.$alert = (content) => {
+      this.alert.content = content
+      this.$refs.alert.open()
     }
   }
 }

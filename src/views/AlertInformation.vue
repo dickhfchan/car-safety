@@ -183,7 +183,7 @@ export default {
           this.rowsExpired = false
           return this.rows
         }).catch((e) => {
-          window.alert('get alert information failed')
+          this.$alert('get alert information failed')
           throw e
         })
       }
@@ -195,7 +195,7 @@ export default {
         data.JSON.forEach(item => { warningTypes[item.warn_type_id] = item.warn_type_code })
         this.warningTypes = warningTypes
       }).catch((e) => {
-        window.alert('get warning types failed')
+        this.$alert('get warning types failed')
         throw e
       })
     },

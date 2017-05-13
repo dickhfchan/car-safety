@@ -72,7 +72,7 @@ export default {
         this.$store.commit('vehicles', vehicles)
         this.getTrips()
       }).catch((e) => {
-        window.alert('get vehicles failed')
+        this.$alert('get vehicles failed')
         throw e
       })
     }
