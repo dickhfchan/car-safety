@@ -93,6 +93,15 @@
 
     <!-- global alert -->
     <md-dialog-alert :md-content="alert.content" md-ok-text="OK" ref="alert"></md-dialog-alert>
+    <!-- global confirm -->
+    <md-dialog-confirm
+      :md-title="confirm.title"
+      :md-content-html="confirm.content"
+      :md-ok-text="confirm.ok"
+      :md-cancel-text="confirm.cancel"
+      @close="onConfirmClose"
+      ref="confirm">
+    </md-dialog-confirm>
   </div>
 </template>
 
@@ -112,6 +121,14 @@ export default {
       },
       alert: {
         content: ' '
+      },
+      confirm: {
+        title: '',
+        content: ' ',
+        ok: 'OK',
+        cancel: 'Cancel',
+        resolve: null,
+        reject: null,
       }
     }
   },
@@ -134,13 +151,40 @@ export default {
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
+    },
+    onConfirmClose(type) {
+      if (type === 'ok') {
+        if (this.confirm.resolve) {
+          this.confirm.resolve()
+        }
+      } else if (type === 'cancel') {
+        if (this.confirm.reject) {
+          this.confirm.reject()
+        }
+      }
     }
   },
   created() {
     const Vue = this.$root.constructor
+    // register alert
     Vue.alert = Vue.prototype.$alert = (content) => {
       this.alert.content = content
       this.$refs.alert.open()
+    }
+    // register confirm
+    Vue.confirm = Vue.prototype.$confirm = (content, options) => {
+      this.confirm.content = content
+      if (options) {
+        Object.assign(this.confirm, options)
+      }
+      if (!this.confirm.title) {
+        this.confirm.title = 'Confirm'
+      }
+      this.$refs.confirm.open()
+      return new Promise((resolve, reject) => {
+        this.confirm.resolve = resolve
+        this.confirm.reject = reject
+      })
     }
   }
 }

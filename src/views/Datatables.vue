@@ -11,13 +11,14 @@
           <template scope="page">
             <datatable
                 :source="page.data"
-                :editable="false"
-                :line-numbers="true"
+                :editable="true"
+                :line-numbers="false"
                 :filterable="false"
                 class="datatables-table"
                 >
                 <datatable-column
                     v-for="column in datatables[current].columns"
+                    :key="column.name"
                     v-if="column.visible"
                     :id="column.name"
                     :label="column.text"
@@ -26,6 +27,13 @@
                     :groupable="column.groupable"
                     :formatter="column.formatter">
                 </datatable-column>
+                <datatable-column id="actions" label="Actions" width="100px"  :sortable="false" :groupable="false"></datatable-column>
+                <template slot="actions" scope="cell">
+                  <md-button class="md-icon-button md-accent md-dense" @click.native="remove(cell.row)">
+                    <md-icon>remove_circle</md-icon>
+                    <md-tooltip md-direction="bottom">Remove</md-tooltip>
+                  </md-button>
+                </template>
             </datatable>
           </template>
       </Paginator>
@@ -548,6 +556,11 @@ export default {
       }).catch((e) => {
         this.$alert('load data failed')
         throw e
+      })
+    },
+    remove(row) {
+      this.$confirm('Are you sure to remove specified item?').then(() => {
+        console.log(row)
       })
     }
   }

@@ -116,5 +116,19 @@ $color-table-row-alt: #FAFAFA;
   th{
     white-space: nowrap;
   }
-
+  // editable
+  &.datatable-editable .datatable-cell {
+    position: relative;
+    padding: 0!important;
+    overflow: visible;
+  }
+  &.datatable-editable .datatable-cell input, &.datatable-editable .datatable-cell select {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: .5rem 1rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+  }
 }

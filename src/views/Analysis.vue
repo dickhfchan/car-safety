@@ -14,6 +14,7 @@
                 >
                 <datatable-column
                     v-for="column in columns"
+                    :key="column.name"
                     v-if="column.visible"
                     :id="column.name"
                     :label="column.text"
