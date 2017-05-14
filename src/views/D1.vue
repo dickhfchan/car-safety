@@ -58,7 +58,7 @@
             </div>
 
             <div class="card-buttons">
-              <fullscreen-button></fullscreen-button>
+              <fullscreen-button @click.native="chart1 && chart1.update(null)"></fullscreen-button>
             </div>
           </md-card-content>
         </md-card>
@@ -75,7 +75,7 @@
             </div>
 
             <div class="card-buttons">
-              <fullscreen-button></fullscreen-button>
+              <fullscreen-button @click.native="chart2 && chart2.update(null)"></fullscreen-button>
             </div>
           </md-card-content>
         </md-card>
