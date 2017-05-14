@@ -48,7 +48,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 ## Changes
 [17/04/28 15:32] add ./src/components/GoogleMapTrackRender.vue  
 [17/04/29 16:13] Left sidebar menu is ok. First, define the menu item text in   dir 'lang', then define menu items in store/menu.js  
-[17/04/29 17:25] full screen button: append '<fullscreen-button></fullscreen-button>' to md-card-header -> md-title. example:
+[17/04/29 17:25] <u>full screen button: append '<fullscreen-button></fullscreen-button>' to md-card-header -> md-title. example:</u>
 ```html
 <md-card-header>
   <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>

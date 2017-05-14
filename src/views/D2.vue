@@ -97,6 +97,7 @@ export default {
         { name: 'atw',
           text: 'ATW',
         },
+        { name: 'vb' },
         { name: 'drv_distance',
           text: 'Distance Travelled',
         },

@@ -4,7 +4,7 @@
       <h2 v-if="modified" class="md-title">{{datatables[current].text}} - <small class="unsaved">Unsaved</small></h2>
       <md-input-container v-else md-inline class="datatables-select">
         <md-select name="datatableSelect" v-model="current">
-          <md-option :value="dt.name" v-for="dt in datatables">{{dt.text}}</md-option>
+          <md-option :value="dt.name" v-for="dt in datatables" :key="dt.name">{{dt.text}}</md-option>
         </md-select>
       </md-input-container>
 
