@@ -2,7 +2,9 @@
   <div class="m-a">
     <md-card  class="card-1">
       <md-card-content>
-        <h2 class="md-title">D1</h2>
+        <h2 class="md-title">D1
+          <small style="color:grey;"><i>{{dateRangeText}}</i></small>
+        </h2>
 
         <div class="relative">
 
@@ -84,7 +86,7 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { subDays, subMonth, getMonthStart, getMonthEnd } from 'date-functions'
+import { format, subDays, subMonth, getMonthStart, getMonthEnd } from 'date-functions'
 import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
@@ -149,6 +151,7 @@ export default {
       chart2ID: `chart2_${this._uid}`,
       chart2BoubleStyle: null,
       dateRange: 1,
+      dateRangeText: null
     }
   },
   created() {
@@ -208,16 +211,19 @@ export default {
         case 1:
           start = subDays(getNow(), 1)
           end = subDays(getNow(), 1)
+          this.dateRangeText = format(start, 'yyyy-MM-dd')
           break
         case 2:
           const t1 = getNow()
           const t2 = getNow()
           start = subDays(t1, t1.getDay() - 1 + 7)
           end = subDays(t2, t2.getDay())
+          this.dateRangeText = `${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')}`
           break
         case 3:
           start = getMonthStart(subMonth(getNow()))
           end = getMonthEnd(subMonth(getNow()))
+          this.dateRangeText = `${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')}`
           break
       }
       start.setHours(0)
@@ -228,8 +234,11 @@ export default {
       end.setMinutes(59)
       end.setSeconds(59)
       end.setMilliseconds(999)
-      start = start.getTime()
-      end = end.getTime()
+      // todo replace to really date
+      start = new Date('2017-04-27 00:00:00').getTime()
+      end = new Date().getTime()
+      // start = start.getTime()
+      // end = end.getTime()
       const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date >= end)
       // aggregrate by vrm_grp_id
       const groupedRows = []
