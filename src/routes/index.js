@@ -11,6 +11,7 @@ export default [
   { path: '/datatables', name: 'datatables', component: (resolve) => require(['../views/Datatables.vue'], resolve) },
   { path: '/d1', name: 'd1', component: (resolve) => require(['../views/D1.vue'], resolve) },
   { path: '/d2', name: 'd2', component: (resolve) => require(['../views/D2.vue'], resolve) },
+  { path: '/dt', name: 'dt', component: (resolve) => require(['../views/dt.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]
