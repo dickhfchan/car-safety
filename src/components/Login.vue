@@ -73,8 +73,12 @@ export default {
   },
   methods: {
     submit() {
-      this.$store.commit('authenticated', true)
       this.validation.check().then((data) => {
+        if (data.email === 'user@user.com' && data.password === '77339652') {
+          this.$store.commit('authenticated', true)
+        } else {
+          this.$alert('Login failed')
+        }
         // this.$http.post(this.serverUrls.auth.login, data)
         // .then(({data}) => {
         //   if (isObject(data) && data.id > 0) {

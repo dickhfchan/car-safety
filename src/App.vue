@@ -108,7 +108,6 @@
 <script>
 import Login from '@/components/Login.vue'
 import MapFilters from '@/components/MapFilters.vue'
-// import Confirm from '@/components/Confirm.vue'
 
 export default {
   components: { Login, MapFilters },
