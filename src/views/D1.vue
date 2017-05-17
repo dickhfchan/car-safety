@@ -204,7 +204,9 @@ export default {
     },
     resolveRows() {
       // filter by time
-      const getNow = () => new Date()
+      // todo replace to really date
+      // const getNow = () => new Date()
+      const getNow = () => new Date('2017-04-27 00:00:00')
       let start = null
       let end = null
       switch (this.dateRange) {
@@ -234,12 +236,9 @@ export default {
       end.setMinutes(59)
       end.setSeconds(59)
       end.setMilliseconds(999)
-      // todo replace to really date
-      start = new Date('2017-04-27 00:00:00').getTime()
-      end = new Date().getTime()
-      // start = start.getTime()
-      // end = end.getTime()
-      const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date >= end)
+      start = start.getTime()
+      end = end.getTime()
+      const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date <= end)
       // aggregrate by vrm_grp_id
       const groupedRows = []
       const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']

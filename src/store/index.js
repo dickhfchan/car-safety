@@ -28,7 +28,7 @@ const store = new Vuex.Store({
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
-    authenticated: false,
+    authenticated: true,
     user: {},
     menu,
     dateRange: [tenDaysBefore, today],
