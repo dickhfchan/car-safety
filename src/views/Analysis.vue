@@ -2,30 +2,25 @@
   <md-card  class="m-a card-1">
     <md-card-content>
       <h2 class="md-title">Analysis</h2>
-      <div class="relative">
-        <Paginator :source="rows" :page-size="pageSize">
-            <template scope="page">
-              <datatable
-                  :source="page.data"
-                  :editable="false"
-                  :line-numbers="true"
-                  :filterable="false"
-                  class="analysis-table"
-                  >
-                  <datatable-column
-                      v-for="column in columns"
-                      :key="column.name"
-                      v-if="column.visible"
-                      :id="column.name"
-                      :label="column.text"
-                      :width="column.width"
-                      :sortable="column.sortable"
-                      :groupable="column.groupable"
-                      :formatter="column.formatter">
-                  </datatable-column>
-              </datatable>
-            </template>
-        </Paginator>
+      <div class="relative overflow-hidden-y">
+        <md-table :md-sort="'vrm_id'" md-sort-type="asc" @select="" @sort="onSort">
+         <md-table-header>
+           <md-table-row>
+             <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+           </md-table-row>
+         </md-table-header>
+
+         <md-table-body>
+           <md-table-row v-for="row in rows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+             <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
+               {{ row[col.name] }}
+             </md-table-cell>
+           </md-table-row>
+         </md-table-body>
+       </md-table>
+
+       <Datatable-Footer :rows="rows"></Datatable-Footer>
+
         <div class="absolute-backdrop center-wrapper" v-show="loading">
           <md-spinner md-indeterminate></md-spinner>
         </div>
@@ -47,14 +42,13 @@
   </md-card>
 </template>
 <script>
-import { Datatable, DatatableColumn } from '@/components/datatable'
-import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
+import DatatableFooter from '../components/DatatableFooter.vue'
 import { retry } from 'helper-js'
 import { format } from 'date-functions'
-import { initColumns, generateExcel } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
 
 export default {
-  components: { Datatable, DatatableColumn, Paginator },
+  components: { DatatableFooter },
   data() {
     return {
       columns: [
@@ -142,16 +136,15 @@ export default {
         },
         {
           name: 'start_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
         },
         { name: 'end_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
         },
         { name: 'type' },
         { name: 'avg_warn_id' },
       ],
       rows: [],
-      pageSize: 20,
       cache: {
         scoreColumnVisible: false,
       },
@@ -182,12 +175,16 @@ export default {
       retry(() => this.$http.get('dao/avg_warning_vrm'))()
       .then(({data}) => {
         this.rows = data.JSON
+        initRows(this, this.rows, this.columns)
         this.loading = false
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
         throw e
       })
+    },
+    onSort(e) {
+      sortRows(e, this.rows, this.columns)
     },
     exportExcel() {
       const cols = this.columns
@@ -206,9 +203,4 @@ export default {
 }
 </script>
 <style lang="scss">
-.analysis-table{
-  &.table-wrapper{
-    border: none;
-  }
-}
 </style>

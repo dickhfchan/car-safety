@@ -110,6 +110,27 @@ export function initColumns(vm, columns) {
   }
 }
 
+export function initRows(vm, rows, columns) {
+  for (const row of rows) {
+    if (row.visible == null) {
+      vm.$set(row, 'visible', true)
+    }
+    for (const col of columns) {
+      if (col.valueProcessor) {
+        row[col.name] = col.valueProcessor({value: row[col.name], column: col, row, rows})
+      }
+    }
+  }
+}
+
+export function sortRows(event, rows, columns) {
+  const sorted = rows.sort((a, b) => a[event.name] - b[event.name])
+  if (event.type === 'desc') {
+    sorted.reverse()
+  }
+  return sorted
+}
+
 export function generateExcel(JSONData, FileName, ShowLabel) {
     // 先转化json
   var arrData = typeof JSONData !== 'object' ? JSON.parse(JSONData) : JSONData

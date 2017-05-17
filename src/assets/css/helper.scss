@@ -32,6 +32,15 @@
 .absolute{
   position: absolute;
 }
+.overflow-hidden{
+  overflow: hidden;
+}
+.overflow-hidden-x{
+  overflow-x: hidden;
+}
+.overflow-hidden-y{
+  overflow-y: hidden;
+}
 
 .fullscreen-button-wrapper{
   display: flex;

@@ -1,19 +1,19 @@
 <template>
   <div class="pagination pagination-sm">
     <div class="md-button-toggle md-primary md-theme-default">
-      <md-button class="md-icon-button" v-if="page > 1" @click="goto(page-1)">
+      <md-button class="md-icon-button" v-if="page > 1" @click.native="goto(page-1)">
         <md-icon>keyboard_arrow_left</md-icon>
       </md-button>
-      <md-button class="md-icon-button btn-more" v-if="btns[0] && btns[0].page > 1" @click="goto(btns[0].page-1)">
+      <md-button class="md-icon-button btn-more" v-if="btns[0] && btns[0].page > 1" @click.native="goto(btns[0].page-1)">
         <md-icon>more_horiz</md-icon>
       </md-button>
-      <md-button class="md-icon-button" v-for="item in btns" :class="{'md-toggle': item.page == page}" @click="goto(item.page)">
+      <md-button class="md-icon-button" v-for="item in btns" :class="{'md-toggle': item.page == page}" @click.native="goto(item.page)">
         {{item.text}}
       </md-button>
-      <md-button class="md-icon-button btn-more" v-if="btns[btns.length-1] && btns[btns.length-1].page < total" @click="goto(btns[btns.length-1]+1)">
+      <md-button class="md-icon-button btn-more" v-if="btns[btns.length-1] && btns[btns.length-1].page < total" @click.native="goto(btns[btns.length-1]+1)">
         <md-icon>more_horiz</md-icon>
       </md-button>
-      <md-button class="md-icon-button" v-if="page < total" @click="goto(page+1)">
+      <md-button class="md-icon-button" v-if="page < total" @click.native="goto(page+1)">
         <md-icon>keyboard_arrow_right</md-icon>
       </md-button>
     </div>
@@ -36,7 +36,7 @@ export default {
   computed: {
     btns() {
       if (this.page > this.total) {
-        return
+        return []
       }
       const left = []
       const right = []
