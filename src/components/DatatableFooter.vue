@@ -13,9 +13,10 @@
   </div>
 </template>
 <script>
+import Pagination from './Pagination.vue'
 export default {
   props: ['total', 'page', 'pageSize'],
-  // components:
+  components: { Pagination },
   data() {
     return {
 
