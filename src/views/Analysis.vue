@@ -172,7 +172,7 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/avg_warning_vrm'))()
+      retry(() => this.$http.get('dao/warning_vrm_grp_co'))()
       .then(({data}) => {
         this.rows = data.JSON
         initRows(this, this.rows, this.columns)

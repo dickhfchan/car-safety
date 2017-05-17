@@ -7,7 +7,7 @@
       <md-button class="md-icon-button btn-more" v-if="btns[0] && btns[0].page > 1" @click.native="goto(btns[0].page-1)">
         <md-icon>more_horiz</md-icon>
       </md-button>
-      <md-button class="md-icon-button" v-for="item in btns" :class="{'md-toggle': item.page == page}" @click.native="goto(item.page)">
+      <md-button class="md-icon-button" v-for="(item, index) in btns" :key="index" :class="{'md-toggle': item.page == page}" @click.native="goto(item.page)">
         {{item.text}}
       </md-button>
       <md-button class="md-icon-button btn-more" v-if="btns[btns.length-1] && btns[btns.length-1].page < total" @click.native="goto(btns[btns.length-1].page+1)">

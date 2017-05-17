@@ -66,5 +66,11 @@
     .md-button{
       margin: 0;
     }
+    .md-select{
+      min-width: initial;
+      .md-select-value{
+        font-size: 14px;
+      }
+    }
   }
 }

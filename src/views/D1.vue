@@ -5,35 +5,34 @@
         <h2 class="md-title">D1</h2>
 
         <div class="relative">
-          <Paginator :source="rows" :page-size="pageSize">
-              <template scope="page">
-                <datatable
-                    :source="page.data"
-                    :editable="false"
-                    :line-numbers="false"
-                    :filterable="false"
-                    class="table1"
-                    >
-                    <datatable-column
-                        v-for="column in columns"
-                        :key="column.name"
-                        v-if="column.visible"
-                        :id="column.name"
-                        :label="column.text"
-                        :width="column.width"
-                        :sortable="column.sortable"
-                        :groupable="column.groupable"
-                        :formatter="column.formatter">
-                    </datatable-column>
-                </datatable>
-              </template>
-          </Paginator>
+
+          <md-table :md-sort="'vrm_grp_id'" md-sort-type="asc" @select="" @sort="onSort">
+           <md-table-header>
+             <md-table-row>
+               <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+             </md-table-row>
+           </md-table-header>
+
+           <md-table-body>
+             <md-table-row v-for="row in rows" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
+               <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
+                 {{ row[col.name] }}
+               </md-table-cell>
+             </md-table-row>
+           </md-table-body>
+         </md-table>
+
           <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
           </div>
         </div>
 
         <div class="card-buttons">
+          <md-select v-model="dateRange">
+            <md-option :value="1">Last Date</md-option>
+            <md-option :value="2">Last Week</md-option>
+            <md-option :value="3">Last Month</md-option>
+         </md-select>
           <md-button class="md-icon-button" @click.native="exportExcel">
             <md-icon>get_app</md-icon>
             <md-tooltip md-direction="bottom">Export</md-tooltip>
@@ -84,11 +83,9 @@
   </div>
 </template>
 <script>
-import { Datatable, DatatableColumn } from '@/components/datatable'
-import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
 import { retry } from 'helper-js'
-import { subDays } from 'date-functions'
-import { initColumns, generateExcel } from '../utils.js'
+import { subDays, subMonth, getMonthStart, getMonthEnd } from 'date-functions'
+import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
@@ -96,7 +93,6 @@ import 'chartist/dist/scss/chartist.scss'
 const chart2Fields = ['pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
 
 export default {
-  components: { Datatable, DatatableColumn, Paginator },
   data() {
     return {
       columns: [
@@ -145,13 +141,14 @@ export default {
           text: 'Distance Travelled',
         },
       ],
+      originRows: [],
       rows: [],
-      pageSize: 20,
       chart1: null,
       chart1ID: `chart1_${this._uid}`,
       chart2: null,
       chart2ID: `chart2_${this._uid}`,
       chart2BoubleStyle: null,
+      dateRange: 1,
     }
   },
   created() {
@@ -177,6 +174,8 @@ export default {
     })
   },
   watch: {
+    originRows() { this.resolveRows() },
+    dateRange() { this.resolveRows() },
     rows() {
       this.$nextTick(() => {
         this.renderChart1()
@@ -190,31 +189,69 @@ export default {
       retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
       .then(({data}) => {
         this.loading = false
-        // filter by time and aggregrate by vrm_grp_id
-        const now = new Date()
-        const lastWeek = subDays(now, 3000)
-        lastWeek.setHours(0)
-        lastWeek.setMinutes(0)
-        lastWeek.setSeconds(0)
-        const minTime = lastWeek.getTime()
-        const groupedRows = []
-        const toAggregrate = ['total_score', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
-        data.JSON.filter(row => row.start_date >= minTime).forEach(row => {
-          let row0 = groupedRows.find(v => v.vrm_grp_id === row.vrm_grp_id)
-          if (!row0) {
-            row0 = Object.assign({}, row)
-            groupedRows.push(row0)
-          }
-          toAggregrate.forEach(field => {
-            row0[field] = (row0[field] || 0) + (row[field] || 0)
-          })
-        })
-        this.rows = groupedRows
+        this.originRows = data.JSON
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
         throw e
       })
+    },
+    onSort(e) {
+      sortRows(e, this.rows, this.columns)
+    },
+    resolveRows() {
+      // filter by time
+      const getNow = () => new Date()
+      let start = null
+      let end = null
+      switch (this.dateRange) {
+        case 1:
+          start = subDays(getNow(), 1)
+          end = subDays(getNow(), 1)
+          break
+        case 2:
+          const t1 = getNow()
+          const t2 = getNow()
+          start = subDays(t1, t1.getDay() - 1 + 7)
+          end = subDays(t2, t2.getDay())
+          break
+        case 3:
+          start = getMonthStart(subMonth(getNow()))
+          end = getMonthEnd(subMonth(getNow()))
+          break
+      }
+      start.setHours(0)
+      start.setMinutes(0)
+      start.setSeconds(0)
+      start.setMilliseconds(0)
+      end.setHours(23)
+      end.setMinutes(59)
+      end.setSeconds(59)
+      end.setMilliseconds(999)
+      start = start.getTime()
+      end = end.getTime()
+      const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date >= end)
+      // aggregrate by vrm_grp_id
+      const groupedRows = []
+      const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
+      filteredRows.forEach(row => {
+        let row0 = groupedRows.find(v => v.vrm_grp_id === row.vrm_grp_id)
+        if (!row0) {
+          row0 = Object.assign({ _count: 0 }, row)
+          groupedRows.push(row0)
+        }
+        row0._count++
+        toAggregrate.forEach(field => {
+          row0[field] = (row0[field] || 0) + (row[field] || 0)
+        })
+      })
+      // average total_score, drv_distance
+      groupedRows.forEach(row => {
+        row.total_score = row.total_score / row._count
+        row.drv_distance = row.drv_distance / 100000
+      })
+      this.rows = groupedRows
+      initRows(this, this.rows, this.columns)
     },
     exportExcel() {
       const cols = this.columns
