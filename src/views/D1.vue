@@ -8,7 +8,7 @@
 
         <div class="relative">
 
-          <md-table :md-sort="'vrm_grp_id'" md-sort-type="asc" @select="" @sort="onSort">
+          <md-table @select="" @sort="onSort">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -30,6 +30,10 @@
         </div>
 
         <div class="card-buttons">
+          <md-select v-model="groupBy" class="m-r">
+            <md-option value="vrm_grp_id">Group</md-option>
+            <md-option value="vrm_id">Vehicle</md-option>
+         </md-select>
           <md-select v-model="dateRange">
             <md-option :value="1">Last Date</md-option>
             <md-option :value="2">Last Week</md-option>
@@ -151,8 +155,12 @@ export default {
       chart2ID: `chart2_${this._uid}`,
       chart2BoubleStyle: null,
       dateRange: 1,
-      dateRangeText: null
+      dateRangeText: null,
+      groupBy: 'vrm_grp_id', // group, vehicle
     }
+  },
+  computed: {
+    api() { return this.groupBy === 'vrm_grp_id' ? 'dao/avg_warning_vrm_grp_co' : 'dao/avg_warning_vrm_co' },
   },
   created() {
     //
@@ -161,6 +169,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      // declare chart2 event
       window._dt1Chart2MouseEnter = (e) => {
         const bouble = this.$refs.chart2Bouble
         bouble.innerHTML = `<b>${e.getAttribute('data-name')}</b> ${e.getAttribute('ct:value')}`
@@ -177,6 +186,14 @@ export default {
     })
   },
   watch: {
+    groupBy() {
+      if (this.groupBy === 'vrm_grp_id') {
+        Object.assign(this.columns[0], { name: 'vrm_grp_id', text: 'Group' })
+      } else {
+        Object.assign(this.columns[0], { name: 'vrm_id', text: 'Vehicle' })
+      }
+      this.getData()
+    },
     originRows() { this.resolveRows() },
     dateRange() { this.resolveRows() },
     rows() {
@@ -189,7 +206,7 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/avg_warning_vrm_grp_co'))()
+      retry(() => this.$http.get(this.api))()
       .then(({data}) => {
         this.loading = false
         // todo hard code company_id to 22
@@ -241,8 +258,9 @@ export default {
       // aggregrate by vrm_grp_id
       const groupedRows = []
       const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
+      const groupBy = this.groupBy
       filteredRows.forEach(row => {
-        let row0 = groupedRows.find(v => v.vrm_grp_id === row.vrm_grp_id)
+        let row0 = groupedRows.find(v => v[groupBy] === row[groupBy])
         if (!row0) {
           row0 = Object.assign({ _count: 0 }, row)
           groupedRows.push(row0)
@@ -280,8 +298,9 @@ export default {
         this.chart1.detach()
         ctx.innerHTML = ''
       }
+      const groupBy = this.groupBy
       this.chart1 = new Chartist.Bar(ctx, {
-        labels: this.rows.map(row => row.vrm_grp_id),
+        labels: this.rows.map(row => row[groupBy]),
         series: [
           this.rows.map(row => row.total_score),
         ]
@@ -301,8 +320,9 @@ export default {
         this.chart2.detach()
         ctx.innerHTML = ''
       }
+      const groupBy = this.groupBy
       this.chart2 = new Chartist.Bar(ctx, {
-        labels: this.rows.map(row => row.vrm_grp_id),
+        labels: this.rows.map(row => row[groupBy]),
         series: chart2Fields.map(field => this.rows.map(row => row[field]))
       }, {
         // horizontalBars: true,
