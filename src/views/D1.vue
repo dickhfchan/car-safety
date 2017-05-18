@@ -247,11 +247,12 @@ export default {
         if (!row0) {
           row0 = Object.assign({ _count: 0 }, row)
           groupedRows.push(row0)
+        } else {
+          toAggregrate.forEach(field => {
+            row0[field] = (row0[field] || 0) + (row[field] || 0)
+          })
         }
         row0._count++
-        toAggregrate.forEach(field => {
-          row0[field] = (row0[field] || 0) + (row[field] || 0)
-        })
       })
       // average total_score, drv_distance
       groupedRows.forEach(row => {
