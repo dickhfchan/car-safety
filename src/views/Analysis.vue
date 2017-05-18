@@ -183,9 +183,7 @@ export default {
         throw e
       })
     },
-    onSort(e) {
-      sortRows(e, this.rows, this.columns)
-    },
+    onSort(e) { sortRows(e, this.rows, this.columns) },
     exportExcel() {
       const cols = this.columns
       const data = this.rows.map(row => {

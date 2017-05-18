@@ -7,8 +7,8 @@
         <md-option :value="30">30</md-option>
         <md-option :value="100">100</md-option>
      </md-select>
-      <span>{{start}}-{{end}} of {{rows.length}}</span>
-      <Pagination class="m-l" :total="totalPages" :page="page" @pagination="page=$event"></Pagination>
+      <span class="m-r" >{{start}}-{{end}} of {{rows.length}}</span>
+      <Pagination class="m-r" v-show="totalPages > 1" :total="totalPages" :page="page" @pagination="page=$event"></Pagination>
     </div>
   </div>
 </template>

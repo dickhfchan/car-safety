@@ -1,82 +1,114 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <h2 v-if="modified" class="md-title">{{datatables[current].text}} - <small class="unsaved">Unsaved</small></h2>
-      <md-input-container v-else md-inline class="datatables-select">
+      <md-input-container md-inline class="datatables-select">
         <md-select name="datatableSelect" v-model="current">
           <md-option :value="dt.name" v-for="dt in datatables" :key="dt.name">{{dt.text}}</md-option>
         </md-select>
       </md-input-container>
 
-      <div class="relative">
-        <Paginator :source="rows" :page-size="pageSize">
-            <template scope="page">
-              <datatable
-                  :source="page.data"
-                  :editable="true"
-                  :line-numbers="false"
-                  :filterable="false"
-                  class="datatables-table"
-                  >
-                  <datatable-column
-                      v-for="column in datatables[current].columns"
-                      :key="column.name"
-                      v-if="column.visible"
-                      :id="column.name"
-                      :label="column.text"
-                      :width="column.width"
-                      :sortable="column.sortable"
-                      :groupable="column.groupable"
-                      :formatter="column.formatter">
-                  </datatable-column>
-                  <datatable-column id="actions" label="Actions" width="100px"  :sortable="false" :groupable="false"></datatable-column>
-                  <template slot="actions" scope="cell">
-                    <md-button class="md-icon-button md-accent md-dense" @click.native="remove(cell.row)">
-                      <md-icon>remove_circle</md-icon>
-                      <md-tooltip md-direction="bottom">Remove</md-tooltip>
-                    </md-button>
-                  </template>
-              </datatable>
-            </template>
-        </Paginator>
+      <div class="relative overflow-hidden-y">
+
+        <md-table @select="" @sort="onSort">
+         <md-table-header>
+           <md-table-row>
+             <md-table-head>Actions</md-table-head>
+             <md-table-head v-for="col in currentColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+           </md-table-row>
+         </md-table-header>
+
+         <md-table-body>
+           <md-table-row v-for="row in rows" v-show="row.visible" :key="row.avg_warn_id" :md-item="row">
+             <md-table-cell class="datatables-actions">
+               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)">
+                 <md-icon>edit</md-icon>
+                 <md-tooltip md-direction="bottom">Edit</md-tooltip>
+               </md-button>
+               <md-button class="md-icon-button md-accent md-dense" @click.native="remove(row)">
+                 <md-icon>remove_circle</md-icon>
+                 <md-tooltip md-direction="bottom">Remove</md-tooltip>
+               </md-button>
+             </md-table-cell>
+             <md-table-cell v-for="col in currentColumns" v-if="col.visible" :key="col.name">
+               {{row[col.name]}}
+             </md-table-cell>
+           </md-table-row>
+         </md-table-body>
+       </md-table>
+
+       <Datatable-Footer :rows="rows"></Datatable-Footer>
+
+
         <div class="absolute-backdrop center-wrapper" v-show="loading">
           <md-spinner md-indeterminate></md-spinner>
         </div>
       </div>
 
       <div class="card-buttons">
-        <template v-if="modified">
-          <md-button class="md-icon-button" @click.native="discard()">
-            <md-icon>clear</md-icon>
-            <md-tooltip md-direction="bottom">Discard</md-tooltip>
-          </md-button>
-          <md-button class="md-icon-button" @click.native="save()">
-            <md-icon>check</md-icon>
-            <md-tooltip md-direction="bottom">Save</md-tooltip>
-          </md-button>
-        </template>
-        <md-button class="md-icon-button" @click.native="add()">
+        <md-button id="addItem" class="md-icon-button" @click.native="add()">
           <md-icon>add</md-icon>
           <md-tooltip md-direction="bottom">New</md-tooltip>
         </md-button>
-        <md-button class="md-icon-button" @click.native="discard()">
+        <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
           <md-tooltip md-direction="bottom">Refresh</md-tooltip>
         </md-button>
         <fullscreen-button></fullscreen-button>
       </div>
+
+      <md-dialog md-open-from="#addItem" md-close-to="#addItem" ref="dialogAdd"  :md-click-outside-to-close="false" :md-esc-to-close="false">
+        <md-dialog-title>New Item</md-dialog-title>
+        <md-dialog-content>
+          <form novalidate @submit.stop.prevent="saveNew()">
+            <md-layout :md-gutter="16">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
+                <md-input-container>
+                  <label>{{field.text}}</label>
+                  <md-input v-model="newRow[field.name]"></md-input>
+                </md-input-container>
+              </md-layout>
+            </md-layout>
+            <div class="flex">
+              <div class="flex-1"></div>
+              <md-button class="md-primary" @click.native="closeDialogAdd()">Cancel</md-button>
+              <md-button class="md-primary" type="submit">Save</md-button>
+            </div>
+          </form>
+        </md-dialog-content>
+      </md-dialog>
+
+      <md-dialog ref="dialogEdit" :md-click-outside-to-close="false" :md-esc-to-close="false">
+        <md-dialog-title>Edit Item</md-dialog-title>
+        <md-dialog-content>
+          <form novalidate @submit.stop.prevent="saveEditing()">
+            <md-layout :md-gutter="16">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
+                <md-input-container>
+                  <label>{{field.text}}</label>
+                  <md-input v-model="editingRow[field.name]"></md-input>
+                </md-input-container>
+              </md-layout>
+            </md-layout>
+            <div class="flex">
+              <div class="flex-1"></div>
+              <md-button class="md-primary" @click.native="closeDialogEdit()">Cancel</md-button>
+              <md-button class="md-primary" type="submit">Save</md-button>
+            </div>
+          </form>
+        </md-dialog-content>
+      </md-dialog>
+
     </md-card-content>
   </md-card>
 </template>
 <script>
-import { Datatable, DatatableColumn } from '@/components/datatable'
-import Paginator from '../../node_modules/vuetiful/src/components/paginator/paginator.vue'
+import DatatableFooter from '../components/DatatableFooter.vue'
 import { retry, titleCase } from 'helper-js'
 import { format } from 'date-functions'
-import { initColumns, generateExcel } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
 
 export default {
-  components: { Datatable, DatatableColumn, Paginator },
+  components: { DatatableFooter },
   data() {
     return {
       datatables: {
@@ -540,16 +572,15 @@ export default {
         }
       },
       rows: [],
-      pageSize: 20,
       current: 'company',
-      modified: false,
-      newRow: null,
-      _beforeunloadListenning: false,
-      leaveConfirm: 'Data have been modified. Do you want to save before you continue?',
       loading: false,
+      newRow: {},
+      editingRow: {},
     }
   },
   computed: {
+    currentColumns() { return this.datatables[this.current].columns },
+    api() { return `dao/${this.current}` }
   },
   watch: {
     current: {
@@ -559,17 +590,6 @@ export default {
         this.getData()
       }
     },
-    rows: {
-      deep: true,
-      handler(val, oldVal) {
-        if (val === oldVal) {
-          this.modified = true
-          if (!this._beforeunloadListenning) {
-            this.listenBeforeunload()
-          }
-        }
-      }
-    }
   },
   created() {
     //
@@ -584,48 +604,48 @@ export default {
       initColumns(this, dt.columns)
     }
   },
-  beforeDestroy() {
-    this.unlistenBeforeunload()
-  },
-  beforeRouteLeave(to, from, next) {
-    if (this.modified) {
-      this.$confirm(this.leaveConfirm).then(() => {
-        this.save()
-      }).catch(e => {
-        if (e.message === 'cancel') {
-          this.discard()
-          next()
-        } else {
-          throw e
-        }
-      })
-    } else {
-      next()
-    }
-  },
   methods: {
     getData(table) {
       this.loading = true
-      retry(() => this.$http.get(`dao/${this.current}`))()
+      retry(() => this.$http.get(this.api))()
       .then(({data}) => {
-        this.loading = false
         this.rows = data.JSON
+        initRows(this, this.rows, this.currentColumns)
+        this.loading = false
       }).catch((e) => {
         this.loading = false
         this.$alert('load data failed')
         throw e
       })
     },
+    onSort(e) { sortRows(e, this.rows, this.currentColumns) },
     add() {
-      if (!this.newRow) {
-        const newRow = {}
-        this.datatables[this.current].columns.forEach(col => {
-          newRow[col.name] = null
-        })
-        this.rows.splice(0, 0, newRow)
-        this.newRow = newRow
-        console.log(this)
-      }
+      const newRow = {}
+      this.currentColumns.forEach(col => { newRow[col.name] = null })
+      this.newRow = newRow
+      this.$refs.dialogAdd.open()
+    },
+    saveNew() {
+      this.$http.post(this.api, this.newRow).then(({data}) => {
+        this.$alert(data)
+      })
+    },
+    closeDialogAdd() {
+      this.newRow = {}
+      this.$refs.dialogAdd.close()
+    },
+    edit(row) {
+      this.editingRow = Object.assign({}, row)
+      this.$refs.dialogEdit.open()
+    },
+    saveEditing() {
+      this.$http.post(this.api, this.editingRow).then(({data}) => {
+        this.$alert(data)
+      })
+    },
+    closeDialogEdit() {
+      this.editingRow = {}
+      this.$refs.dialogEdit.close()
     },
     remove(row) {
       this.$confirm('Are you sure to remove specified item?').then(() => {
@@ -640,28 +660,8 @@ export default {
       // this.modified = false
       // this.newRow = null
     },
-    discard() {
-      this.modified = false
-      this.unlistenBeforeunload()
-      this.getData()
-    },
     saved() {
-      this.modified = true
-      this.unlistenBeforeunload()
     },
-    beforeunload(e) {
-      var confirmationMessage = this.leaveConfirm
-      e.returnValue = confirmationMessage     // Gecko, Trident, Chrome 34+
-      return confirmationMessage              // Gecko, WebKit, Chrome <34
-    },
-    listenBeforeunload() {
-      this._beforeunloadListenning = true
-      window.addEventListener('beforeunload', this.beforeunload)
-    },
-    unlistenBeforeunload() {
-      this._beforeunloadListenning = false
-      window.removeEventListener('beforeunload', this.beforeunload)
-    }
   }
 }
 </script>
@@ -679,12 +679,7 @@ export default {
     font-size: 20px;
   }
 }
-.datatables-table{
-  &.table-wrapper{
-    border: none;
-  }
-}
-.unsaved{
-  color: #565656;
+.datatables-actions .md-table-cell-container{
+  padding-left: 12px!important;
 }
 </style>
