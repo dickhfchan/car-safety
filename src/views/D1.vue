@@ -140,7 +140,7 @@ export default {
         },
         { name: 'vb' },
         { name: 'drv_distance',
-          text: 'Distance Travelled',
+          text: 'Distance',
         },
       ],
       originRows: [],
@@ -256,8 +256,8 @@ export default {
       })
       // average total_score, drv_distance
       groupedRows.forEach(row => {
-        row.total_score = row.total_score / row._count
-        row.drv_distance = row.drv_distance / 100000
+        row.total_score = Math.round(row.total_score / row._count)
+        row.drv_distance = Math.round(row.drv_distance / 100000)
       })
       this.rows = groupedRows
       initRows(this, this.rows, this.columns)
