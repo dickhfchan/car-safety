@@ -189,10 +189,11 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
+      retry(() => this.$http.get('dao/avg_warning_vrm_grp_co'))()
       .then(({data}) => {
         this.loading = false
-        this.originRows = data.JSON
+        // todo hard code company_id to 22
+        this.originRows = data.JSON.filter(row => row.company_id === 22)
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
@@ -204,9 +205,7 @@ export default {
     },
     resolveRows() {
       // filter by time
-      // todo replace to really date
-      // const getNow = () => new Date()
-      const getNow = () => new Date('2017-04-27 00:00:00')
+      const getNow = () => new Date()
       let start = null
       let end = null
       switch (this.dateRange) {
