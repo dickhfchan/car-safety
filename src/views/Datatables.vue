@@ -104,8 +104,8 @@
 <script>
 import DatatableFooter from '../components/DatatableFooter.vue'
 import { retry, titleCase } from 'helper-js'
-import { format } from 'date-functions'
-import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
+// import { format } from 'date-functions'
+import { initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
 
 export default {
   components: { DatatableFooter },
@@ -626,8 +626,16 @@ export default {
       this.$refs.dialogAdd.open()
     },
     saveNew() {
-      this.$http.post(this.api, this.newRow).then(({data}) => {
-        this.$alert(data)
+      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(this.newRow)).then(({data}) => {
+        if (data === 'error') {
+          this.$alert('Save Failed')
+        } else if (data.toLowerCase().indexOf('succe') === -1) {
+          this.$alert(data)
+        } else {
+          this.$alert(data)
+          this.getData()
+          this.$refs.dialogAdd.close()
+        }
       })
     },
     closeDialogAdd() {
@@ -635,12 +643,20 @@ export default {
       this.$refs.dialogAdd.close()
     },
     edit(row) {
-      this.editingRow = Object.assign({}, row)
+      this.editingRow = getRowData(row)
       this.$refs.dialogEdit.open()
     },
     saveEditing() {
-      this.$http.post(this.api, this.editingRow).then(({data}) => {
-        this.$alert(data)
+      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(this.editingRow)).then(({data}) => {
+        if (data === 'error') {
+          this.$alert('Save Failed')
+        } else if (data.toLowerCase().indexOf('succe') === -1) {
+          this.$alert(data)
+        } else {
+          this.$alert(data)
+          this.getData()
+          this.$refs.dialogEdit.close()
+        }
       })
     },
     closeDialogEdit() {
@@ -649,7 +665,16 @@ export default {
     },
     remove(row) {
       this.$confirm('Are you sure to remove specified item?').then(() => {
-        console.log(row)
+        axiosAutoProxy(this.$http, this.api, 'delete', row).then(({data}) => {
+          if (data === 'error') {
+            this.$alert('Remove Failed')
+          } else if (data.toLowerCase().indexOf('succe') === -1) {
+            this.$alert(data)
+          } else {
+            this.$alert(data)
+            this.getData()
+          }
+        })
       }).catch(e => {
         if (e.message !== 'cancel') {
           throw e

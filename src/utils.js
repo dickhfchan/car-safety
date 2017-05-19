@@ -1,4 +1,6 @@
 import { titleCase } from 'helper-js'
+import config from '@/config.js'
+
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
     baseURL: store.state.urls.server.base,
@@ -94,6 +96,22 @@ export function axiosNamedPost(name, url, query) {
   })
 }
 
+// use proxy in developing
+export function axiosAutoProxy(http, url, method, data) {
+  if (method === 'delete') {
+    data = { data: data }
+  }
+  if (config.isDevelopment) {
+    return http.post('http://' + window.location.host + '/proxy', {
+      url,
+      method,
+      data
+    })
+  } else {
+    return http[method](url, data)
+  }
+}
+
 export function initColumns(vm, columns) {
   // auto generate column display name
   for (const col of columns) {
@@ -121,6 +139,26 @@ export function initRows(vm, rows, columns) {
       }
     }
   }
+}
+
+const dateTimeFields = ['create_ts', 'start_date', 'end_date', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
+export function getRowData(row) {
+  const item = {}
+  Object.keys(row).filter(key => key !== 'visible').forEach(key => {
+    item[key] = row[key]
+    if (dateTimeFields.indexOf(key) > -1 && (item[key] + '').length === 13) {
+      item[key] = Math.round(item[key] / 1000)
+    }
+  })
+  return item
+}
+export function beforeSave(row) {
+  dateTimeFields.forEach(fld => {
+    if (row[fld]) {
+      row[fld] = parseInt(row[fld])
+    }
+  })
+  return row
 }
 
 export function sortRows(event, rows, columns) {
