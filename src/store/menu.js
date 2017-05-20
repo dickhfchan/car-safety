@@ -49,4 +49,9 @@ export default [
     icon: 'analysis',
     routeName: 'd2'
   },
+  {
+    text: 'Report2',
+    icon: 'Report2',
+    routeName: 'report2'
+  },
 ]
