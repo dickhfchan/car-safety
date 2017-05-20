@@ -283,13 +283,14 @@ export default {
         this.chart2.detach()
         ctx.innerHTML = ''
       }
+      const labelColss = this.columns1.slice(2)
       this.chart2 = new Chartist.Line(ctx, {
-        labels: this.columns1.slice(2).map(col => col.name),
-        series: this.rows1.map(row => Object.values(row).slice(2)),
+        labels: labelColss.map(col => col.text),
+        series: this.rows1.map(row => labelColss.map(lb => row[lb.name])),
       }, {
         fullWidth: true,
         chartPadding: {
-          right: 0
+          right: 30
         }
       })
     },
