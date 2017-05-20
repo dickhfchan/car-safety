@@ -4,7 +4,7 @@
       <md-card class="map-card card-1">
         <md-card-content class="flex relative">
           <div class="flex flex-1 flex-col">
-            <h2 class="md-title">Google Map</h2>
+            <h2 class="md-title">Google Map <small style="color:grey;">{{$store.state.tripId}}</small></h2>
             <div class="center-wrapper relative w-100 flex-1">
               <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="$store.state.points" class="w-100 h-100"></Google-Map-Track-Render>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading">

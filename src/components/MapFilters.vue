@@ -1,13 +1,9 @@
 <template>
   <div class="map-filters">
    <label for="vehicle_select" class="m-r-sm">Vehicle</label>
-   <md-input-container md-inline class="vehicle-select-container m-r">
-     <md-select name="vehicle_select" id="vehicle_select" v-model="vehicle">
-       <md-option v-for="item in $store.state.vehicles" :key="item.vrm_id" :value="item.vrm_id">{{item.vrm_mark_code}}</md-option>
-     </md-select>
-   </md-input-container>
+   <Vehicle-Select :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Vehicle-Select>
 
-   <div class="date-range">
+   <div class="date-range m-l">
      <label class="m-r-sm">Date Range</label>
      <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
    </div>
@@ -15,11 +11,12 @@
 </template>
 <script>
 import DatePicker from '@/components/DatePicker.vue'
+import VehicleSelect from '@/components/VehicleSelect.vue'
 import { mapActions } from 'vuex'
 import { retry } from 'helper-js'
 
 export default {
-  components: { DatePicker },
+  components: { DatePicker, VehicleSelect },
   data() {
     return {
     }
@@ -113,6 +110,16 @@ export default {
   }
   .date-picker{
     width: 180px;
+    height: auto!important;
+    border-bottom: 1px solid #fff;
+    .input-wrapper{
+      height: auto;
+      padding: 0;
+      input{
+        padding: 0;
+        border: none;
+      }
+    }
   }
 }
 @media (max-width:960px) {

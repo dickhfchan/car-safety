@@ -92,7 +92,8 @@ const store = new Vuex.Store({
         http.get('dao/veh_trip/' + vehicle, {
           cancelToken: new CancelToken((c) => { local.cancelPrevgetTripsRequest = c })
         }).then(({data}) => {
-          context.commit('allTrips', data.JSON)
+          // filter out drv_distance === 0
+          context.commit('allTrips', data.JSON.filter(item => item.drv_distance > 0))
           context.dispatch('getTripsInDateRange').then((trips) => {
             context.dispatch('updateTrips', trips)
           })
