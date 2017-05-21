@@ -142,3 +142,9 @@ VIEW `avg_warning_vrm_co` AS
     WHERE
         ((`a`.`vrm_id` = `b`.`vrm_id`)
             AND (`a`.`vrm_id` = `c`.`vrm_id`))
+            
+            
+           
+ALTER TABLE `gds_frontend`.`user_account` 
+ADD COLUMN `map` VARCHAR(20) NULL AFTER `version`,
+ADD COLUMN `company` INT(10) NULL AFTER `map`;
