@@ -1,17 +1,38 @@
 <template>
-  <md-table class="alert-information">
-    <md-table-header>
-      <md-table-row>
-        <md-table-head v-for="col in columns" :key="col.name">{{col.text}}</md-table-head>
-      </md-table-row>
-    </md-table-header>
+  <div class="alert-information">
+    <md-table v-show="rows.length > 0">
+      <md-table-header>
+        <md-table-row>
+          <md-table-head v-for="col in columns" :key="col.name">{{col.text}}</md-table-head>
+        </md-table-row>
+      </md-table-header>
 
-    <md-table-body>
-      <md-table-row v-for="row in rows" :key="row.log_id" :class="{active: row.active}">
-        <md-table-cell v-for="col in columns" :key="col.name">{{row[col.name]}}</md-table-cell>
-      </md-table-row>
-    </md-table-body>
-  </md-table>
+      <md-table-body>
+        <md-table-row v-for="row in rows" :key="row.log_id" :class="{active: row.active}">
+          <md-table-cell v-for="col in columns" :key="col.name">
+            <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
+            <md-button v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)" class="md-raised">Play</md-button>
+          </md-table-cell>
+        </md-table-row>
+      </md-table-body>
+    </md-table>
+    <div class="text-center" v-show="rows.length === 0">No records found</div>
+
+    <!-- video diaplog -->
+    <md-dialog ref="dialogVideo" @close="videoIframeSrc=null" class="alert-information">
+      <md-dialog-title class="video-dialog-title">
+        <span>Alert Video</span>
+        <md-button class="md-icon-button" @click.native="$refs.dialogVideo.close()">
+          <md-icon>clear</md-icon>
+        </md-button>
+      </md-dialog-title>
+      <md-dialog-content>
+        <div style="width:1280px;height:720px;overflow:hidden;">
+          <iframe :src="videoIframeSrc" frameborder="0" scrolling="no" style="width:2000px;height:1000px;margin-top:-150px;margin-left:-150px;"></iframe>
+        </div>
+      </md-dialog-content>
+    </md-dialog>
+  </div>
 </template>
 <script>
 import { titleCase, retry, waitFor } from 'helper-js'
@@ -66,10 +87,10 @@ export default {
           'name': 'top_spd',
           'text': 'Top Speed'
         },
-        {
-          'name': 'ti',
-          'text': 'TI'
-        },
+        // {
+        //   'name': 'ti',
+        //   'text': 'TI'
+        // },
         {
           'name': 'hw',
           'text': 'HW'
@@ -78,50 +99,52 @@ export default {
           'name': 'near_hw',
           'text': 'Near HW'
         },
+        // {
+        //   'name': 'ss',
+        //   'text': 'SS'
+        // },
+        // {
+        //   'name': 'sx',
+        //   'text': 'SX'
+        // },
+        // {
+        //   'name': 'accuracy'
+        // },
+        // {
+        //   'name': 'bearing'
+        // },
+        // {
+        //   'name': 'driver_id'
+        // },
+        // {
+        //   'name': 'log_id'
+        // },
+        // {
+        //   'name': 'state'
+        // },
+        // {
+        //   'name': 'upload_id'
+        // },
+        // {
+        //   'name': 'vrm_id'
+        // },
         {
-          'name': 'ss',
-          'text': 'SS'
+          'name': 'warning_vdo_id',
+          text: 'Video',
         },
-        {
-          'name': 'sx',
-          'text': 'SX'
-        },
-        {
-          'name': 'accuracy'
-        },
-        {
-          'name': 'bearing'
-        },
-        {
-          'name': 'driver_id'
-        },
-        {
-          'name': 'log_id'
-        },
-        {
-          'name': 'state'
-        },
-        {
-          'name': 'upload_id'
-        },
-        {
-          'name': 'vrm_id'
-        },
-        {
-          'name': 'warning_vdo_id'
-        },
-        {
-          'name': 'warning_vdo_ready'
-        },
-        {
-          'name': 'alt',
-        },
+        // {
+        //   'name': 'warning_vdo_ready'
+        // },
+        // {
+        //   'name': 'alt',
+        // },
       ],
       cache: {
         rows: []
       },
       rowsExpired: false, // be turned to expired when request start
       overLays: [], // store alert markers
+      videoIframeSrc: null,
     }
   },
   computed: {
@@ -260,11 +283,16 @@ End Speed:    ${row.end_spd} KM/h
       })
       const titleLabels = cols.map(col => col.text)
       generateExcel(data, 'Alert Information', titleLabels)
-    }
+    },
+    playAlertVideo(row) {
+      this.videoIframeSrc = `http://dev3.neshmobilog.com:28080/CarTracker_040405/api/getVideoFile.jsp?videoId=${row.warning_vdo_id}`
+      this.$refs.dialogVideo.open()
+    },
   }
 }
 
 </script>
+
 <style lang="scss">
 .alert-information{
   .md-table-row.active, .md-table-row.active:hover{
@@ -272,6 +300,11 @@ End Speed:    ${row.end_spd} KM/h
       background-color: #689f38;
       color: #fff;
     }
+  }
+  .video-dialog-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 </style>
