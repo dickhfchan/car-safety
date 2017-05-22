@@ -15,6 +15,15 @@ const fourteenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date()
 let storagedDefaultVehicles = window.localStorage.getItem('vehicles')
 storagedDefaultVehicles = storagedDefaultVehicles == null ? [{vrm_id: 45, vrm_mark_code: 'RC6558'}] : JSON.parse(storagedDefaultVehicles)
 const storagedMap = window.localStorage.getItem('map')
+let storagedUser = window.localStorage.getItem('user')
+if (storagedUser) {
+  storagedUser = JSON.parse(storagedUser)
+  if (new Date().getTime() - (storagedUser.lastTime || 0) > 3600000) {
+    storagedUser = null
+  }
+}
+
+const lang = (storagedUser && (window.localStorage.getItem('lang_' + storagedUser.company_id) || storagedUser.lang)) || window.localStorage.getItem('lang') || 'en'
 
 // store local data
 const local = {}
@@ -25,12 +34,12 @@ const store = new Vuex.Store({
   },
   state: {
     map: storagedMap || 'googleMap',
-    lang: window.localStorage.getItem('lang') || 'en',
+    lang: lang,
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
-    authenticated: false,
-    user: {},
+    authenticated: storagedUser != null,
+    user: storagedUser || {},
     menu,
     dateRange: [tenDaysBefore, today],
     vehicle: storagedDefaultVehicles[0].vrm_id,
@@ -54,7 +63,6 @@ const store = new Vuex.Store({
     lang(state, val) {
       if (state.lang !== val) {
         state.lang = val
-        window.localStorage.setItem('lang', val)
         window.location.reload()
       }
     },
@@ -82,6 +90,11 @@ const store = new Vuex.Store({
     dateRangeInD2(state, val) { state.dateRangeInD2 = val },
   },
   actions: {
+    logout({commit}) {
+      commit('authenticated', false)
+      commit('user', {})
+      window.localStorage.removeItem('user')
+    },
     getTrips (context) {
       const vehicle = context.state.vehicle
       if (vehicle != null) {

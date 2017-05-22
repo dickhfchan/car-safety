@@ -52,3 +52,12 @@ const app = new Vue({
   components: { App }
 })
 runtime.app = app
+
+// storage user
+window.onbeforeunload = function () {
+  if (store.state.authenticated && store.state.user) {
+    const user = Object.assign({}, store.state.user)
+    user.lastTime = new Date().getTime()
+    window.localStorage.setItem('user', JSON.stringify(user))
+  }
+}

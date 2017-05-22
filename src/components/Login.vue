@@ -67,6 +67,7 @@ export default {
     lang: {
       get() { return this.$store.state.lang },
       set(val) { setTimeout(() => {
+        window.localStorage.setItem('lang', val)
         this.$store.commit('lang', val)
       }, 200) },
     }
@@ -77,12 +78,17 @@ export default {
         this.$http.get(`dao/authentication/${data.name}?password=${data.password}`).then(({data}) => {
           if (data && data.message === 'Success') {
             this.$store.commit('authenticated', true)
-            this.$store.commit('user', data.JSON)
-            this.$emit('success', data.JSON)
+            const user = data.JSON[0]
+            this.$store.commit('user', user)
+            this.$store.commit('lang', user.lang)
+            this.$emit('success', user)
           } else {
             this.$alert('Login failed')
             this.$emit('error')
           }
+        }).catch(e => {
+          this.$alert('Login failed')
+          this.$emit('error')
         })
       })
     }

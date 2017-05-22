@@ -29,9 +29,22 @@
            <md-tooltip md-direction="bottom">{{$t('settings')}}</md-tooltip>
           </md-button>
 
-          <md-avatar>
-            <img src="./assets/img/avatar.png" alt="Avatar">
-          </md-avatar>
+          <md-menu md-size="4" md-align-trigger>
+            <md-avatar md-menu-trigger>
+              <img src="./assets/img/avatar.png" alt="Avatar">
+            </md-avatar>
+
+            <md-menu-content>
+              <div class="author-card">
+                <div class="author-card-info p-a">
+                  <span>{{$store.state.user.fullname}}</span>
+                  <div class="author-card-links">
+                    <a href="#" @click.prevent="$store.dispatch('logout')">Logout</a>
+                  </div>
+                </div>
+              </div>
+            </md-menu-content>
+          </md-menu>
 
         </md-toolbar>
       </md-whiteframe>
@@ -158,6 +171,7 @@ export default {
     },
     updateSettings() {
       this.$store.commit('map', this.settings.map)
+      window.localStorage.setItem('lang_' + this.$store.state.user.company_id, this.settings.lang)
       this.$store.commit('lang', this.settings.lang)
       this.closeRightSidenav()
     },
