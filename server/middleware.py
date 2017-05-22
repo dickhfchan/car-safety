@@ -1,13 +1,13 @@
-#import mysql.connector as mdb
+#coding: UTF-8
 from config import API_KEY
 import pandas as pd
 import requests
 import json
 from pandas.io.sql import DatabaseError
-#from mysql.connector.errors import Error
 import MySQLdb as mdb
 import time
 import datetime
+from config import baidu_apk, baidu_service_id
 
 #Return database connection
 def connect_to_database(_user, _password, _dbname, _host='127.0.0.1', _port=3306):
@@ -225,6 +225,13 @@ def retrieve_table(query_args, conn, json_format=False):
         column = "vrm_id" if query_args[0] == 'veh_trip' else "veh_trip_id"
         query = "SELECT * FROM %s WHERE %s = %s"%(query_args[0], column, query_args[1])
 
+    elif query_args[0] == 'authentication':
+
+        print query_args
+
+        query = "SELECT fullname, company_id, lang, map FROM %s WHERE username = '%s' and password = '%s'"%('user_account', query_args[1], query_args[2])
+        print "Authentication"
+        print query
 
     elif query_args[0] == 'log_data':
        
@@ -260,6 +267,164 @@ def retrieve_table(query_args, conn, json_format=False):
 
 
 
+#Perform insertion into avg_warning_table
+## Issue: type in group_table is minimum of vehicle type within a group
+def insert_into_warning_grp_table(conn):
+
+    # SQL statement will perform aggregation for each group (vrm_grp_id)
+    sql = "SELECT a.vrm_grp_id, 'D' as type, c.start_date as start_date, Null as end_date,\
+SUM(c.drv_distance) as drv_distance, SUM(c.drv_duration) as drv_duration, SUM(c.idle_duration_trf) as idle_duration_trf,\
+SUM(c.idle_duration_non_trf) as idle_duration_non_trf, SUM(c.fuel_usage) as fuel_usage, AVG(c.total_score) as total_score,\
+AVG(c.fcw_score) as fcw_score, AVG(c.ufcw_score) as ufcw_score, AVG(c.vb_score) as vb_score,\
+AVG(c.hmw_h_score) as hmw_h_score, AVG(c.hmw_m_score) as hmw_m_score, AVG(c.hmw_l_score) as hmw_l_score,\
+AVG(c.pcw_score) as pcw_score, AVG(c.lldw_score) as lldw_score, AVG(c.rldw_score) as rldw_score,\
+AVG(c.spw_score) as spw_score, AVG(c.aaw_score) as aaw_score, AVG(c.abw_score) as abw_score,\
+AVG(c.atw_score) as atw_score, SUM(c.fcw) as fcw, SUM(c.ufcw) as ufcw, SUM(c.vb) as vb, SUM(c.hmw_h) as hmw_h,\
+SUM(c.hmw_m) as hmw_m, SUM(c.hmw_l) as hmw_l, SUM(c.pcw) as pcw,\
+SUM(c.lldw) as lldw, SUM(c.rldw) as rldw, SUM(c.spw) as spw,\
+SUM(c.aaw) as aaw, SUM(c.abw) as abw, SUM(c.atw) as atw FROM veh_reg_mark_group_dtl a, veh_reg_mark_group b, avg_warning_vrm c where a.vrm_grp_id = b.vrm_grp_id and a.vrm_id = c.vrm_id and c.type = 'D' GROUP BY a.vrm_grp_id, c.start_date"
+
+    print sql
+    
+    try:
+        df = pd.read_sql_query(sql, conn)
+    except pd.io.sql.DatabaseError as e:
+        return e
+
+    #Convert to datetime
+    df['start_date'] = pd.to_datetime(df['start_date'], format='%Y-%m-%d')
+    
+    #Create new columns:
+    df['create_ts'] = pd.datetime.now()
+    ##Setting default as System for user and 0 for version
+    df['create_user'] = 'System'
+    df['version'] = 0
+
+    #Extract the names of the columns in order to be used in the SQL insert statement
+    columns = ', '.join(df.columns.tolist())
+
+    #Transform the dataframe into a JSON list
+    df =json.loads(df.to_json(orient='values', date_format='iso', date_unit='s'))
+
+    instances = []
+
+    #Change the JSON list into instances for SQL insertion
+    #convert the date strings to this form  YYYY-MM-DD HH:MM:SS
+    for row in df:
+        row[2] = row[2].replace("T", " ")
+        row[2] = row[2].replace("Z","")
+        row[-3] = row[-3].replace("T", " ")
+        row[-3] = row[-3].replace("Z","")
+        row = tuple(row)
+        instances.append(row)
+
+    format_string = '%s,' * len(instances[0])
+    insert_statement = "INSERT INTO avg_warning_vrm_grp(%s) VALUES (%s)"%(columns,format_string[:-1])
+
+    cursor = conn.cursor()
+    try:
+        cursor.executemany(insert_statement,instances)
+    except mdb.Error as e:
+        return e
+    conn.commit()
+    return "%s records successfully added to avg_warning_vrm_grp table"% (len(instances))
 
 
+class from_Baidu(object):
+    @staticmethod
+    def add_entity(veh_trip_id):
+        ##Adding entity
+        body = {
+            'ak': baidu_apk,
+            'service id': baidu_service_id,
+            'entity name': veh_trip_id,
+        }
 
+        response = requests.post('http://yingyan.baidu.com/api/v3/entity/add', data=body)
+        result = response.json()
+        if result['status'] == 0:
+            return True
+        else:
+            print result['message']
+            return False
+    
+    @staticmethod
+    def break_evenly(data,n=50):
+        for i in range(0, len(data), n):
+            yield data[i:i+n]
+
+    @staticmethod
+    def get_track(start_time, entity):
+        params = {
+            'ak' : baidu_apk,
+            'service_id':  baidu_service_id,
+            'entity_name': entity,
+            'start_time': start_time,
+            'end_time': int(time.time()),
+            'is_processed': 1,
+            'process_option': 'need_mapmatch=1',
+            'page_size' : 5000,
+            'coord_type_output': 'bd09ll'
+        }
+
+        response = requests.get("http://yingyan.baidu.com/api/v3/track/gettrack", params = params)
+
+        result = response.json()
+        if result['status'] == 0:
+            return result
+        else:
+            return []
+
+    @staticmethod
+    def delete_entity(entity):
+        url = 'http://yingyan.baidu.com/api/v3/entity/delete'
+        body = {
+            'ak' : baidu_apk, 
+            'service_id': baidu_service_id,
+            'entity_name': entity
+        }
+
+        requests.post(url, data=body)
+
+    @classmethod
+    def add_points(cls, conn, veh_trip_id, delay_between_calls=5):
+
+        sql_data = generate_dict_from_sql("SELECT time,lat,lng FROM veh_trip_detail WHERE veh_trip_id = %s AND lat <> 0 AND lng <> 0 ORDER BY seq_no"%veh_trip_id, conn)
+        counter = 1
+
+        #Feed to Baidu API by chunk of 50 points
+        for chunk in cls.break_evenly(sql_data):
+
+        #Reformat data to fit baidu API call for this chunk
+            baidu_feed = [
+                {
+                    'entity_name': veh_trip_id,
+                    'loc_time': int(time.time()),
+                    'latitude': row['lat'],
+                    'longitude': row['lng'],
+                    "coord_type_input": "wgs84"
+                }
+                for row in chunk
+            ]
+
+            body = {
+                'ak' : baidu_apk,
+                'service id': baidu_service_id,
+                'point_list': json.dumps(baidu_feed)
+            }
+
+            response = requests.post("http://yingyan.baidu.com/api/v3/track/addpoints", data=body)
+            result = response.json()
+            if result['status'] == 0:
+                print "Chunk %s successfully posted to BAIDU"%counter
+            else:
+                print result['message']
+
+            #Put on timer to introduce pause between calls
+            if counter % 2 == 0:
+                time.sleep(delay_between_calls)
+            counter+=1
+
+        
+        
+            
