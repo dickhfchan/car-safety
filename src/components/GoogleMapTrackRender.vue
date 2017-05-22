@@ -15,12 +15,14 @@ function loadGoogleMap(ak) {
   return windowLoaded().then(() => {
     if (fun.loaded) {
       return window.google
-    } else if (!fun.requested) {
-      fun.requested = true
-      window._GoogleMapLoadedCallback = () => { fun.loaded = true; unset(window, '_GoogleMapLoadedCallback') }
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${ak}&callback=_GoogleMapLoadedCallback`
-      document.body.appendChild(script)
+    } else {
+      if (!fun.requested) {
+        fun.requested = true
+        window._GoogleMapLoadedCallback = () => { fun.loaded = true; unset(window, '_GoogleMapLoadedCallback') }
+        const script = document.createElement('script')
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${ak}&callback=_GoogleMapLoadedCallback`
+        document.body.appendChild(script)
+      }
       return new Promise(function(resolve, reject) {
         const requestInterval = window.setInterval(function () {
           if (fun.loaded) {
@@ -60,6 +62,12 @@ export default {
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
             this.autoCenterAndZoom(map, points, google)
+            //
+            const startPoint = new google.maps.Marker({
+              position: points[0],
+              label: 'A'
+            })
+            overLays.push(startPoint)
             // track
             const pathPolyline = new google.maps.Polyline({
               path: points,
@@ -69,12 +77,6 @@ export default {
               strokeWeight: 3,
             })
             overLays.push(pathPolyline)
-            //
-            const startPoint = new google.maps.Marker({
-              position: points[0],
-              label: 'A'
-            })
-            overLays.push(startPoint)
             //
             const endPoint = new google.maps.Marker({
               position: arrayLast(points),

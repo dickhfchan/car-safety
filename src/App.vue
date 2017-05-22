@@ -150,6 +150,7 @@ export default {
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       this.$store.commit('lang', this.settings.lang)
+      this.closeRightSidenav()
     },
     onConfirmClose(type) {
       if (type === 'ok') {

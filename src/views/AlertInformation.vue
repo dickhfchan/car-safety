@@ -159,7 +159,7 @@ export default {
         rows.forEach(row => { row.active = false })
         this.cache.rows = rows
       }
-    }
+    },
   },
   watch: {
     // get rows
@@ -172,6 +172,10 @@ export default {
       handler() { this.renderAlertPoint() }
     },
     '$store.state.pointsFromTripDetail': {
+      immediate: true,
+      handler() { this.renderAlertPoint() }
+    },
+    '$store.state.map': {
       immediate: true,
       handler() { this.renderAlertPoint() }
     },
@@ -223,6 +227,16 @@ export default {
       })
     },
     renderAlertPoint() {
+      switch (this.$store.state.map) {
+        case 'googleMap':
+          this.renderAlertPointOnGoogleMap()
+          break
+        case 'baiduMap':
+          this.renderAlertPointOnBaiduMap()
+          break
+      }
+    },
+    renderAlertPointOnGoogleMap() {
       // clear
       const overLays = this.overLays
       overLays.forEach(v => v.setMap(null))
@@ -269,6 +283,53 @@ End Speed:    ${row.end_spd} KM/h
             overLays.push(marker)
           })
           overLays.forEach(v => v.setMap(map))
+        })
+      }
+    },
+    renderAlertPointOnBaiduMap() {
+      //
+      const state = this.$store.state
+      if (!this.rowsExpired && !state.pointsExpired) {
+        waitFor('baiduMapReady', () => runtime.bmtr && runtime.bmtr.map)
+        .then(() => {
+          const bmtr = runtime.bmtr
+          const BMap = bmtr.BMap
+          const map = bmtr.map
+          const rows = this.rows
+          let prevOpenedInfoWindow = null
+          let prevRowOfOpenedInfoWindow = null
+          rows.forEach(row => {
+            const point = new BMap.Point(row.lng, row.lat)
+            const icon = mapIcons[row.Warning]
+            const BMapIcon = new BMap.Icon(icon, new BMap.Size(26, 26), {
+              anchor: new BMap.Size(13, 26),
+            })
+            const marker = new BMap.Marker(point, {icon: BMapIcon})
+            map.addOverlay(marker)
+            const infoWindow = new BMap.InfoWindow(`
+<pre>
+Duration:     ${row.duration} seconds
+Top Speed:    ${row.top_spd} KM/h
+Start Speed:  ${row.start_spd} KM/h
+End Speed:    ${row.end_spd} KM/h
+</pre>`,
+              {
+                width: 250,
+                height: 120,
+              })
+            marker.addEventListener('click', () => {
+              if (prevOpenedInfoWindow) {
+                prevRowOfOpenedInfoWindow.active = false
+              }
+              prevOpenedInfoWindow = infoWindow
+              prevRowOfOpenedInfoWindow = row
+              row.active = true
+              map.openInfoWindow(infoWindow, point)
+            })
+            infoWindow.addEventListener('close', () => {
+              row.active = false
+            })
+          })
         })
       }
     },

@@ -4,9 +4,12 @@
       <md-card class="map-card card-1">
         <md-card-content class="flex relative">
           <div class="flex flex-1 flex-col">
-            <h2 class="md-title">Google Map <small style="color:grey;">{{$store.state.tripId}}</small></h2>
+            <h2 class="md-title">{{mapCardTitle}} <small style="color:grey;">{{$store.state.tripId}}</small></h2>
             <div class="center-wrapper relative w-100 flex-1">
-              <Google-Map-Track-Render ref="gmtr" :ak="$store.state.googleMapAK" :points="$store.state.points" class="w-100 h-100"></Google-Map-Track-Render>
+              <Google-Map-Track-Render v-if="mapType === 'googleMap'"
+              ref="gmtr" :ak="$store.state.googleMapAK" :points="$store.state.points" class="w-100 h-100"></Google-Map-Track-Render>
+              <Baidu-Map-Track-Render v-if="mapType === 'baiduMap'"
+              ref="bmtr" :ak="$store.state.baiduMapAK" :points="$store.state.points" class="w-100 h-100"></Baidu-Map-Track-Render>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsLoading">
                 <md-spinner md-indeterminate></md-spinner>
               </div>
@@ -65,7 +68,7 @@
 
           </div>
           <div class="card-buttons">
-            <fullscreen-button @click.native="$refs.gmtr.checkSize()"></fullscreen-button>
+            <fullscreen-button @click.native="onMapCardFullscreen"></fullscreen-button>
           </div>
         </md-card-content>
       </md-card>
@@ -122,6 +125,17 @@ export default {
     }
   },
   computed: {
+    mapType() { return this.$store.state.map },
+    mapCardTitle() {
+      switch (this.mapType) {
+        case 'googleMap':
+          return 'Google Map'
+        case 'baiduMap':
+          return 'Baidu Map'
+        default:
+          return ''
+      }
+    },
     noTripsFoundVisible() {
       const state = this.$store.state
       return !state.tripsLoading && !state.tripsFailed && state.trips.length === 0 && state.vehicle
@@ -138,6 +152,13 @@ export default {
     ...mapActions(['getPoints']),
     tripDate(trip) { return format(new Date(trip.start_time), 'MM-dd HH:mm') },
     tripDistance(trip) { return (trip.drv_distance / 100000).toFixed(1) },
+    onMapCardFullscreen() {
+      if (this.mapType === 'googleMap') {
+        this.$refs.gmtr.checkSize()
+      } else if (this.mapType === 'baiduMap') {
+        this.$refs.bmtr.checkSize()
+      }
+    }
   }
 }
 </script>

@@ -12,8 +12,9 @@ const dateFormat = 'yyyy-MM-dd'
 const tempDate = new Date()
 const today = dateFunctions.format(tempDate, dateFormat)
 const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(tempDate, 10), dateFormat)
-let storagedDefaultVehicles = window.localStorage.getItem('defaultVehicles')
+let storagedDefaultVehicles = window.localStorage.getItem('vehicles')
 storagedDefaultVehicles = storagedDefaultVehicles == null ? [{vrm_id: 45, vrm_mark_code: 'RC6558'}] : JSON.parse(storagedDefaultVehicles)
+const storagedMap = window.localStorage.getItem('map')
 
 // store local data
 const local = {}
@@ -23,7 +24,7 @@ const store = new Vuex.Store({
     urls
   },
   state: {
-    map: 'baiduMap',
+    map: storagedMap || 'googleMap',
     lang: window.localStorage.getItem('lang') || 'en',
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
@@ -45,7 +46,10 @@ const store = new Vuex.Store({
     pointsExpired: true, // points belongs to tripId, a new request start, the points expire
   },
   mutations: {
-    map(state, val) { state.map = val },
+    map(state, val) {
+      window.localStorage.setItem('map', val)
+      state.map = val
+    },
     lang(state, val) {
       if (state.lang !== val) {
         state.lang = val
@@ -61,7 +65,7 @@ const store = new Vuex.Store({
     },
     dateRange(state, val) { state.dateRange = val },
     vehicle(state, val) {
-      window.localStorage.setItem('defaultVehicles', JSON.stringify([state.vehicles.find(v => v.vrm_id === val)]))
+      window.localStorage.setItem('vehicles', JSON.stringify([state.vehicles.find(v => v.vrm_id === val)]))
       state.vehicle = val
     },
     vehicles(state, val) { state.vehicles = val },

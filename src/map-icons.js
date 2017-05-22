@@ -14,4 +14,6 @@ export default {
   SPW: require('./assets/img/map/SPW_25.png'),
   UFCW: require('./assets/img/map/UFCW_25.png'),
   VB: require('./assets/img/map/VBW_25.png'),
+  start: require('./assets/img/map/start.png'),
+  end: require('./assets/img/map/end.png'),
 }

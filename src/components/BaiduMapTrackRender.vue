@@ -1,44 +1,144 @@
+<template>
+  <div class="baidu-map-track-render">
+    <div class="baidu-map-track-render__map" :id="id"></div>
+  </div>
+</template>
 <script>
-import BaiduMapTrackRender from 'baidu-map-track-render-vue/src/BaiduMapTrackRender.vue'
+import {windowLoaded, unset, arrayLast} from 'helper-js'
+import runtime from '@/runtime.js'
+import mapIcons from '../map-icons.js'
+//
+function loadBaiduMap(ak) {
+  if (window.BMap) {
+    return Promise.resolve(window.BMap)
+  }
+  const fun = loadBaiduMap
+  return windowLoaded().then(() => {
+    if (fun.loaded) {
+      return Promise.resolve(window.BMap)
+    } else {
+      if (!fun.requested) {
+        fun.requested = true
+        window._BaiduMapLoadedCallback = () => { fun.loaded = true; unset(window, '_BaiduMapLoadedCallback') }
+        const script = document.createElement('script')
+        script.src = `http://api.map.baidu.com/api?v=2.0&ak=${ak}&callback=_BaiduMapLoadedCallback`
+        document.body.appendChild(script)
+      }
+      return new Promise(function(resolve, reject) {
+        const requestInterval = window.setInterval(function () {
+          if (fun.loaded) {
+            window.clearInterval(requestInterval)
+            resolve(window.BMap)
+          }
+        }, 10)
+      })
+    }
+  })
+}
+
 export default {
-  extends: BaiduMapTrackRender,
   props: {
-    points: {},
+    points: {}, //
     ak: {},
-    snap: { default: true }, // snap to roads
-    serviceId: {},
+  },
+  data() {
+    return {
+      id: 'BaiduMapTrackRender' + this._uid,
+      BMap: null,
+      map: null,
+      pathPolyline: null,
+      BMapApiLoading: true,
+      BMapPoints: null
+    }
+  },
+  watch: {
+    points: {
+      immediate: true,
+      handler(points) {
+        // clear overlays
+        this.map && this.map.clearOverlays()
+        //
+        if (points && points.length > 0) {
+          this.mapReady().then(({BMap, map}) => {
+            points = points.map(p => new BMap.Point(p.lng, p.lat))
+            this.BMapPoints = points
+            this.autoCenterAndZoom(map, points, BMap)
+            //
+            let icon, BMapIcon
+            //
+            icon = mapIcons.start
+            BMapIcon = new BMap.Icon(icon, new BMap.Size(26, 26), {
+              anchor: new BMap.Size(13, 26),
+            })
+            const startPoint = new BMap.Marker(points[0], {icon: BMapIcon})
+            map.addOverlay(startPoint)
+            // track
+            const pathPolyline = new BMap.Polyline(
+              points,
+              {strokeColor: '#FF0000', strokeWeight: 3, strokeOpacity: 1.0}
+            )
+            map.addOverlay(pathPolyline)
+            //
+            icon = mapIcons.end
+            BMapIcon = new BMap.Icon(icon, new BMap.Size(26, 26), {
+              anchor: new BMap.Size(13, 26),
+            })
+            const lastPoint = arrayLast(points)
+            const endPoint = new BMap.Marker(lastPoint, {icon: BMapIcon})
+            map.addOverlay(endPoint)
+            //
+          })
+        }
+      }
+    }
   },
   methods: {
-    // overide
-    ready(BMap, points) {
-      this.addEntity('develope')
-      return
-      this.convertPoints(points, BMap).then(({points}) => {
-        var map = new BMap.Map(this.id)
-        var center = this.getCenter(points, BMap)
-        map.centerAndZoom(center, 15)
-        map.enableScrollWheelZoom()
-
-        for (let i = 0; i < points.length; i++) {
-          const prev = points[i - 1]
-          if (prev) {
-            const current = points[i]
-            const polyline = new BMap.Polyline([
-              prev,
-              current,
-            ], {strokeColor: 'blue', strokeWeight: 2, strokeOpacity: 0.5})   // 创建折线
-            map.addOverlay(polyline)   // 增加折线
-          }
+    autoCenterAndZoom(map, points, BMap) {
+      map.setViewport(points)
+    },
+    mapReady() {
+      return loadBaiduMap(this.ak).then(BMap => {
+        this.BMap = BMap
+        if (!this.map) {
+          this.map = new BMap.Map(this.id)
+          this.map.enableScrollWheelZoom()
         }
+        return Promise.resolve({BMap, map: this.map})
       })
     },
-    addEntity(name) {
-      return this.$http.post('https://yingyan.baidu.com/api/v3/entity/add', {
-        ak: this.ak,
-        service_id: this.serviceId,
-        entity_name: name
-      }).then(({data}) => data)
-    },
+    checkSize() {
+      if (this.BMap && this.map && this.map) {
+        this.autoCenterAndZoom(this.map, this.BMapPoints, this.BMap)
+      }
+    }
+  },
+  created() {
+    this.mapReady().then(({BMap, map}) => {
+      this.BMap = BMap
+      this.BMapApiLoading = false
+    })
+    runtime.bmtr = this
+    window.addEventListener('resize', this.checkSize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkSize)
   }
 }
+
 </script>
+
+<style lang="scss">
+.baidu-map-track-render{
+  width: 100%;
+  height:100%;
+  min-height: 50px;
+  /* prevent other css effect baidumap overlay */
+  svg{
+    max-width: inherit;
+  }
+}
+.baidu-map-track-render__map{
+  width: 100%;
+  height: 100%;
+}
+</style>
