@@ -1,11 +1,16 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime
 import pandas as pd
+import MySQLdb as mdb
+import time
+
 #Self-defined modules:
 from middleware import retrieve_table, clean_veh_trip_table, retrieve_json_from_google, check_veh_trip_id, generate_dict_from_sql, insert_into_google_table
 from middleware import connect_to_database
 from config import db_name, db_password, db_username, host, port
+from middleware import from_Baidu
+
 
 
 app = Flask(__name__)
@@ -19,8 +24,33 @@ default_headers = {
 
 table_routes = [
     '/api/dao/<string:table_name>',
-    '/api/dao/<string:table_name>/<int:key>'
+    '/api/dao/<string:table_name>/<int:key>',
+    '/api/dao/<string:table_name>/<string:key>'
 ]
+
+
+#Store the primary key of each table as key:value pairs
+primary_keys = {
+    'company' : 'company_id',
+    'driver' : 'driver_id',
+    'driver_group' : 'drv_grp_id',
+    'driver_group_dtl' : 'drv_group_dtl_id',
+    'mob_device' : 'md_id',
+    'user_account' : 'user_id',
+    'user_group' : 'group_id',
+    'user_group_func' : 'group_func_id',
+    'users' : 'id',
+    'vehicle' : 'vehicle_id',
+    'veh_reg_mark' : 'vrm_id',
+    'veh_reg_mark_group' : 'vrm_grp_id',
+    'veh_reg_mark_group_dtl' : 'vrm_grp_dtl_id',
+    'warning_type' : 'warn_type_id',
+    'authentication' : 'username'
+}
+
+#Create datatime columns
+dt_columns = ['create_ts','start_date', 'end_date', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
+
 
 class Google_JSON(Resource):
     def get(self, veh_trip_id):
@@ -52,6 +82,26 @@ class Google_JSON(Resource):
                 # Possible errors: Daily limit reached, GOOGLE API did not return anything (faulty gps values)
                 return {'message': message, 'JSON': []}, 200, default_headers
 
+
+
+class Baidu_API(Resource):
+    def get(self, veh_trip_id):
+        veh_id = str(veh_trip_id)
+        from_Baidu.add_entity(veh_id)
+        start_time = int(time.time())
+        from_Baidu.add_points(conn=conn, veh_trip_id=veh_id,delay_between_calls=10)
+        result = from_Baidu.get_track(start_time, veh_id)
+        
+        if type(result) is dict:
+            from_Baidu.delete_entity(veh_id)
+            return {"JSON": [result]}
+        else:
+            return {"JSON": []}
+
+    
+
+
+
 class Tables_JSON(Resource):
     def get(self,table_name, key=None):
         # "veh_trip_detail" or "veh_trip"
@@ -64,6 +114,20 @@ class Tables_JSON(Resource):
             else:
                 ##Validation error
                 return {'message': message, 'JSON': []}, 400
+
+        elif table_name == 'authentication':
+            #print reqparse.RequestParser()
+            parser = reqparse.RequestParser()
+            parser.add_argument('password', type=str)
+            args = parser.parse_args()
+            password = parser.get('password')
+            print key
+
+            if key is not None and password is not None:
+                results, message = retrieve_table([table_name, key, password], conn, json_format=True)         
+                return {'message': message,'JSON': results}, 200, default_headers
+            else:
+                return {'message':'please check your key, password', 'JSON':[]}, 400,{'message': "Check your query string"}                
 
         elif table_name == 'log_data':
             ##Log_data table: please add <start_date> and <end_date> in query string
@@ -90,12 +154,127 @@ class Tables_JSON(Resource):
             return {'message': message,'JSON': results}, 200, default_headers
 
 
+    # Handle POST event for an insertion/Update event:
+    # User must set "Content-Type" to "application/json" in POST request
+    # Use table attributes given in MySQL schema for JSON keys
+    def post(self, table_name, key=None):
+        #check if table is one of those listed in "primary_keys"
+        if primary_keys.has_key(table_name):
+            json = request.get_json()
+
+            if json is None:
+                return "No JSON object captured"
+
+            pk_name = primary_keys[table_name]
+            columns = json.keys()
+
+            #Check if Primary Key is given in JSON
+            try:
+                pk_value = json[pk_name]
+            except KeyError:
+                return "Key %s is not in JSON" % pk_name
+
+            #Datetime clean up:
+            #Convert unix time to UTC time for safe insertion into database
+            if any(col in dt_columns for col in columns):
+                for each in dt_columns:
+                    if json.has_key(each):
+                        json[each] = datetime.fromtimestamp(json[each]).strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        continue
+            
+            #Query database if this pk alrdy exists
+            _dict = generate_dict_from_sql("SELECT * FROM %s WHERE %s = %s"%(table_name, pk_name, pk_value), conn, False)
+
+            #Perform Insertion if primary key doesnt exist on table
+            if not _dict:
+
+                placeholders = ("%s,"*len(columns))[:-1]
+                columns = ",".join(columns)
+                values = tuple(json.values())
+                sql = "INSERT INTO %s (%s) VALUES (%s)"%(table_name, columns, placeholders)
+                print sql
+                
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(sql,values)
+                except mdb.Error as e:
+                    return e[1]
+                conn.commit()
+                cursor.close()
+                return "%s %s successfully added to %s table"%(pk_name, pk_value, table_name)
+
+            #Perform Update if the pk alrdy exists
+            else:
+                
+                sql = "UPDATE %s SET %s WHERE %s = %s"
+                
+                placeholders = ""
+                for k,v in json.items():
+                    if type(v) is str or type(v) is unicode:
+                        placeholders += "%s = '%s',"%(k,v)
+                    else:
+                        placeholders += "%s = %s,"%(k,v)
+                
+                #Construct Update statement
+                sql = sql%(table_name, placeholders[:-1], pk_name, pk_value)
+
+                print sql
+
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(sql)
+                except mdb.Error as e:
+                    return e[1]
+                conn.commit()
+                cursor.close()
+                return "Successfully Updated PK %s in table %s"%(pk_value, table_name)
+        else:
+            return "POST request denied for this table %s"%(table_name)
+
+
+    # Handle DELETE event for an insertion/Update event:
+    # User must set "Content-Type" to "application/json" in POST request
+    # Use table attributes given in MySQL schema for JSON keys
+    def delete(self, table_name, key=None):
+        if primary_keys.has_key(table_name):
+            json = request.get_json()
+            if json is None:
+                return "No JSON object captured"
+
+            pk_name = primary_keys[table_name]
+            columns = json.keys()
+
+            #Check if Primary Key is given in JSON
+            try:
+                pk_value = json[pk_name]
+            except KeyError:
+                return "Key %s is not in JSON" % pk_name
+
+            cursor = conn.cursor()
+            sql = "DELETE FROM %s WHERE %s=%s"%(table_name, pk_name, pk_value)
+
+            try:
+                cursor.execute(sql)
+            except mdb.Error as e:
+                return e[1]
+            conn.commit()
+            cursor.close()
+            return "PK %s successfully removed from table %s"%(pk_value, table_name)
+
+        else:
+            return "DELETE request denied for this table %s" % table_name
+
+
+
+
 @app.route('/')
 def index():
     return "Hello_World"
 
 api.add_resource(Tables_JSON, *table_routes)
 api.add_resource(Google_JSON, '/api/google/<int:veh_trip_id>')
+api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8080, debug=True)
