@@ -165,8 +165,7 @@ export default {
         this.loading = false
         this.rows1 = data.JSON
         .filter(row => start <= row.start_date && row.start_date <= end)
-        // todo hard code company_id to 22
-        .filter(row => row.company_id === 22)
+        .filter(row => row.company_id === this.$store.state.user.company_id)
         this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
         initRows(this, this.rows1, this.columns1)
         initRows(this, this.rows1Ranking, this.columns1)

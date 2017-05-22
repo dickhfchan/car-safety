@@ -256,8 +256,7 @@ export default {
       .then(({data}) => {
         this.loading1 = false
         this.rows1 = data.JSON
-        // todo hard code company_id to 22
-        .filter(row => row.company_id === 22)
+        .filter(row => row.company_id === this.$store.state.user.company_id)
         // foramt count columns
         this.rows1.forEach(row => {
           this.columns1.slice(3).forEach(col => {
@@ -290,8 +289,7 @@ export default {
       .then(({data}) => {
         this.loading2 = false
         this.rows2 = data.JSON
-        // todo hard code company_id to 22
-        .filter(row => row.company_id === 22)
+        .filter(row => row.company_id === this.$store.state.user.company_id)
         initRows(this, this.rows2, this.columns2)
         windowLoaded().then(() => this.renderChart2())
       }).catch((e) => {

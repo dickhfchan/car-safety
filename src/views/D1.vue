@@ -209,8 +209,7 @@ export default {
       retry(() => this.$http.get(this.api))()
       .then(({data}) => {
         this.loading = false
-        // todo hard code company_id to 22
-        this.originRows = data.JSON.filter(row => row.company_id === 22)
+        this.originRows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
