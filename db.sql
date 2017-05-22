@@ -152,5 +152,5 @@ ADD COLUMN `company` INT(10) NULL AFTER `map`;
 
 
 CREATE VIEW `avg_warning_drv_name` AS
-SELECT b.name, a.* FROM gds_frontend.avg_warning_drv a, driver b where a.driver_id =b.driver_id;
+SELECT b.company_id, b.name, a.* FROM gds_frontend.avg_warning_drv a, driver b where a.driver_id =b.driver_id;
 
