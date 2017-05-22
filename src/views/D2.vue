@@ -95,7 +95,8 @@ export default {
           text: '司機',
         },
         {
-          'name': '車牌'
+          'name': '車牌',
+          visible: false,
         },
         {
           name: 'total_score',
