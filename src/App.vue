@@ -10,7 +10,8 @@
 
           <h2 class="md-title">{{$t('brand')}}</h2>
 
-          <MapFilters v-if="$route.name === 'map'"></MapFilters>
+          <Map-Filters v-if="$route.name === 'map'"></Map-Filters>
+          <Date-Range-Picker-In-Top v-else-if="$route.name === 'd2'" v-model="dateRangeInD2" class="d2-date-range"></Date-Range-Picker-In-Top>
           <span v-else class="flex-1"></span>
 
           <md-button class="md-icon-button" @click.native="toggleRightSidenav">
@@ -93,6 +94,7 @@
 
     <!-- global alert -->
     <md-dialog-alert :md-content="alert.content" md-ok-text="OK" ref="alert"></md-dialog-alert>
+
     <!-- global confirm -->
     <md-dialog-confirm
       :md-title="confirm.title"
@@ -108,9 +110,10 @@
 <script>
 import Login from '@/components/Login.vue'
 import MapFilters from '@/components/MapFilters.vue'
+import DateRangePickerInTop from '@/components/DateRangePickerInTop.vue'
 
 export default {
-  components: { Login, MapFilters },
+  components: { Login, MapFilters, DateRangePickerInTop },
   data () {
     const state = this.$store.state
     return {
@@ -129,6 +132,12 @@ export default {
         resolve: null,
         reject: null,
       }
+    }
+  },
+  computed: {
+    dateRangeInD2: {
+      get() { return this.$store.state.dateRangeInD2 },
+      set(value) { this.$store.commit('dateRangeInD2', value) },
     }
   },
   methods: {
@@ -229,5 +238,18 @@ body, html{
   text-align: center;
   padding: 20px 0;
   border-bottom: 1px solid rgba(0,0,0,.12);
+}
+.d2-date-range{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding-right: 100px;
+}
+@media (max-width:960px) {
+  .d2-date-range{
+    justify-content: flex-end;
+    padding-right: 0;
+  }
 }
 </style>

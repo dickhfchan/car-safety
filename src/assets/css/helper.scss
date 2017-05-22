@@ -86,7 +86,7 @@
   height: 100%;
   line-height: 36px;
 }
-.md-table .md-table-cell .md-button {
+.md-table .md-table-cell .md-button:not(.md-icon-button) {
   width: auto;
   min-width: inherit;
 }

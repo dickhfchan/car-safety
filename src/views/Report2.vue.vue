@@ -263,7 +263,7 @@ export default {
         ctx.innerHTML = ''
       }
       this.chart1 = new Chartist.Bar(ctx, {
-        labels: this.rows1.map(row => row['Date']),
+        labels: this.rows1.map(row => row['Date'].replace(/^\d{4}-/, '')),
         series: [
           this.rows1.map(row => row['安全評分']),
         ]

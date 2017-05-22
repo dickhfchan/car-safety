@@ -9,9 +9,9 @@ import * as dateFunctions from 'date-functions'
 Vue.use(Vuex)
 
 const dateFormat = 'yyyy-MM-dd'
-const tempDate = new Date()
-const today = dateFunctions.format(tempDate, dateFormat)
-const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(tempDate, 10), dateFormat)
+const today = dateFunctions.format(new Date(), dateFormat)
+const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 10), dateFormat)
+const fourteenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 14), dateFormat)
 let storagedDefaultVehicles = window.localStorage.getItem('vehicles')
 storagedDefaultVehicles = storagedDefaultVehicles == null ? [{vrm_id: 45, vrm_mark_code: 'RC6558'}] : JSON.parse(storagedDefaultVehicles)
 const storagedMap = window.localStorage.getItem('map')
@@ -44,6 +44,7 @@ const store = new Vuex.Store({
     pointsLoading: false,
     pointsFailed: false,
     pointsExpired: true, // points belongs to tripId, a new request start, the points expire
+    dateRangeInD2: [fourteenDaysBefore, today],
   },
   mutations: {
     map(state, val) {
@@ -78,6 +79,7 @@ const store = new Vuex.Store({
     pointsLoading(state, val) { state.pointsLoading = val },
     pointsFailed(state, val) { state.pointsFailed = val },
     pointsExpired(state, val) { state.pointsExpired = val },
+    dateRangeInD2(state, val) { state.dateRangeInD2 = val },
   },
   actions: {
     getTrips (context) {

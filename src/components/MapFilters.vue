@@ -3,20 +3,17 @@
    <label for="vehicle_select" class="m-r-sm">Vehicle</label>
    <Vehicle-Select :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Vehicle-Select>
 
-   <div class="date-range m-l">
-     <label class="m-r-sm">Date Range</label>
-     <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
-   </div>
+   <Date-Range-Picker-In-Top class="m-l" v-model="dateRange"></Date-Range-Picker-In-Top>
   </div>
 </template>
 <script>
-import DatePicker from '@/components/DatePicker.vue'
 import VehicleSelect from '@/components/VehicleSelect.vue'
+import DateRangePickerInTop from './DateRangePickerInTop.vue'
 import { mapActions } from 'vuex'
 import { retry } from 'helper-js'
 
 export default {
-  components: { DatePicker, VehicleSelect },
+  components: { VehicleSelect, DateRangePickerInTop },
   data() {
     return {
     }
@@ -100,26 +97,6 @@ export default {
     line-height: inherit;
     top: 11px;
     color: #fff;
-  }
-  .date-range{
-    display: flex;
-    align-items: center;
-    label{
-      white-space: nowrap;
-    }
-  }
-  .date-picker{
-    width: 180px;
-    height: auto!important;
-    border-bottom: 1px solid #fff;
-    .input-wrapper{
-      height: auto;
-      padding: 0;
-      input{
-        padding: 0;
-        border: none;
-      }
-    }
   }
 }
 @media (max-width:960px) {
