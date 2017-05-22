@@ -9,12 +9,12 @@
 
           <md-card-content>
             <form novalidate @submit.stop.prevent="submit">
-              <md-input-container :class="fields.email.getValidationClass()">
-                <md-icon>mail</md-icon>
-                <label>{{fields.email.text}}</label>
-                <md-input v-model="fields.email.value" :required="fields.email.required"></md-input>
-                <template v-if="fields.email.isValidationErrorsVisible()">
-                  <span class="md-error" v-for="error in fields.email.errors">{{error.message}}</span>
+              <md-input-container :class="fields.name.getValidationClass()">
+                <md-icon>person</md-icon>
+                <label>{{fields.name.text}}</label>
+                <md-input v-model="fields.name.value" :required="fields.name.required"></md-input>
+                <template v-if="fields.name.isValidationErrorsVisible()">
+                  <span class="md-error" v-for="error in fields.name.errors">{{error.message}}</span>
                 </template>
               </md-input-container>
               <md-input-container md-has-password :class="fields.password.getValidationClass()">
@@ -52,9 +52,9 @@ export default {
       serverUrls: this.$store.state.urls.server,
       validation: {},
       fields: {
-        email: {
-          text: this.$t('email'),
-          rules: 'required|email|minLength:3'
+        name: {
+          text: this.$t('name'),
+          rules: 'required'
         },
         password: {
           text: this.$t('password'),
@@ -74,25 +74,16 @@ export default {
   methods: {
     submit() {
       this.validation.check().then((data) => {
-        if (data.email === 'user@user.com' && data.password === '77339652') {
-          this.$store.commit('authenticated', true)
-        } else {
-          this.$alert('Login failed')
-        }
-        // this.$http.post(this.serverUrls.auth.login, data)
-        // .then(({data}) => {
-        //   if (isObject(data) && data.id > 0) {
-        //     this.$store.commit('authenticated', true)
-        //     this.$store.commit('user', data)
-        //     this.$notification.success(`Hello, ${data.name}. You are successfully logged in.`)
-        //     this.$emit('success', data)
-        //   } else {
-        //     this.$store.commit('authenticated', false)
-        //     this.$store.commit('user', {})
-        //     this.$notification.error(data)
-        //     this.$emit('error')
-        //   }
-        // })
+        this.$http.get(`dao/authentication/${data.name}?password=${data.password}`).then(({data}) => {
+          if (data && data.message === 'Success') {
+            this.$store.commit('authenticated', true)
+            this.$store.commit('user', data.JSON)
+            this.$emit('success', data.JSON)
+          } else {
+            this.$alert('Login failed')
+            this.$emit('error')
+          }
+        })
       })
     }
   },
