@@ -1,7 +1,7 @@
 <template>
   <md-card  class="m-a card-1">
     <md-card-content>
-      <h2 class="md-title">Analysis Group</h2>
+      <h2 class="md-title">{{$t('analysisGroup')}}</h2>
 
       <Paginator :source="rows" :page-size="pageSize">
           <template scope="page">
@@ -28,14 +28,14 @@
       </Paginator>
 
       <div class="card-buttons">
-        <md-switch class="md-primary" v-model="scoreColumnVisible">Score Column</md-switch>
+        <md-switch class="md-primary" v-model="scoreColumnVisible">{{$t('scoreColumn')}}</md-switch>
         <md-button class="md-icon-button" @click.native="exportExcel">
           <md-icon>get_app</md-icon>
-          <md-tooltip md-direction="bottom">Export</md-tooltip>
+          <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
         </md-button>
         <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
-          <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+          <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
         </md-button>
         <fullscreen-button></fullscreen-button>
       </div>
@@ -54,97 +54,97 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'vrm_grp_id' },
-        { name: 'total_score',
-          text: 'Total',
+        { name: 'vrm_grp_id', text: this.$t('vrmGrpId') },
+        { name: 'total_score', text: this.$t('totalScore') },
+        { name: 'pcw_score', text: this.$t('pcwScore'),
+
         },
-        { name: 'pcw_score',
-          text: 'PCW S',
+        { name: 'ufcw_score', text: this.$t('ufcwScore'),
+
         },
-        { name: 'ufcw_score',
-          text: 'UFCW S',
+        { name: 'fcw_score', text: this.$t('fcwScore'),
         },
-        { name: 'fcw_score',
-          text: 'FCW S'},
-        { name: 'hmw_h_score',
-          text: 'HMW_H S'},
-        { name: 'hmw_m_score',
-          text: 'HMW_M S'},
-        { name: 'hmw_l_score',
-          text: 'HMW_L S'},
-        { name: 'lldw_score',
-          text: 'LLDW S'},
-        { name: 'rldw_score',
-          text: 'RLDW S'},
-        { name: 'spw_score',
-          text: 'SPW S',
+        { name: 'hmw_h_score', text: this.$t('hmwHScore'),
         },
-        { name: 'vb_score',
-          text: 'VB S',
+        { name: 'hmw_m_score', text: this.$t('hmwMScore'),
         },
-        { name: 'aaw_score',
-          text: 'AAW S',
+        { name: 'hmw_l_score', text: this.$t('hmwLScore'),
         },
-        { name: 'abw_score',
-          text: 'ABW S',
+        { name: 'lldw_score', text: this.$t('lldwScore'),
         },
-        { name: 'atw_score',
-          text: 'ATW S',
+        { name: 'rldw_score', text: this.$t('rldwScore'),
         },
-        { name: 'drv_distance',
-          text: 'Distance',
+        { name: 'spw_score', text: this.$t('spwScore'),
+
         },
-        { name: 'drv_duration',
-          text: 'Duration',
+        { name: 'vb_score', text: this.$t('vbScore'),
+
         },
-        { name: 'pcw',
-          text: 'PCW',
+        { name: 'aaw_score', text: this.$t('aawScore'),
+
         },
-        { name: 'ufcw',
-          text: 'UFCW',
+        { name: 'abw_score', text: this.$t('abwScore'),
+
         },
-        { name: 'fcw',
-          text: 'FCW',
+        { name: 'atw_score', text: this.$t('atwScore'),
+
         },
-        { name: 'hmw_h',
-          text: 'HMW_H',
+        { name: 'drv_distance', text: this.$t('drvDistance'),
+
         },
-        { name: 'hmw_m',
-          text: 'HMW_M',
+        { name: 'drv_duration', text: this.$t('drvDuration'),
+
         },
-        { name: 'hmw_l',
-          text: 'HMW_L',
+        { name: 'pcw', text: this.$t('pcw'),
+
         },
-        { name: 'lldw',
-          text: 'LLDW',
+        { name: 'ufcw', text: this.$t('ufcw'),
+
         },
-        { name: 'rldw',
-          text: 'RLDW',
+        { name: 'fcw', text: this.$t('fcw'),
+
         },
-        { name: 'spw',
-          text: 'SPW',
+        { name: 'hmw_h', text: this.$t('hmwH'),
+
         },
-        { name: 'vb',
-          text: 'VB',
+        { name: 'hmw_m', text: this.$t('hmwM'),
+
         },
-        { name: 'aaw',
-          text: 'AAW',
+        { name: 'hmw_l', text: this.$t('hmwL'),
+
         },
-        { name: 'abw',
-          text: 'ABW',
+        { name: 'lldw', text: this.$t('lldw'),
+
         },
-        { name: 'atw',
-          text: 'ATW',
+        { name: 'rldw', text: this.$t('rldw'),
+
+        },
+        { name: 'spw', text: this.$t('spw'),
+
+        },
+        { name: 'vb', text: this.$t('vb'),
+
+        },
+        { name: 'aaw', text: this.$t('aaw'),
+
+        },
+        { name: 'abw', text: this.$t('abw'),
+
+        },
+        { name: 'atw', text: this.$t('atw'),
+
         },
         {
           name: 'start_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+          text: this.$t('startDate'),
+          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
         },
         { name: 'end_date',
-          formatter: (val) => format(new Date(val), 'MM-dd HH:mm')
+          text: this.$t('endDate'),
+          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
         },
-        { name: 'type' },
-        { name: 'avg_warn_id' },
+        { name: 'type', text: this.$t('type') },
+        { name: 'avg_warn_id', text: this.$t('avgWarnId') },
       ],
       rows: [],
       pageSize: 20,
@@ -177,7 +177,7 @@ export default {
       .then(({data}) => {
         this.rows = data.JSON
       }).catch((e) => {
-        this.$alert('load failed')
+        this.$alert(this.$t('loadFailed'))
         throw e
       })
     },
@@ -192,7 +192,7 @@ export default {
         return r
       })
       const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'Analysis Group', titleLabels)
+      generateExcel(data, this.$t('loadFailed'), titleLabels)
     }
   }
 }

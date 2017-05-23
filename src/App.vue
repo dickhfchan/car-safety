@@ -21,7 +21,7 @@
 
           <md-button class="md-icon-button" @click.native="toggleRightSidenav">
            <md-icon>notifications</md-icon>
-           <md-tooltip md-direction="bottom">Notifications</md-tooltip>
+           <md-tooltip md-direction="bottom">{{$t('notifications')}}</md-tooltip>
           </md-button>
 
           <md-button class="md-icon-button" @click.native="toggleRightSidenav">
@@ -39,7 +39,7 @@
                 <div class="author-card-info p-a">
                   <span>{{$store.state.user.fullname}}</span>
                   <div class="author-card-links">
-                    <a href="#" @click.prevent="$store.dispatch('logout')">Logout</a>
+                    <a href="#" @click.prevent="$store.dispatch('logout')">{{$t('logout')}}</a>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@
     </template>
 
     <!-- global alert -->
-    <md-dialog-alert :md-content="alert.content" md-ok-text="OK" ref="alert"></md-dialog-alert>
+    <md-dialog-alert :md-content="alert.content" :md-ok-text="$t('ok')" ref="alert"></md-dialog-alert>
 
     <!-- global confirm -->
     <md-dialog-confirm
@@ -140,8 +140,8 @@ export default {
       confirm: {
         title: '',
         content: ' ',
-        ok: 'OK',
-        cancel: 'Cancel',
+        ok: this.$t('ok'),
+        cancel: this.$t('cancel'),
         resolve: null,
         reject: null,
       }
@@ -201,7 +201,7 @@ export default {
         Object.assign(this.confirm, options)
       }
       if (!this.confirm.title) {
-        this.confirm.title = 'Confirm'
+        this.confirm.title = this.$t('confirm')
       }
       this.$refs.confirm.open()
       return new Promise((resolve, reject) => {

@@ -2,7 +2,7 @@
   <div class="report2 m-a">
     <md-card  class="card-1">
       <md-card-content>
-        <h2 class="md-title">司機安全評分及每百公里警報次數</h2>
+        <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
         <div class="relative">
           <md-table @select="" @sort="onSort($event, rows1, columns1)">
@@ -27,13 +27,13 @@
         </div>
 
         <div class="card-buttons">
-          <md-button class="md-icon-button" @click.native="exportExcel(rows1, columns1, '司機安全評分及每百公里警報次數')">
+          <md-button class="md-icon-button" @click.native="exportExcel(rows1, columns1, $t('driverScoreAndAlertCountPer100KM'))">
             <md-icon>get_app</md-icon>
-            <md-tooltip md-direction="bottom">Export</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
           <md-button class="md-icon-button" @click.native="getData1()">
             <md-icon>refresh</md-icon>
-            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
           </md-button>
           <fullscreen-button></fullscreen-button>
         </div>
@@ -44,7 +44,7 @@
       <md-layout md-flex>
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">Chart1</h2>
+            <h2 class="md-title">{{$t('chart1')}}</h2>
 
             <div class="relative">
               <div :id="chart1ID" class="w-100 chart1"></div>
@@ -60,7 +60,7 @@
       <md-layout md-flex class="">
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">Chart2</h2>
+            <h2 class="md-title">{{$t('chart2')}}</h2>
 
             <div class="relative">
               <div :id="chart2ID" class="w-100 chart2" ref="chart2"></div>
@@ -81,7 +81,7 @@
 
     <md-card  class="card-1 m-t">
       <md-card-content>
-        <h2 class="md-title">司機安全評分及警報次數</h2>
+        <h2 class="md-title">{{$t('driverScoreAndAlertCount')}}</h2>
 
         <div class="relative">
           <md-table @select="" @sort="onSort($event, rows2, columns2)">
@@ -106,13 +106,13 @@
         </div>
 
         <div class="card-buttons">
-          <md-button class="md-icon-button" @click.native="exportExcel(rows2, columns2, '司機安全評分及警報次數')">
+          <md-button class="md-icon-button" @click.native="exportExcel(rows2, columns2, $t('driverScoreAndAlertCount'))">
             <md-icon>get_app</md-icon>
-            <md-tooltip md-direction="bottom">Export</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
           <md-button class="md-icon-button" @click.native="getData2()">
             <md-icon>refresh</md-icon>
-            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
           </md-button>
           <fullscreen-button></fullscreen-button>
         </div>
@@ -140,48 +140,48 @@ export default {
       columns1: [
         {
           name: 'start_date',
-          text: 'Date',
+          text: this.$t('startDate'),
           valueProcessor: ({value}) => format(new Date(value), dateFormat),
         },
         {
           name: 'total_score',
-          text: '安全評分'
+          text: this.$t('totalScore')
         },
         {
           name: 'drv_distance',
-          text: '公里數'
+          text: this.$t('drvDistance')
         },
         {
           name: 'hmw',
-          text: '跟車太近'
+          text: this.$t('hmw')
         },
         {
           name: 'pcw',
-          text: '行人前撞'
+          text: this.$t('pcw')
         },
         {
           name: 'fcw',
-          text: '高速前撞'
+          text: this.$t('fcw')
         },
         {
           name: 'ufcw',
-          text: '低速前撞'
+          text: this.$t('ufcw')
         },
         {
           name: 'lldw',
-          text: '左道偏離'
+          text: this.$t('lldw')
         },
         {
           name: 'rldw',
-          text: '右道偏離'
+          text: this.$t('rldw')
         },
         {
           name: 'aaw',
-          text: '急加速'
+          text: this.$t('aaw')
         },
         {
           name: 'abw',
-          text: '急刹車'
+          text: this.$t('abw')
         }
       ],
       rows1: [],
@@ -192,48 +192,48 @@ export default {
       columns2: [
         {
           name: 'start_date',
-          text: 'Date',
+          text: this.$t('startDate'),
           valueProcessor: ({value}) => format(new Date(value), dateFormat),
         },
         {
           name: 'total_score',
-          text: '安全評分'
+          text: this.$t('totalScore')
         },
         {
           name: 'drv_distance',
-          text: '公里數'
+          text: this.$t('drvDistance')
         },
         {
           name: 'hmw',
-          text: '跟車太近'
+          text: this.$t('hmw')
         },
         {
           name: 'pcw',
-          text: '行人前撞'
+          text: this.$t('pcw')
         },
         {
           name: 'fcw',
-          text: '高速前撞'
+          text: this.$t('fcw')
         },
         {
           name: 'ufcw',
-          text: '低速前撞'
+          text: this.$t('ufcw')
         },
         {
           name: 'lldw',
-          text: '左道偏離'
+          text: this.$t('lldw')
         },
         {
           name: 'rldw',
-          text: '右道偏離'
+          text: this.$t('rldw')
         },
         {
           name: 'aaw',
-          text: '急加速'
+          text: this.$t('aaw')
         },
         {
           name: 'abw',
-          text: '急刹車'
+          text: this.$t('abw')
         }
       ],
       rows2: [],

@@ -51,7 +51,7 @@
         </md-button>
         <md-button class="md-icon-button" @click.native="getData()">
           <md-icon>refresh</md-icon>
-          <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+          <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
         </md-button>
         <fullscreen-button></fullscreen-button>
       </div>

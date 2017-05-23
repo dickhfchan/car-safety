@@ -16,7 +16,7 @@
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.pointsFailed">
                 <md-button class="md-icon-button md-raised md-primary" @click.native="getPoints()">
                   <md-icon>refresh</md-icon>
-                  <md-tooltip md-direction="bottom">Reload</md-tooltip>
+                  <md-tooltip md-direction="bottom">{{$t('reload')}}</md-tooltip>
                 </md-button>
               </div>
               <div class="absolute-backdrop center-wrapper" v-show="$store.state.tripId == null && !$store.state.tripsLoading">
@@ -29,14 +29,14 @@
           </div>
 
           <div class="trips">
-            <h2 class="md-title">Trips</h2>
+            <h2 class="md-title">{{$t('trips')}}</h2>
             <div class="center-wrapper flex-1" v-if="$store.state.tripsLoading">
               <md-spinner md-indeterminate></md-spinner>
             </div>
             <div class="center-wrapper flex-1" v-if="$store.state.tripsFailed">
               <md-button class="md-icon-button md-raised md-primary" @click.native="$store.dispatch('getTrips')">
                 <md-icon>refresh</md-icon>
-                <md-tooltip md-direction="bottom">Reload</md-tooltip>
+                <md-tooltip md-direction="bottom">{{$t('reload')}}</md-tooltip>
               </md-button>
             </div>
             <div v-if="noTripsFoundVisible" class="md-subheading no-trips-found">No Trips Found</div>
@@ -77,16 +77,16 @@
     <md-layout>
       <md-card  class="flex-1 m-x m-b card-1">
         <md-card-content>
-          <h2 class="md-title">Alert Information</h2>
+          <h2 class="md-title">{{$t('alertInformation')}}</h2>
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
             <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
               <md-icon>get_app</md-icon>
-              <md-tooltip md-direction="bottom">Export</md-tooltip>
+              <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
             </md-button>
             <md-button class="md-icon-button" @click.native="$refs.alertInformation.getData()">
               <md-icon>refresh</md-icon>
-              <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+              <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
             </md-button>
             <fullscreen-button></fullscreen-button>
           </div>
@@ -129,9 +129,9 @@ export default {
     mapCardTitle() {
       switch (this.mapType) {
         case 'googleMap':
-          return 'Google Map'
+          return this.$t('googleMap')
         case 'baiduMap':
-          return 'Baidu Map'
+          return this.$t('baiduMap')
         default:
           return ''
       }

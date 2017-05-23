@@ -53,7 +53,7 @@ export default {
       validation: {},
       fields: {
         name: {
-          text: this.$t('name'),
+          text: this.$t('username'),
           rules: 'required'
         },
         password: {
@@ -83,11 +83,11 @@ export default {
             this.$store.commit('lang', user.lang)
             this.$emit('success', user)
           } else {
-            this.$alert('Login failed')
+            this.$alert(this.$t('loginFailed'))
             this.$emit('error')
           }
         }).catch(e => {
-          this.$alert('Login failed')
+          this.$alert(this.$t('loginFailed'))
           this.$emit('error')
         })
       })

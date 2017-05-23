@@ -1,7 +1,7 @@
 <template>
   <div class="datatable-footer md-table-card">
     <div class="md-table-pagination">
-      <span class="md-table-pagination-label">Rows:</span>
+      <span class="md-table-pagination-label">{{$t('rows')}}:</span>
       <md-select v-model="pageSize">
         <md-option :value="10">10</md-option>
         <md-option :value="30">30</md-option>

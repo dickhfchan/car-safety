@@ -25,17 +25,17 @@ export default [
     routeName: 'map'
   },
   {
-    text: 'Analysis',
+    text: 'analysis',
     icon: 'analysis',
     routeName: 'analysis'
   },
   {
-    text: 'Analysis Group',
+    text: 'analysisGroup',
     icon: 'analysis',
     routeName: 'analysisGroup'
   },
   {
-    text: 'Datatables',
+    text: 'datatables',
     icon: 'analysis',
     routeName: 'datatables'
   },
@@ -50,7 +50,7 @@ export default [
     routeName: 'd2'
   },
   {
-    text: 'Report2',
+    text: 'report2',
     icon: 'Report2',
     routeName: 'report2'
   },

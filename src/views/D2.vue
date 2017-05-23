@@ -2,9 +2,9 @@
   <div class="">
     <md-card  class="m-a card-1">
       <md-card-content>
-        <h2 class="md-title">安全評分及每百公里警報次數</h2>
+        <h2 class="md-title">{{$t('totalScoreAndAlertCountPer100KM')}}</h2>
 
-        <div class="relative">
+        <div class="relative overflow-hidden-y">
           <md-table @select="" @sort="onSort($event, rows1, columns1)">
            <md-table-header>
              <md-table-row>
@@ -27,13 +27,13 @@
         </div>
 
         <div class="card-buttons">
-          <md-button class="md-icon-button" @click.native="exportExcel(rows1, columns1, '安全評分及每百公里警報次數')">
+          <md-button class="md-icon-button" @click.native="exportExcel(rows1, columns1, $t('totalScoreAndAlertCountPer100KM'))">
             <md-icon>get_app</md-icon>
-            <md-tooltip md-direction="bottom">Export</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
           <md-button class="md-icon-button" @click.native="getData()">
             <md-icon>refresh</md-icon>
-            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
           </md-button>
           <fullscreen-button></fullscreen-button>
         </div>
@@ -42,9 +42,9 @@
 
     <md-card  class="m-x m-b card-1">
       <md-card-content>
-        <h2 class="md-title">排名圖</h2>
+        <h2 class="md-title">{{$t('ranking')}}</h2>
 
-        <div class="relative">
+        <div class="relative overflow-hidden-y">
           <md-table @select="" @sort="onSort($event, rows1Ranking, columns1)">
            <md-table-header>
              <md-table-row>
@@ -69,11 +69,11 @@
         <div class="card-buttons">
           <md-button class="md-icon-button" @click.native="exportExcel(rows1Ranking, columns1, '排名圖')">
             <md-icon>get_app</md-icon>
-            <md-tooltip md-direction="bottom">Export</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
           <md-button class="md-icon-button" @click.native="getData()">
             <md-icon>refresh</md-icon>
-            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
           </md-button>
           <fullscreen-button></fullscreen-button>
         </div>
@@ -92,7 +92,7 @@ export default {
       columns1: [
         {
           'name': 'name',
-          text: '司機',
+          text: this.$t('driverName'),
         },
         {
           'name': '車牌',
@@ -100,39 +100,39 @@ export default {
         },
         {
           name: 'total_score',
-          text: '安全評分'
+          text: this.$t('totalScore')
         },
         {
           name: 'hmw',
-          text: '跟車太近'
+          text: this.$t('hmw')
         },
         {
           name: 'pcw',
-          text: '行人前撞'
+          text: this.$t('pcw')
         },
         {
           name: 'fcw',
-          text: '高速前撞'
+          text: this.$t('fcw')
         },
         {
           name: 'ufcw',
-          text: '低速前撞'
+          text: this.$t('ufcw')
         },
         {
           name: 'lldw',
-          text: '左道偏離'
+          text: this.$t('lldw')
         },
         {
           name: 'rldw',
-          text: '右道偏離'
+          text: this.$t('rldw')
         },
         {
           name: 'aaw',
-          text: '急加速'
+          text: this.$t('aaw')
         },
         {
           name: 'abw',
-          text: '急刹車'
+          text: this.$t('abw')
         }
       ],
       rows1: [],

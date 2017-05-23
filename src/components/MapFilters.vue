@@ -1,6 +1,6 @@
 <template>
   <div class="map-filters">
-   <label for="vehicle_select" class="m-r-sm">Vehicle</label>
+   <label for="vehicle_select" class="m-r-sm">{{$t('vehicle')}}</label>
    <Vehicle-Select :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Vehicle-Select>
 
    <Date-Range-Picker-In-Top class="m-l" v-model="dateRange"></Date-Range-Picker-In-Top>
@@ -66,7 +66,7 @@ export default {
         this.$store.commit('vehicles', vehicles)
         this.getTrips()
       }).catch((e) => {
-        this.$alert('get vehicles failed')
+        this.$alert(this.$t('getVehiclesFailed'))
         throw e
       })
     }

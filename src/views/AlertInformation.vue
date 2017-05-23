@@ -3,20 +3,20 @@
     <md-table v-show="rows.length > 0">
       <md-table-header>
         <md-table-row>
-          <md-table-head v-for="col in columns" :key="col.name">{{col.text}}</md-table-head>
+          <md-table-head v-for="col in columns" v-if="col.visible" :key="col.name">{{col.text}}</md-table-head>
         </md-table-row>
       </md-table-header>
 
       <md-table-body>
         <md-table-row v-for="row in rows" :key="row.log_id" :class="{active: row.active}">
-          <md-table-cell v-for="col in columns" :key="col.name">
+          <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
             <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
-            <md-button v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)" class="md-raised">Play</md-button>
+            <md-button v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)" class="md-raised">{{$t('play')}}</md-button>
           </md-table-cell>
         </md-table-row>
       </md-table-body>
     </md-table>
-    <div class="text-center" v-show="rows.length === 0">No records found</div>
+    <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
     <!-- video diaplog -->
     <md-dialog ref="dialogVideo" @close="videoIframeSrc=null" class="alert-information">
@@ -35,16 +35,17 @@
   </div>
 </template>
 <script>
-import { titleCase, retry, waitFor } from 'helper-js'
+import { retry, waitFor, camelCase } from 'helper-js'
 import { format, subHours } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
-import { generateExcel } from '../utils.js'
+import { initColumns, initRows, generateExcel } from '../utils.js'
 
 export default {
   data() {
     return {
       warningTypes: null,
+      warningTypesI18n: null,
       columns: [
         {
           name: 'sequence',
@@ -52,92 +53,61 @@ export default {
           valueProcessor: ({row, rows}) => rows.indexOf(row) + 1
         },
         {
-          'name': 'Warning',
-          'text': 'Warning',
+          'name': 'warningType',
+          visible: false,
           valueProcessor: ({row}) => this.warningTypes[row.wt]
         },
         {
+          'name': 'warningTypeDisplay',
+          'text': this.$t('warningType'),
+          valueProcessor: ({row}) => this.warningTypesI18n[row.wt]
+        },
+        {
           'name': 'start_time',
+          text: this.$t('startTime'),
           valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
         },
         {
           'name': 'end_time',
+          text: this.$t('endTime'),
           valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
         },
         {
-          'name': 'duration'
+          'name': 'duration',
+          text: this.$t('duration')
         },
         {
           'name': 'lat',
-          'text': 'Latitude'
+          'text': this.$t('lat')
         },
         {
           'name': 'lng',
-          'text': 'Longitude'
+          'text': this.$t('lng')
         },
         {
           'name': 'start_spd',
-          'text': 'Start Speed'
+          'text': this.$t('startSpd')
         },
         {
           'name': 'end_spd',
-          'text': 'End Speed'
+          'text': this.$t('endSpd')
         },
         {
           'name': 'top_spd',
-          'text': 'Top Speed'
+          'text': this.$t('topSpd')
         },
-        // {
-        //   'name': 'ti',
-        //   'text': 'TI'
-        // },
         {
           'name': 'hw',
-          'text': 'HW'
+          'text': this.$t('hw')
         },
         {
           'name': 'near_hw',
-          'text': 'Near HW'
+          'text': this.$t('nearHw')
         },
-        // {
-        //   'name': 'ss',
-        //   'text': 'SS'
-        // },
-        // {
-        //   'name': 'sx',
-        //   'text': 'SX'
-        // },
-        // {
-        //   'name': 'accuracy'
-        // },
-        // {
-        //   'name': 'bearing'
-        // },
-        // {
-        //   'name': 'driver_id'
-        // },
-        // {
-        //   'name': 'log_id'
-        // },
-        // {
-        //   'name': 'state'
-        // },
-        // {
-        //   'name': 'upload_id'
-        // },
-        // {
-        //   'name': 'vrm_id'
-        // },
         {
           'name': 'warning_vdo_id',
-          text: 'Video',
+          text: this.$t('video')
         },
-        // {
-        //   'name': 'warning_vdo_ready'
-        // },
-        // {
-        //   'name': 'alt',
-        // },
       ],
       cache: {
         rows: []
@@ -185,12 +155,7 @@ export default {
     },
   },
   created() {
-    // auto generate column display name
-    for (const col of this.columns) {
-      if (!col.text) {
-        this.$set(col, 'text', titleCase(col.name))
-      }
-    }
+    initColumns(this, this.columns)
   },
   methods: {
     getData() {
@@ -207,10 +172,11 @@ export default {
         return Promise.all([getWarningTypes, getLogData()]).then((data) => {
           const response = data[1]
           this.rows = response.data.JSON
+          initRows(this, this.rows, this.columns)
           this.rowsExpired = false
           return this.rows
         }).catch((e) => {
-          this.$alert('get alert information failed')
+          this.$alert(this.$t('getAlertInformationFailed'))
           throw e
         })
       }
@@ -220,9 +186,14 @@ export default {
       return func().then(({data}) => {
         const warningTypes = {}
         data.JSON.forEach(item => { warningTypes[item.warn_type_id] = item.warn_type_code })
+        const warningTypesI18n = {}
+        Object.keys(warningTypes).forEach(key => {
+          warningTypesI18n[key] = this.$t(camelCase(warningTypes[key].toLowerCase()))
+        })
         this.warningTypes = warningTypes
+        this.warningTypesI18n = warningTypesI18n
       }).catch((e) => {
-        this.$alert('get warning types failed')
+        this.$alert(this.$t('getWarningTypesFailed'))
         throw e
       })
     },
@@ -253,7 +224,7 @@ export default {
           let prevOpenedInfoWindow = null
           let prevRowOfOpenedInfoWindow = null
           rows.forEach(row => {
-            const icon = mapIcons[row.Warning]
+            const icon = mapIcons[row.warningType]
             const marker = new google.maps.Marker({
               position: { lat: row.lat, lng: row.lng },
               icon,
@@ -261,10 +232,10 @@ export default {
             const infowindow = new google.maps.InfoWindow({
               content: `
 <pre>
-Duration:     ${row.duration} seconds
-Top Speed:    ${row.top_spd} KM/h
-Start Speed:  ${row.start_spd} KM/h
-End Speed:    ${row.end_spd} KM/h
+${this.$t('duration')}:     ${row.duration} seconds
+${this.$t('topSpd')}:    ${row.top_spd} KM/h
+${this.$t('startSpd')}:  ${row.start_spd} KM/h
+${this.$t('endSpd')}:    ${row.end_spd} KM/h
 </pre>`
             })
             marker.addListener('click', () => {
@@ -300,7 +271,7 @@ End Speed:    ${row.end_spd} KM/h
           let prevRowOfOpenedInfoWindow = null
           rows.forEach(row => {
             const point = new BMap.Point(row.lng, row.lat)
-            const icon = mapIcons[row.Warning]
+            const icon = mapIcons[row.warningType]
             const BMapIcon = new BMap.Icon(icon, new BMap.Size(26, 26), {
               anchor: new BMap.Size(13, 26),
             })
@@ -308,10 +279,10 @@ End Speed:    ${row.end_spd} KM/h
             map.addOverlay(marker)
             const infoWindow = new BMap.InfoWindow(`
 <pre>
-Duration:     ${row.duration} seconds
-Top Speed:    ${row.top_spd} KM/h
-Start Speed:  ${row.start_spd} KM/h
-End Speed:    ${row.end_spd} KM/h
+${this.$t('duration')}:     ${row.duration} seconds
+${this.$t('topSpd')}:    ${row.top_spd} KM/h
+${this.$t('startSpd')}:  ${row.start_spd} KM/h
+${this.$t('endSpd')}:    ${row.end_spd} KM/h
 </pre>`,
               {
                 width: 250,

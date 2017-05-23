@@ -1,8 +1,8 @@
 <template>
   <md-button class="md-icon-button fullscreen-button" @click.native="toggleFullscreen()">
     <md-icon>{{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}}</md-icon>
-    <md-tooltip v-if="isFullscreen" md-direction="bottom">Exit Fullscreen</md-tooltip>
-    <md-tooltip v-else md-direction="bottom">Fullscreen</md-tooltip>
+    <md-tooltip v-if="isFullscreen" md-direction="bottom">{{$t('exitFullscreen')}}</md-tooltip>
+    <md-tooltip v-else md-direction="bottom">{{$t('fullscreen')}}</md-tooltip>
   </md-button>
 </template>
 <script>

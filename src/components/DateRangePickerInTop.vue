@@ -1,6 +1,6 @@
 <template>
   <div class="date-range-picker-in-top">
-   <label class="m-r-sm">Date Range</label>
+   <label class="m-r-sm">{{$t('dateRange')}}</label>
    <date-picker class="date-picker" v-model="dateRange" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="true"></date-picker>
   </div>
 </template>

@@ -31,21 +31,21 @@
 
         <div class="card-buttons">
           <md-select v-model="groupBy" class="m-r">
-            <md-option value="vrm_grp_id">Group</md-option>
-            <md-option value="vrm_id">Vehicle</md-option>
+            <md-option value="vrm_grp_id">{{$t('group')}}</md-option>
+            <md-option value="vrm_id">{{$t('vehicle')}}</md-option>
          </md-select>
           <md-select v-model="dateRange">
-            <md-option :value="1">Last Date</md-option>
-            <md-option :value="2">Last Week</md-option>
-            <md-option :value="3">Last Month</md-option>
+            <md-option :value="1">{{$t('lastDate')}}</md-option>
+            <md-option :value="2">{{$t('lastWeek')}}</md-option>
+            <md-option :value="3">{{$t('lastMonth')}}</md-option>
          </md-select>
           <md-button class="md-icon-button" @click.native="exportExcel">
             <md-icon>get_app</md-icon>
-            <md-tooltip md-direction="bottom">Export</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
           <md-button class="md-icon-button" @click.native="getData()">
             <md-icon>refresh</md-icon>
-            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+            <md-tooltip md-direction="bottom">{{$t('refresh')}}</md-tooltip>
           </md-button>
           <fullscreen-button></fullscreen-button>
         </div>
@@ -56,7 +56,7 @@
       <md-layout md-flex>
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">Total Score</h2>
+            <h2 class="md-title">{{$t('totalScore')}}</h2>
 
             <div class="relative">
               <div :id="chart1ID" class="w-100 d1-chart1"></div>
@@ -72,7 +72,7 @@
       <md-layout md-flex class="m-l">
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">Alert Details</h2>
+            <h2 class="md-title">{{$t('alertDetails')}}</h2>
 
             <div class="relative">
               <div :id="chart2ID" class="w-100 d1-chart2" style="height:400px;" ref="chart2"></div>
@@ -102,49 +102,51 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'vrm_grp_id', text: 'Group' },
+        { name: 'vrm_grp_id', text: this.$t('vrmGrpId') },
         { name: 'total_score',
-          text: 'Total',
+          text: this.$t('totalScore')
         },
         { name: 'pcw',
-          text: 'PCW',
+          text: this.$t('pcw'),
         },
         { name: 'hmw_h',
-          text: 'HMW_H',
+          text: this.$t('hmwH'),
         },
         { name: 'hmw_m',
-          text: 'HMW_M',
+          text: this.$t('hmwM'),
         },
         { name: 'hmw_l',
-          text: 'HMW_L',
+          text: this.$t('hmwL'),
         },
         { name: 'fcw',
-          text: 'FCW',
+          text: this.$t('fcw'),
         },
         { name: 'ufcw',
-          text: 'UFCW',
+          text: this.$t('ufcw'),
         },
         { name: 'lldw',
-          text: 'LLDW',
+          text: this.$t('lldw'),
         },
         { name: 'rldw',
-          text: 'RLDW',
+          text: this.$t('rldw'),
         },
         { name: 'spw',
-          text: 'SPW',
+          text: this.$t('spw'),
         },
         { name: 'aaw',
-          text: 'AAW',
+          text: this.$t('aaw'),
         },
         { name: 'abw',
-          text: 'ABW',
+          text: this.$t('abw'),
         },
         { name: 'atw',
-          text: 'ATW',
+          text: this.$t('atw'),
         },
-        { name: 'vb' },
+        { name: 'vb',
+          text: this.$t('vb')
+        },
         { name: 'drv_distance',
-          text: 'Distance',
+          text: this.$t('drvDistance'),
         },
       ],
       originRows: [],
@@ -212,7 +214,7 @@ export default {
         this.originRows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
       }).catch((e) => {
         this.loading = false
-        this.$alert('load failed')
+        this.$alert(this.$t('loadFailed'))
         throw e
       })
     },
