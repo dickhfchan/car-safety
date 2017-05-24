@@ -261,7 +261,7 @@ export default {
     getDrivers() {
       retry(() => this.$http.get('dao/driver'))()
       .then(({data}) => {
-        const drivers = data.JSON.filter(item => item.company_id === this.$store.user.company_id)
+        const drivers = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
         this.$store.commit('report2Drivers', drivers)
         this.$store.commit('report2DriverId', drivers[0].driver_id)
       }).catch(e => {
