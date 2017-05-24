@@ -1,19 +1,19 @@
 <template>
   <div class="map-filters">
    <label for="vehicle_select" class="m-r-sm">{{$t('vehicle')}}</label>
-   <Vehicle-Select :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Vehicle-Select>
+   <Select2 :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Select2>
 
    <Date-Range-Picker-In-Top class="m-l" v-model="dateRange"></Date-Range-Picker-In-Top>
   </div>
 </template>
 <script>
-import VehicleSelect from '@/components/VehicleSelect.vue'
+import Select2 from '@/components/Select2.vue'
 import DateRangePickerInTop from './DateRangePickerInTop.vue'
 import { mapActions } from 'vuex'
 import { retry } from 'helper-js'
 
 export default {
-  components: { VehicleSelect, DateRangePickerInTop },
+  components: { Select2, DateRangePickerInTop },
   data() {
     return {
     }

@@ -4,7 +4,7 @@
       <md-card-content>
         <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
-        <div class="relative">
+        <div class="relative overflow-hidden-y">
           <md-table @select="" @sort="onSort($event, rows1, columns1)">
            <md-table-header>
              <md-table-row>
@@ -83,7 +83,7 @@
       <md-card-content>
         <h2 class="md-title">{{$t('driverScoreAndAlertCount')}}</h2>
 
-        <div class="relative">
+        <div class="relative overflow-hidden-y">
           <md-table @select="" @sort="onSort($event, rows2, columns2)">
            <md-table-header>
              <md-table-row>
@@ -184,6 +184,7 @@ export default {
           text: this.$t('abw')
         }
       ],
+      originRows1: [],
       rows1: [],
       chart1: null,
       chart1ID: `chart1_${this._uid}`,
@@ -236,67 +237,92 @@ export default {
           text: this.$t('abw')
         }
       ],
+      originRows2: [],
       rows2: [],
     }
   },
   computed: {
     countColumns1() { return this.columns1.slice(3) }
   },
+  watch: {
+    '$store.state.report2DriverId'() { this.getRows1(); this.getRows2() },
+    originRows1() { this.getRows1() },
+    originRows2() { this.getRows2() },
+  },
   created() {
     //
     initColumns(this, this.columns1)
     initColumns(this, this.columns2)
+    this.getDrivers()
     this.getData1()
     this.getData2()
   },
   methods: {
+    getDrivers() {
+      retry(() => this.$http.get('dao/driver'))()
+      .then(({data}) => {
+        const drivers = data.JSON.filter(item => item.company_id === this.$store.user.company_id)
+        this.$store.commit('report2Drivers', drivers)
+        this.$store.commit('report2DriverId', drivers[0].driver_id)
+      }).catch(e => {
+        this.$alert(this.$t('loadFailed'))
+      })
+    },
     getData1() {
       this.loading1 = true
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading1 = false
-        this.rows1 = data.JSON
-        .filter(row => row.company_id === this.$store.state.user.company_id)
-        // foramt count columns
-        this.rows1.forEach(row => {
-          this.columns1.slice(3).forEach(col => {
-            row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
-          })
-        })
-        initRows(this, this.rows1, this.columns1)
-        const rows1Sorted = this.rows1.slice(0).sort((a, b) => a.total_score - b.total_score)
-        rows1Sorted.reverse()
-        let prev = -1
-        let rank = 0
-        rows1Sorted.forEach(row => {
-          const cell = parseFloat(row.total_score)
-          if (cell !== prev) {
-            rank++
-          }
-          this.$set(row, 'scoreRank', rank > 20 ? 20 : rank)
-          prev = cell
-        })
-        windowLoaded().then(() => this.renderChart1())
+        this.originRows1 = data.JSON
       }).catch((e) => {
+        this.originRows1 = []
         this.loading1 = false
-        this.$alert('load failed')
+        this.$alert(this.$t('loadFailed'))
         throw e
       })
+    },
+    getRows1() {
+      this.rows1 = this.originRows1
+      .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
+      // foramt count columns
+      this.rows1.forEach(row => {
+        this.columns1.slice(3).forEach(col => {
+          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+        })
+      })
+      initRows(this, this.rows1, this.columns1)
+      const rows1Sorted = this.rows1.slice(0).sort((a, b) => a.total_score - b.total_score)
+      rows1Sorted.reverse()
+      let prev = -1
+      let rank = 0
+      rows1Sorted.forEach(row => {
+        const cell = parseFloat(row.total_score)
+        if (cell !== prev) {
+          rank++
+        }
+        this.$set(row, 'scoreRank', rank > 20 ? 20 : rank)
+        prev = cell
+      })
+      windowLoaded().then(() => this.renderChart1())
     },
     getData2() {
       this.loading2 = true
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading2 = false
-        this.rows2 = data.JSON
-        .filter(row => row.company_id === this.$store.state.user.company_id)
-        initRows(this, this.rows2, this.columns2)
-        windowLoaded().then(() => this.renderChart2())
+        this.originRows1 = data.JSON
       }).catch((e) => {
+        this.originRows2 = []
         this.loading1 = false
-        this.$alert('load failed')
+        this.$alert(this.$t('loadFailed'))
         throw e
       })
+    },
+    getRows2() {
+      this.rows2 = this.originRows2
+      .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
+      initRows(this, this.rows2, this.columns2)
+      windowLoaded().then(() => this.renderChart2())
     },
     onSort(e, rows, columns) {
       sortRows(e, rows, columns)
@@ -359,11 +385,20 @@ export default {
 .report2{
   .md-table-cell, .md-table tbody .md-table-row:hover .md-table-cell{
     $total : 20;
-    $unit : 255 / $total;
+    $half : $total / 2;
+    $unit : 255 / $half;
     @for $i from 1 through $total{
       &.rank#{$i}{
-        $red : ($i - 1) * $unit;
-        background-color: rgb($red, 255 - $red, 30);
+        @if $i <= $half {
+          $red : ($i - 1) * $unit;
+          $green: 255;
+          background-color: rgb($red, $green, 30);
+        }
+        @else {
+          $red : 255;
+          $green: 255 - ($i - 10) * $unit;
+          background-color: rgb($red, $green, 30);
+        }
       }
     }
   }

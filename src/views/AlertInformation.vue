@@ -109,27 +109,11 @@ export default {
           text: this.$t('video')
         },
       ],
-      cache: {
-        rows: []
-      },
+      rows: [],
       rowsExpired: false, // be turned to expired when request start
       overLays: [], // store alert markers
       videoIframeSrc: null,
     }
-  },
-  computed: {
-    rows: {
-      get() { return this.cache.rows },
-      set(rows) {
-        this.columns
-        .filter(col => col.valueProcessor)
-        .forEach(col => {
-          rows.forEach(row => { row[col.name] = col.valueProcessor({value: row[col.name], col, row, rows}) })
-        })
-        rows.forEach(row => { row.active = false })
-        this.cache.rows = rows
-      }
-    },
   },
   watch: {
     // get rows

@@ -12,6 +12,10 @@
 
           <Map-Filters v-if="$route.name === 'map'"></Map-Filters>
           <Date-Range-Picker-In-Top v-else-if="$route.name === 'd2'" v-model="dateRangeInD2" class="d2-date-range"></Date-Range-Picker-In-Top>
+          <div v-else-if="$route.name === 'report2'"  class="report2-select-wrapper">
+            <label for="vehicle_select" class="m-r-sm">{{$t('driver')}}</label>
+            <Select2 :options="$store.state.report2Drivers" value-key="driver_id" text-key="name" v-model="report2DriverId"></Select2>
+          </div>
           <span v-else class="flex-1"></span>
 
           <md-button class="md-icon-button" @click.native="toggleRightSidenav">
@@ -124,9 +128,10 @@
 import Login from '@/components/Login.vue'
 import MapFilters from '@/components/MapFilters.vue'
 import DateRangePickerInTop from '@/components/DateRangePickerInTop.vue'
+import Select2 from '@/components/Select2.vue'
 
 export default {
-  components: { Login, MapFilters, DateRangePickerInTop },
+  components: { Login, MapFilters, DateRangePickerInTop, Select2 },
   data () {
     const state = this.$store.state
     return {
@@ -151,7 +156,11 @@ export default {
     dateRangeInD2: {
       get() { return this.$store.state.dateRangeInD2 },
       set(value) { this.$store.commit('dateRangeInD2', value) },
-    }
+    },
+    report2DriverId: {
+      get() { return this.$store.state.report2DriverId },
+      set(value) { this.$store.commit('report2DriverId', value) },
+    },
   },
   methods: {
     toggleLeftSidenav() {
@@ -253,7 +262,7 @@ body, html{
   padding: 20px 0;
   border-bottom: 1px solid rgba(0,0,0,.12);
 }
-.d2-date-range{
+.d2-date-range, .report2-select-wrapper{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,7 +270,7 @@ body, html{
   padding-right: 100px;
 }
 @media (max-width:960px) {
-  .d2-date-range{
+  .d2-date-range, .report2-select-wrapper{
     justify-content: flex-end;
     padding-right: 0;
   }

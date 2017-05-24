@@ -73,6 +73,7 @@ export default {
   driverScoreAndAlertCount: '司機評分及警報次數',
   chart1: '圖表1',
   chart2: '圖表2',
+  driver: '司機',
   // columns
   startDate: '開始日期',
   drvDistance: '公裏數',

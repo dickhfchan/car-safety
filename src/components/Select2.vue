@@ -1,10 +1,10 @@
 <template>
-  <div class="relative vehicle-select">
+  <div class="relative select2">
     <div class="value-arrow-wrapper" @click="dropVisible = !dropVisible">
       <div class="arrow-wrapper">
         <md-icon class="arrow">arrow_drop_down</md-icon>
       </div>
-      <span class="value-text">{{valueItem && valueItem[textKey]}}</span>
+      <span class="value-text">{{(valueItem && valueItem[textKey]) || '&nbsp;'}}</span>
       <span class="arrow-holder"></span>
     </div>
     <div class="drop-down popup-layer" v-show="dropVisible">
@@ -86,7 +86,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.vehicle-select{
+.select2{
   .value-arrow-wrapper{
     display: flex;
     align-items: center;

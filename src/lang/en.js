@@ -73,6 +73,7 @@ export default {
   driverScoreAndAlertCount: 'Driver Score And Alert Count',
   chart1: 'Chart1',
   chart2: 'Chart2',
+  driver: 'Driver',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',

@@ -54,6 +54,8 @@ const store = new Vuex.Store({
     pointsFailed: false,
     pointsExpired: true, // points belongs to tripId, a new request start, the points expire
     dateRangeInD2: [fourteenDaysBefore, today],
+    report2DriverId: null,
+    report2Drivers: [],
   },
   mutations: {
     map(state, val) {
@@ -88,6 +90,8 @@ const store = new Vuex.Store({
     pointsFailed(state, val) { state.pointsFailed = val },
     pointsExpired(state, val) { state.pointsExpired = val },
     dateRangeInD2(state, val) { state.dateRangeInD2 = val },
+    report2DriverId(state, val) { state.report2DriverId = val },
+    report2Drivers(state, val) { state.report2Drivers = val },
   },
   actions: {
     logout({commit}) {

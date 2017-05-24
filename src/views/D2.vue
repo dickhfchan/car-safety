@@ -214,11 +214,20 @@ export default {
 <style lang="scss">
 .md-table-cell, .md-table tbody .md-table-row:hover .md-table-cell{
   $total : 20;
-  $unit : 255 / $total;
+  $half : $total / 2;
+  $unit : 255 / $half;
   @for $i from 1 through $total{
     &.rank#{$i}{
-      $red : ($i - 1) * $unit;
-      background-color: rgb($red, 255 - $red, 30);
+      @if $i <= $half {
+        $red : ($i - 1) * $unit;
+        $green: 255;
+        background-color: rgb($red, $green, 30);
+      }
+      @else {
+        $red : 255;
+        $green: 255 - ($i - 10) * $unit;
+        background-color: rgb($red, $green, 30);
+      }
     }
   }
 }
