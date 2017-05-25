@@ -1,3 +1,4 @@
+
 #coding: UTF-8
 from config import API_KEY
 import pandas as pd
@@ -16,7 +17,9 @@ def connect_to_database(_user, _password, _dbname, _host='127.0.0.1', _port=3306
         port=_port,
         user=_user,
         passwd=_password,
-        db=_dbname
+        db=_dbname,
+        use_unicode=True,
+	charset='utf8'
         )
     return conn
 
@@ -231,7 +234,7 @@ def retrieve_table(query_args, conn, json_format=False):
 
         query = "SELECT fullname, company_id, lang, map FROM %s WHERE username = '%s' and password = '%s'"%('user_account', query_args[1], query_args[2])
         print "Authentication"
-        print query
+        print query        
 
     elif query_args[0] == 'log_data':
        
@@ -331,6 +334,10 @@ SUM(c.aaw) as aaw, SUM(c.abw) as abw, SUM(c.atw) as atw FROM veh_reg_mark_group_
 
 
 class from_Baidu(object):
+    #class-level attributes 
+    start_time = None
+    end_time = None
+
     @staticmethod
     def add_entity(veh_trip_id):
         ##Adding entity
@@ -354,13 +361,13 @@ class from_Baidu(object):
             yield data[i:i+n]
 
     @staticmethod
-    def get_track(start_time, entity):
+    def get_track(start_time, end_time, entity):
         params = {
             'ak' : baidu_apk,
             'service_id':  baidu_service_id,
             'entity_name': entity,
             'start_time': start_time,
-            'end_time': int(time.time()),
+            'end_time': end_time,
             'is_processed': 1,
             'process_option': 'need_mapmatch=1',
             'page_size' : 5000,
@@ -391,15 +398,19 @@ class from_Baidu(object):
 
         sql_data = generate_dict_from_sql("SELECT time,lat,lng FROM veh_trip_detail WHERE veh_trip_id = %s AND lat <> 0 AND lng <> 0 ORDER BY seq_no"%veh_trip_id, conn)
         counter = 1
+        cls.start_time = int(time.mktime(sql_data[0]['time'].timetuple()))
+        cls.end_time = int(time.mktime(sql_data[-1]['time'].timetuple()))
 
         #Feed to Baidu API by chunk of 50 points
         for chunk in cls.break_evenly(sql_data):
-
+            print len(chunk)
         #Reformat data to fit baidu API call for this chunk
+
+        
             baidu_feed = [
                 {
                     'entity_name': veh_trip_id,
-                    'loc_time': int(time.time()),
+                    'loc_time': int(time.mktime(row['time'].timetuple())),
                     'latitude': row['lat'],
                     'longitude': row['lng'],
                     "coord_type_input": "wgs84"
@@ -413,6 +424,7 @@ class from_Baidu(object):
                 'point_list': json.dumps(baidu_feed)
             }
 
+        
             response = requests.post("http://yingyan.baidu.com/api/v3/track/addpoints", data=body)
             result = response.json()
             if result['status'] == 0:
