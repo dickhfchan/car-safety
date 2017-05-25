@@ -46,57 +46,57 @@
 
 <script>
 // import {isObject} from 'helper-js'
-export default {
-  data() {
-    return {
-      serverUrls: this.$store.state.urls.server,
-      validation: {},
-      fields: {
-        name: {
-          text: this.$t('username'),
-          rules: 'required'
-        },
-        password: {
-          text: this.$t('password'),
-          rules: 'required'
-        }
-      }
-    }
-  },
-  computed: {
-    lang: {
-      get() { return this.$store.state.lang },
-      set(val) { setTimeout(() => {
-        window.localStorage.setItem('lang', val)
-        this.$store.commit('lang', val)
-      }, 200) },
-    }
-  },
-  methods: {
-    submit() {
-      this.validation.check().then((data) => {
-        this.$http.get(`dao/authentication/${data.name}?password=${data.password}`).then(({data}) => {
-          if (data && data.message === 'Success') {
-            this.$store.commit('authenticated', true)
-            const user = data.JSON[0]
-            this.$store.commit('user', user)
-            this.$store.commit('lang', user.lang)
-            this.$emit('success', user)
-          } else {
-            this.$alert(this.$t('loginFailed'))
-            this.$emit('error')
-          }
-        }).catch(e => {
-          this.$alert(this.$t('loginFailed'))
-          this.$emit('error')
-        })
-      })
-    }
-  },
-  created() {
-    this.$validate(this.validation, this.fields)
-  }
-}
+ export default {
+   data() {
+     return {
+       serverUrls: this.$store.state.urls.server,
+       validation: {},
+       fields: {
+         name: {
+           text: this.$t('username'),
+           rules: 'required'
+         },
+         password: {
+           text: this.$t('password'),
+           rules: 'required'
+         }
+       }
+     }
+   },
+   computed: {
+     lang: {
+       get() { return this.$store.state.lang },
+       set(val) { setTimeout(() => {
+         window.localStorage.setItem('lang', val)
+         this.$store.commit('lang', val)
+       }, 200) },
+     }
+   },
+   methods: {
+     submit() {
+       this.validation.check().then((data) => {
+         this.$http.get(`dao/authentication/${data.name}?password=${data.password}`).then(({data}) => {
+           if (data && data.message === 'Success') {
+             this.$store.commit('authenticated', true)
+             const user = data.JSON[0]
+             this.$store.commit('user', user)
+             this.$store.commit('lang', user.lang)
+             this.$emit('success', user)
+           } else {
+             this.$alert(this.$t('loginFailed'))
+             this.$emit('error')
+           }
+         }).catch(e => {
+           this.$alert(this.$t('loginFailed'))
+           this.$emit('error')
+         })
+       })
+     }
+   },
+   created() {
+     this.$validate(this.validation, this.fields)
+   }
+ }
 
 </script>
 <style lang="scss">

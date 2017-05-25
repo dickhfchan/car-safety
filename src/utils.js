@@ -64,12 +64,13 @@ export function initVueMaterial(VueMaterial, Vue) {
 }
 
 export function initI18n(VueI18n, messages, store, Vue) {
+  // this is disabled, because it has bug in ie 11
   // reload when other page change lang
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'lang') {
-      window.location.reload()
-    }
-  })
+  // window.addEventListener('storage', (e) => {
+  //   if (e.key === 'lang') {
+  //     window.location.reload()
+  //   }
+  // })
   Vue.use(VueI18n)
   return new VueI18n({
     locale: store.state.lang, // set locale

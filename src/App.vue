@@ -225,6 +225,10 @@ export default {
 
 <!-- base -->
 <style lang="scss">
+// <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+@import "./assets/css/google-font.css";
+// <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+@import "./assets/css/google-icon-font.css";
 // the css about svg in vue-material.css will effect baidu map overlays, add svg{max-width: inherit;} to prevent that (already added in baidu-map-track-render-vue )
 @import "../node_modules/vue-material/dist/vue-material.css";
 // layer.scss should after vue-material.css
