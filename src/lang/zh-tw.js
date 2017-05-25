@@ -95,7 +95,7 @@ export default {
   endSpd: '結束速度',
   topSpd: '最高速度',
   hw: '前进',
-  nearHw: '近前進,
+  nearHw: '近前進',
   video: '視頻',
   vrmId: 'vrmId',
   pcwScore: 'pcwScore',
