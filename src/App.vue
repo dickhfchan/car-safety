@@ -15,6 +15,7 @@
           <div v-else-if="$route.name === 'report2'"  class="report2-select-wrapper">
             <label for="vehicle_select" class="m-r-sm">{{$t('driver')}}</label>
             <Select2 :options="$store.state.report2Drivers" value-key="driver_id" text-key="name" v-model="report2DriverId"></Select2>
+            <Date-Range-Picker-In-Top v-model="dateRangeInReport2" class="m-l report2-date-range"></Date-Range-Picker-In-Top>
           </div>
           <span v-else class="flex-1"></span>
 
@@ -160,6 +161,10 @@ export default {
     report2DriverId: {
       get() { return this.$store.state.report2DriverId },
       set(value) { this.$store.commit('report2DriverId', value) },
+    },
+    dateRangeInReport2: {
+      get() { return this.$store.state.dateRangeInReport2 },
+      set(value) { this.$store.commit('dateRangeInReport2', value) },
     },
   },
   methods: {

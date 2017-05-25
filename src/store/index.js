@@ -56,6 +56,7 @@ const store = new Vuex.Store({
     dateRangeInD2: [fourteenDaysBefore, today],
     report2DriverId: null,
     report2Drivers: [],
+    dateRangeInReport2: [fourteenDaysBefore, today],
   },
   mutations: {
     map(state, val) {
@@ -92,6 +93,7 @@ const store = new Vuex.Store({
     dateRangeInD2(state, val) { state.dateRangeInD2 = val },
     report2DriverId(state, val) { state.report2DriverId = val },
     report2Drivers(state, val) { state.report2Drivers = val },
+    dateRangeInReport2(state, val) { state.dateRangeInReport2 = val },
   },
   actions: {
     logout({commit}) {

@@ -242,12 +242,17 @@ export default {
     }
   },
   computed: {
-    countColumns1() { return this.columns1.slice(3) }
+    countColumns1() { return this.columns1.slice(3) },
+    dateRange() { return this.$store.state.dateRangeInReport2 }
   },
   watch: {
     '$store.state.report2DriverId'() { this.getRows1(); this.getRows2() },
     originRows1() { this.getRows1() },
     originRows2() { this.getRows2() },
+    dateRange: {
+      deep: true,
+      handler() { this.getRows1(); this.getRows2() },
+    },
   },
   created() {
     //
@@ -282,7 +287,11 @@ export default {
       })
     },
     getRows1() {
+      const dateRange = this.dateRange
+      const start = new Date(`${dateRange[0]} 00:00:00`).getTime()
+      const end = new Date(`${dateRange[1]} 23:59:59`).getTime()
       this.rows1 = this.originRows1
+      .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       // foramt count columns
       this.rows1.forEach(row => {
@@ -319,7 +328,11 @@ export default {
       })
     },
     getRows2() {
+      const dateRange = this.dateRange
+      const start = new Date(`${dateRange[0]} 00:00:00`).getTime()
+      const end = new Date(`${dateRange[1]} 23:59:59`).getTime()
       this.rows2 = this.originRows2
+      .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       initRows(this, this.rows2, this.columns2)
       windowLoaded().then(() => this.renderChart2())
