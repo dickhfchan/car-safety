@@ -1,6 +1,7 @@
+
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import MySQLdb as mdb
 import time
@@ -16,7 +17,7 @@ from middleware import from_Baidu
 app = Flask(__name__)
 api = Api(app)
 #cnxpool = MySQLConnectionPool(pool_name="GreenSafety", database=db_name,user=db_username, password=db_password, pool_size=7)
-conn = connect_to_database(db_username, db_password, db_name)
+conn = connect_to_database(db_username, db_password, db_name, host, port)
 
 default_headers = {
     'Access-Control-Allow-Origin': '*',
@@ -88,17 +89,13 @@ class Baidu_API(Resource):
     def get(self, veh_trip_id):
         veh_id = str(veh_trip_id)
         from_Baidu.add_entity(veh_id)
-        start_time = int(time.time())
-        from_Baidu.add_points(conn=conn, veh_trip_id=veh_id,delay_between_calls=10)
-        result = from_Baidu.get_track(start_time, veh_id)
-        
+        from_Baidu.add_points(conn=conn, veh_trip_id=veh_id,delay_between_calls=5)
+        result = from_Baidu.get_track(from_Baidu.start_time, from_Baidu.end_time, veh_id)
         if type(result) is dict:
             from_Baidu.delete_entity(veh_id)
             return {"JSON": [result]}
         else:
             return {"JSON": []}
-
-    
 
 
 
@@ -116,11 +113,12 @@ class Tables_JSON(Resource):
                 return {'message': message, 'JSON': []}, 400
 
         elif table_name == 'authentication':
-            #print reqparse.RequestParser()
+            print reqparse.RequestParser()
             parser = reqparse.RequestParser()
             parser.add_argument('password', type=str)
             args = parser.parse_args()
-            password = parser.get('password')
+            print "password and user name"
+            password =  args.get('password')
             print key
 
             if key is not None and password is not None:
@@ -138,6 +136,10 @@ class Tables_JSON(Resource):
             args = parser.parse_args()
             start_time = args.get('start_time')
             end_time = args.get('end_time')
+	        print start_time
+	        start_time = start_time - timedelta(hours=8)
+	        print start_time
+            end_time   = end_time - timedelta(hours=8)
 
             if key is not None and type(start_time) is datetime and type(end_time) is datetime: 
                 ##Validation for key, start_time and end_time
@@ -278,3 +280,4 @@ api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8080, debug=True)
+
