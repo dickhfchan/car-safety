@@ -166,6 +166,11 @@ export default {
         this.rows1 = data.JSON
         .filter(row => start <= row.start_date && row.start_date <= end)
         .filter(row => row.company_id === this.$store.state.user.company_id)
+        // compute hmw
+        this.rows1.forEach(row => {
+          row.hmw = row.hmw_h + row.hmw_m + row.hmw_l
+        })
+        // get ranking
         this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
         initRows(this, this.rows1, this.columns1)
         initRows(this, this.rows1Ranking, this.columns1)

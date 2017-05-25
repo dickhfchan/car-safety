@@ -319,7 +319,7 @@ export default {
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading2 = false
-        this.originRows1 = data.JSON
+        this.originRows2 = data.JSON
       }).catch((e) => {
         this.originRows2 = []
         this.loading1 = false
