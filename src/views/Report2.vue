@@ -293,11 +293,13 @@ export default {
       this.rows1 = this.originRows1
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
+      .map(row => Object.assign({}, row)) // clone row
       // foramt count columns
       this.rows1.forEach(row => {
         this.columns1.slice(3).forEach(col => {
           row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
         })
+        row.drv_distance = Math.round(row.drv_distance / 100000)
       })
       initRows(this, this.rows1, this.columns1)
       const rows1Sorted = this.rows1.slice(0).sort((a, b) => a.total_score - b.total_score)
@@ -334,6 +336,10 @@ export default {
       this.rows2 = this.originRows2
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
+      .map(row => Object.assign({}, row)) // clone row
+      this.rows2.forEach(row => {
+        row.drv_distance = Math.round(row.drv_distance / 100000)
+      })
       initRows(this, this.rows2, this.columns2)
       windowLoaded().then(() => this.renderChart2())
     },
