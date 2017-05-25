@@ -59,6 +59,11 @@ export default {
         this.map && this.map.clearOverlays()
         //
         if (points && points.length > 0) {
+          // pick one point out of 10 if distance more than 100km
+          const trip = this.$store.state.trips.find(item => item.veh_trip_id === this.$store.state.tripId)
+          if (trip && trip.drv_distance / 100000 > 100) {
+            points = points.filter((p, i) => i % 10 === 0)
+          }
           this.mapReady().then(({BMap, map}) => {
             points = points.map(p => new BMap.Point(p.lng, p.lat))
             this.BMapPoints = points
@@ -103,6 +108,7 @@ export default {
           this.map = new BMap.Map(this.id)
           this.map.enableScrollWheelZoom()
         }
+        this.map.addControl(new BMap.NavigationControl({anchor: window.BMAP_ANCHOR_BOTTOM_RIGHT, type: window.BMAP_NAVIGATION_CONTROL_ZOOM}))
         return Promise.resolve({BMap, map: this.map})
       })
     },

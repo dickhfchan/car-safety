@@ -36,7 +36,7 @@
 </template>
 <script>
 import { retry, waitFor, camelCase } from 'helper-js'
-import { format, subHours } from 'date-functions'
+import { format } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
 import { initColumns, initRows, generateExcel } from '../utils.js'
@@ -147,8 +147,8 @@ export default {
       const currentTrip = state.allTrips.find(v => v.veh_trip_id === state.tripId)
       if (currentTrip) {
         const dateInUrlFormat = 'yyyy-MM-dd+HH%3Amm%3Ass'
-        const start = format(subHours(new Date(currentTrip.start_time), 8), dateInUrlFormat)
-        const end = format(subHours(new Date(currentTrip.end_time), 8), dateInUrlFormat)
+        const start = format(new Date(currentTrip.start_time), dateInUrlFormat)
+        const end = format(new Date(currentTrip.end_time), dateInUrlFormat)
         const getWarningTypes = this.warningTypes == null ? this.getWarningTypes() : Promise.resolve()
         const getLogData = retry(() => this.$http.get(`dao/log_data/${currentTrip.vrm_id}?start_time=${start}&end_time=${end}`))
         // const getLogData = retry(() => this.$http.get(`dao/log_data/45?start_time=2017-04-27+00%3A00%3A00&end_time=2017-04-28+00%3A00%3A00`))
