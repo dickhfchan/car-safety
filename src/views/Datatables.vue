@@ -111,6 +111,7 @@ export default {
   components: { DatatableFooter },
   data() {
     return {
+      title: this.$t('settings'),
       datatables: {
         'company': {
           'columns': [
@@ -603,6 +604,11 @@ export default {
       }
       initColumns(this, dt.columns)
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     getData(table) {

@@ -89,6 +89,7 @@ export default {
   components: {},
   data() {
     return {
+      title: this.$t('totalScoreAndAlert'),
       columns1: [
         {
           'name': 'name',
@@ -153,6 +154,11 @@ export default {
     //
     initColumns(this, this.columns1)
     this.getData()
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     getData() {

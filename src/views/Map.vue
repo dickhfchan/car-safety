@@ -122,6 +122,7 @@ export default {
   },
   data() {
     return {
+      title: this.$t('map')
     }
   },
   computed: {
@@ -147,6 +148,11 @@ export default {
   },
   watch: {
     '$store.state.tripId'() { this.getPoints() },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     ...mapActions(['getPoints']),

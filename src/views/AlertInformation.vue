@@ -23,7 +23,7 @@
       <md-dialog-title class="video-dialog-title">
         <span>Alert Video</span>
         <md-button class="md-icon-button" @click.native="$refs.dialogVideo.close()">
-          <md-icon>clear</md-icon>
+          <md-icon>cancel</md-icon>
         </md-button>
       </md-dialog-title>
       <md-dialog-content>

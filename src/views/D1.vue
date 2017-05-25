@@ -101,6 +101,7 @@ const chart2Fields = ['pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', '
 export default {
   data() {
     return {
+      title: this.$t('analysis'),
       columns: [
         { name: 'vrm_grp_id', text: this.$t('vrmGrpId') },
         { name: 'total_score',
@@ -171,6 +172,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      document.title = this.title
       // declare chart2 event
       window._dt1Chart2MouseEnter = (e) => {
         const bouble = this.$refs.chart2Bouble

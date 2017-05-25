@@ -25,33 +25,39 @@ export default [
     routeName: 'map'
   },
   {
-    text: 'analysis',
-    icon: 'analysis',
-    routeName: 'analysis'
-  },
-  {
-    text: 'analysisGroup',
-    icon: 'analysis',
-    routeName: 'analysisGroup'
-  },
-  {
-    text: 'datatables',
-    icon: 'analysis',
-    routeName: 'datatables'
-  },
-  {
-    text: 'D1',
-    icon: 'analysis',
-    routeName: 'd1'
-  },
-  {
-    text: 'D2',
+    text: 'totalScoreAndAlert',
     icon: 'analysis',
     routeName: 'd2'
   },
   {
-    text: 'report2',
+    text: 'driverScoreAndAlert',
     icon: 'Report2',
     routeName: 'report2'
+  },
+  {
+    text: 'analysis',
+    icon: 'analysis',
+    routeName: 'd1'
+  },
+  {
+    text: 'dataList',
+    icon: 'unknown',
+    children: [
+      {
+        text: 'dataListByVehicle',
+        icon: 'analysis',
+        routeName: 'analysis'
+      },
+      {
+        text: 'dataListByGroup',
+        icon: 'analysis',
+        routeName: 'analysisGroup'
+      },
+    ]
+  },
+  {
+    text: 'settings',
+    icon: 'analysis',
+    routeName: 'datatables'
   },
 ]

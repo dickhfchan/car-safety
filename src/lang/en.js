@@ -1,7 +1,11 @@
 export default {
   brand: 'Green Safety',
+  // top nav
+  nineBoxes: '9 Boxes',
+  profile: 'Profile',
   // settings
   settings: 'Settings',
+  setting: 'Setting',
   map: 'Map',
   googleMap: 'Google Map',
   baiduMap: 'Baidu Map',
@@ -27,6 +31,9 @@ export default {
   analysis: 'Analysis',
   analysisGroup: 'Analysis Group',
   report2: 'Report2',
+  dataList: 'Data List',
+  dataListByVehicle: 'Data List By Vehicle',
+  dataListByGroup: 'Data List By Group',
   // top menu
   notifications: 'Notifications',
   logout: 'Logout',
@@ -66,9 +73,11 @@ export default {
   totalScore: 'Total Score',
   alertDetails: 'Alert Details',
   // D2.vue
+  totalScoreAndAlert: 'Total Score And Alert',
   totalScoreAndAlertCountPer100KM: 'Total Score And Alert Count Per 100KM',
   ranking: 'Rank',
   // Report2.vue
+  driverScoreAndAlert: 'Driver Score And Alert',
   driverScoreAndAlertCountPer100KM: 'Driver Score And Alert Count Per 100KM',
   driverScoreAndAlertCount: 'Driver Score And Alert Count',
   chart1: 'Chart1',

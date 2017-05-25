@@ -1,19 +1,19 @@
 <template>
   <div class="">
-    <h1>home</h1>
-    <router-link :to="{name: 'users'}">users</router-link>
-    <router-link :to="{name: 'gauge'}">gauge</router-link>
-    <router-link :to="{name: 'plotly'}">plotly</router-link>
-    <router-link :to="{name: 'map'}">map</router-link>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      title: 'Dashboard'
+      title: this.$t('dashboard')
     }
-  }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
+  },
 }
 </script>
 <style lang="scss">

@@ -135,6 +135,7 @@ export default {
   components: {},
   data() {
     return {
+      title: this.$t('driverScoreAndAlert'),
       loading1: false,
       loading2: false,
       columns1: [
@@ -261,6 +262,11 @@ export default {
     this.getDrivers()
     this.getData1()
     this.getData2()
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     getDrivers() {

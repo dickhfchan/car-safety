@@ -1,7 +1,11 @@
 export default {
   brand: 'Green Safety',
+  // top nav
+  nineBoxes: '九宫格',
+  profile: '个人资料',
   // settings
   settings: '设置',
+  setting: '设置',
   map: '地图',
   googleMap: '谷歌地图',
   baiduMap: '百度地图',
@@ -27,6 +31,9 @@ export default {
   analysis: '分析',
   analysisGroup: '队伍分析',
   report2: '报告',
+  dataList: '表格',
+  dataListByVehicle: '表格-车',
+  dataListByGroup: '表格-车队',
   // top menu
   notifications: '消息',
   logout: '注销',
@@ -66,9 +73,11 @@ export default {
   totalScore: '安全评分',
   alertDetails: '警报详情',
   // D2.vue
+  totalScoreAndAlert: '安全评分排名',
   totalScoreAndAlertCountPer100KM: '安全评分及每百公里警报次数',
   ranking: '排名图',
   // Report2.vue
+  driverScoreAndAlert: '司机评分及警报',
   driverScoreAndAlertCountPer100KM: '司机评分及每百公里警报次数',
   driverScoreAndAlertCount: '司机评分及警报次数',
   chart1: '图表1',

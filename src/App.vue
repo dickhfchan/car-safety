@@ -19,68 +19,80 @@
           </div>
           <span v-else class="flex-1"></span>
 
-          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
+          <md-button class="md-icon-button" @click.native="">
            <md-icon>apps</md-icon>
-           <md-tooltip md-direction="bottom">unknow</md-tooltip>
+           <md-tooltip md-direction="bottom">{{$t('nineBoxes')}}</md-tooltip>
           </md-button>
 
-          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
+          <md-button class="md-icon-button" @click.native="">
            <md-icon>notifications</md-icon>
            <md-tooltip md-direction="bottom">{{$t('notifications')}}</md-tooltip>
           </md-button>
 
-          <md-button class="md-icon-button" @click.native="toggleRightSidenav">
+          <!-- <md-button class="md-icon-button" @click.native="toggleRightSidenav">
            <md-icon>settings</md-icon>
-           <md-tooltip md-direction="bottom">{{$t('settings')}}</md-tooltip>
-          </md-button>
+           <md-tooltip md-direction="bottom">{{$t('setting')}}</md-tooltip>
+          </md-button> -->
 
-          <md-menu md-size="4" md-align-trigger>
-            <md-avatar md-menu-trigger>
-              <img src="./assets/img/avatar.png" alt="Avatar">
-            </md-avatar>
-
-            <md-menu-content>
-              <div class="author-card">
-                <div class="author-card-info p-a">
-                  <span>{{$store.state.user.fullname}}</span>
-                  <div class="author-card-links">
-                    <a href="#" @click.prevent="$store.dispatch('logout')">{{$t('logout')}}</a>
-                  </div>
-                </div>
-              </div>
-            </md-menu-content>
-          </md-menu>
+          <md-avatar @click.native="toggleRightSidenav">
+            <img src="./assets/img/avatar.png" alt="Avatar">
+            <md-tooltip md-direction="bottom">{{$t('profile')}}</md-tooltip>
+          </md-avatar>
 
         </md-toolbar>
       </md-whiteframe>
 
-      <md-sidenav md-theme="blue" class="md-left sidebar-layer" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
+      <!-- left side -->
+      <md-sidenav md-theme="blue" class="md-left sidebar-layer left-side-bar" ref="leftSidenav" @open="open('Left')" @close="close('Left')">
           <md-toolbar class="md-large logo-wrapper" md-theme="white">
             <router-link :to="{name: 'dashboard'}">
               <img src="./assets/img/webwxgetmsgimgg.jpg" alt="Vue">
             </router-link>
           </md-toolbar>
-
-          <md-list>
-            <md-list-item v-for="(item, index) in $store.state.menu"
-            :key="index"
-            :href="$router.resolve({name:item.routeName}).href"
-            @click.native.prevent="$router.push({name:item.routeName})"
-            >
-              <md-icon>{{item.icon}}</md-icon> <span>{{$t(item.text)}}</span>
-            </md-list-item>
-          </md-list>
+          <div class="" style="">
+            <md-list>
+              <template v-for="(item, index) in $store.state.menu">
+                <md-list-item v-if="item.children">
+                  <md-icon>{{item.icon}}</md-icon>
+                  <span>{{$t(item.text)}}</span>
+                  <md-list-expand>
+                   <md-list>
+                     <md-list-item class="md-inset" v-for="childItem in item.children" :key="childItem.name"
+                     :href="$router.resolve({name:item.routeName}).href"
+                      @click.native.prevent="onMenuItemClik(childItem)"
+                      >
+                      {{$t(childItem.text)}}
+                     </md-list-item>
+                   </md-list>
+                 </md-list-expand>
+                </md-list-item>
+                <md-list-item v-else
+                :href="$router.resolve({name:item.routeName}).href"
+                 @click.native.prevent="onMenuItemClik(item)"
+                >
+                  <md-icon>{{item.icon}}</md-icon>
+                  <span>{{$t(item.text)}}</span>
+                </md-list-item>
+              </template>
+            </md-list>
+          </div>
 
       </md-sidenav>
 
+      <!-- right side -->
       <md-sidenav md-theme="blue" class="md-right sidebar-layer" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
           <md-toolbar class="">
             <div class="md-toolbar-container">
-              <h3 class="md-title">{{$t('settings')}}</h3>
+              <h3 class="md-title">{{$t('profile')}}</h3>
             </div>
           </md-toolbar>
-
+          <div class="p-a">
+            <span>{{$store.state.user.fullname}}</span>
+            <br>
+            <a href="#" @click.prevent="$store.dispatch('logout')">{{$t('logout')}}</a>
+          </div>
           <form novalidate @submit.stop.prevent="updateSettings">
+            <md-subheader class="md-inset">{{$t('settings')}}</md-subheader>
             <div style="padding:0 1em;">
               <md-input-container>
                 <label for="mapSelect">{{$t('map')}}</label>
@@ -183,6 +195,11 @@ export default {
     close(ref) {
       console.log('Closed: ' + ref)
     },
+    onMenuItemClik(item) {
+      if (item.routeName) {
+        this.$router.push({name: item.routeName})
+      }
+    },
     updateSettings() {
       this.$store.commit('map', this.settings.map)
       window.localStorage.setItem('lang_' + this.$store.state.user.company_id, this.settings.lang)
@@ -283,5 +300,27 @@ body, html{
     justify-content: flex-end;
     padding-right: 0;
   }
+}
+//
+.left-side-bar.md-sidenav.md-theme-blue{
+  .md-sidenav-content{
+    // display: flex;
+    // flex-direction: column;
+    background-color: #2196f3;
+    .logo-wrapper{
+      background-color: #fff;
+    }
+    .md-list, .md-list-item-container{
+      background-color: #2196f3;
+    }
+    .md-list-item-container{
+      color: #fff;
+    }
+    .md-list-item .md-icon{
+      color: #fff;
+    }
+  }
+  // .menu-wrapper{
+  // }
 }
 </style>

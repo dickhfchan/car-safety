@@ -53,6 +53,7 @@ export default {
   components: { Datatable, DatatableColumn, Paginator },
   data() {
     return {
+      title: this.$t('dataListByGroup'),
       columns: [
         { name: 'vrm_grp_id', text: this.$t('vrmGrpId') },
         { name: 'total_score', text: this.$t('totalScore') },
@@ -170,6 +171,11 @@ export default {
     //
     initColumns(this, this.columns)
     this.getData()
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     getData() {

@@ -51,6 +51,7 @@ export default {
   components: { DatatableFooter },
   data() {
     return {
+      title: this.$t('dataListByVehicle'),
       columns: [
         { name: 'vrm_id', text: this.$t('vrmId') },
         { name: 'total_score', text: this.$t('totalScore'),
@@ -170,6 +171,11 @@ export default {
     //
     initColumns(this, this.columns)
     this.getData()
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
   methods: {
     getData() {
