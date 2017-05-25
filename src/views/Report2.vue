@@ -139,9 +139,9 @@ export default {
       loading2: false,
       columns1: [
         {
-          name: 'start_date',
+          name: 'start_date_formatted',
           text: this.$t('startDate'),
-          valueProcessor: ({value}) => format(new Date(value), dateFormat),
+          valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
         },
         {
           name: 'total_score',
@@ -192,9 +192,9 @@ export default {
       chart2ID: `chart2_${this._uid}`,
       columns2: [
         {
-          name: 'start_date',
+          name: 'start_date_formatted',
           text: this.$t('startDate'),
-          valueProcessor: ({value}) => format(new Date(value), dateFormat),
+          valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
         },
         {
           name: 'total_score',
@@ -360,7 +360,7 @@ export default {
         ctx.innerHTML = ''
       }
       this.chart1 = new Chartist.Bar(ctx, {
-        labels: this.rows1.map(row => row.start_date.replace(/^\d{4}-/, '')),
+        labels: this.rows1.map(row => row.start_date_formatted.replace(/^\d{4}-/, '')),
         series: [
           this.rows1.map(row => row.total_score),
         ]
@@ -382,7 +382,7 @@ export default {
       }
       const labelCols = this.countColumns1
       this.chart2 = new Chartist.Line(ctx, {
-        labels: this.rows1.map(row => row.start_date.replace(/^\d{4}-/, '')),
+        labels: this.rows1.map(row => row.start_date_formatted.replace(/^\d{4}-/, '')),
         series: labelCols.map(col => this.rows1.map(row => row[col.name])),
       }, {
         fullWidth: true,
