@@ -181,7 +181,7 @@ export default {
     getData() {
       retry(() => this.$http.get('dao/avg_warning_vrm_grp'))()
       .then(({data}) => {
-        this.rows = data.JSON
+        this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
       }).catch((e) => {
         this.$alert(this.$t('loadFailed'))
         throw e

@@ -182,7 +182,7 @@ export default {
       this.loading = true
       retry(() => this.$http.get('dao/warning_vrm_grp_co'))()
       .then(({data}) => {
-        this.rows = data.JSON
+        this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
         initRows(this, this.rows, this.columns)
         this.loading = false
       }).catch((e) => {

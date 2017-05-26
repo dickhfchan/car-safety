@@ -8,7 +8,7 @@ const config = {
   },
   //
   clientBaseUrl: '/',
-  serverBaseUrl: 'http://54.255.227.246:8080/api/',
+  serverBaseUrl: window.serverBaseUrl || 'http://54.255.227.246:8080/api/',
   clientLoginUrl: null,
 }
 switch (process.env.NODE_ENV) {
