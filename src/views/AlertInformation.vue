@@ -8,7 +8,7 @@
       </md-table-header>
 
       <md-table-body>
-        <md-table-row v-for="row in rows" :key="row.log_id" :class="{active: row.active}">
+        <md-table-row v-for="row in filteredRows" :key="row.log_id" :class="{active: row.active}">
           <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
             <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
             <md-button v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)" class="md-raised">{{$t('play')}}</md-button>
@@ -19,17 +19,16 @@
     <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
     <!-- video diaplog -->
-    <md-dialog ref="dialogVideo" @close="videoIframeSrc=null" class="alert-information">
-      <md-dialog-title class="video-dialog-title">
-        <span>Alert Video</span>
-        <md-button class="md-icon-button" @click.native="$refs.dialogVideo.close()">
-          <md-icon>cancel</md-icon>
-        </md-button>
-      </md-dialog-title>
+    <md-dialog ref="dialogVideo" @close="videoIframeSrc=null" class="alert-information dialog-video">
       <md-dialog-content>
-        <div style="width:1280px;height:720px;overflow:hidden;">
-          <iframe :src="videoIframeSrc" frameborder="0" scrolling="no" style="width:2000px;height:1000px;margin-top:-150px;margin-left:-150px;"></iframe>
+        <div class="relative iframe-wrapper">
+          <div class="relative iframe-wrapper2">
+            <iframe :src="videoIframeSrc" frameborder="0" scrolling="no" style="width:3000px;height:2000px;"></iframe>
+          </div>
         </div>
+        <md-button class="md-icon-button md-raised md-dense video-close-button"  @click.native="$refs.dialogVideo.close()">
+          <md-icon>close</md-icon>
+        </md-button>
       </md-dialog-content>
     </md-dialog>
   </div>
@@ -114,6 +113,17 @@ export default {
       overLays: [], // store alert markers
       videoIframeSrc: null,
     }
+  },
+  computed: {
+    filteredRows() {
+      let wt = this.$store.state.alertInformationWarningType
+      if (wt === 'all') {
+        return this.rows
+      } else {
+        wt = parseInt(wt)
+        return this.rows.filter(row => row.wt === wt)
+      }
+    },
   },
   watch: {
     // get rows
@@ -317,10 +327,39 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
       color: #fff;
     }
   }
-  .video-dialog-title{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  &.dialog-video{
+    .iframe-wrapper2{
+      position:absolute;top:-150px;left:-150px;
+    }
+    .iframe-wrapper{
+      // width: 1430px;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+    }
+    .md-dialog{
+      max-width: initial;
+      max-height: initial;
+      width: 1280px;
+      height: 720px;
+      overflow: visible;
+    }
+    .md-dialog-content{
+      padding: 0;
+      width: 1280px;
+      height: 720px;
+      overflow: visible;
+    }
+    .video-close-button{
+      right: -13px;
+      top: -13px;
+      background: #fff;
+      position: absolute;
+      margin: 0;
+      &:hover{
+        background-color: #ccc;
+      }
+    }
   }
 }
 </style>

@@ -45,6 +45,7 @@ export default {
   trips: '行程',
   reload: '重新加載',
   alertInformation: '警告信息',
+  all: '所有',
   // MapFilters.vue
   vehicle: '車輛',
   getVehiclesFailed: '獲取車輛失敗',

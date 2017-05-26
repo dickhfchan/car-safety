@@ -75,9 +75,20 @@
     </div>
 
     <md-layout>
-      <md-card  class="flex-1 m-x m-b card-1">
+      <md-card  class="flex-1 m-x m-b card-1 alert-information-card">
         <md-card-content>
-          <h2 class="md-title">{{$t('alertInformation')}}</h2>
+          <div class="flex title-left">
+            <h2 class="md-title">{{$t('alertInformation')}}</h2>
+            <div class="filters">
+              <div class="type-filter" v-if="$refs && $refs.alertInformation">
+                <label class="m-l grey">{{$t('type')}}:</label>
+                <md-select class="m-l-sm warning-type-select" v-model="alertInformationWarningType">
+                  <md-option value="all">{{$t('all')}}</md-option>
+                  <md-option v-for="(val, key) in $refs.alertInformation.warningTypesI18n" :key="key" :value="key">{{val}}</md-option>
+                </md-select>
+              </div>
+            </div>
+          </div>
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
             <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
@@ -122,7 +133,7 @@ export default {
   },
   data() {
     return {
-      title: this.$t('map')
+      title: this.$t('map'),
     }
   },
   computed: {
@@ -144,6 +155,10 @@ export default {
     tripsListVisible() {
       const state = this.$store.state
       return !state.tripsLoading && !state.tripsFailed && !this.noTripsFoundVisible
+    },
+    alertInformationWarningType: {
+      get() { return this.$store.state.alertInformationWarningType },
+      set(value) { this.$store.commit('alertInformationWarningType', value) }
     }
   },
   watch: {
@@ -222,6 +237,24 @@ export default {
       .distance{
         color: rgba(0,0,0,.54);
       }
+    }
+  }
+}
+.alert-information-card{
+  .title-left{
+    align-items: center;
+  }
+  .type-filter{
+    display: flex;
+    align-items: center;
+  }
+  .warning-type-select{
+    display: inline-block;
+    width: auto;
+    min-width: initial;
+    .md-select-value{
+      font-size: 14px;
+      color: grey;
     }
   }
 }
