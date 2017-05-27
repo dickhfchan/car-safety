@@ -40,7 +40,14 @@ import { retry, waitFor, camelCase } from 'helper-js'
 import { format } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
-import { initColumns, initRows, generateExcel } from '../utils.js'
+import { initColumns, initRows as initRowsOld, generateExcel } from '../utils.js'
+
+const initRows = (vm, rows, columns) => {
+  rows.forEach(row => {
+    vm.$set(row, 'active', false)
+  })
+  initRowsOld(vm, rows, columns)
+}
 
 export default {
   data() {
