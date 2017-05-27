@@ -6,7 +6,7 @@
           <small style="color:grey;"><i>{{dateRangeText}}</i></small>
         </h2>
 
-        <div class="relative">
+        <div class="relative overflow-hidden-y">
 
           <md-table @select="" @sort="onSort">
            <md-table-header>
@@ -163,7 +163,7 @@ export default {
     }
   },
   computed: {
-    api() { return this.groupBy === 'vrm_grp_id' ? 'dao/avg_warning_vrm_grp_co' : 'dao/avg_warning_vrm_co' },
+    api() { return this.groupBy === 'vrm_grp_id' ? 'dao/v_avg_warning_vrm_grp_co' : 'dao/avg_warning_vrm_co' },
   },
   created() {
     //

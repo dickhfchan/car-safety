@@ -180,7 +180,7 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/warning_vrm_grp_co'))()
+      retry(() => this.$http.get('dao/avg_warning_vrm_co'))()
       .then(({data}) => {
         this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
         initRows(this, this.rows, this.columns)
