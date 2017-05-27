@@ -11,7 +11,9 @@
         <md-table-row v-for="row in filteredRows" :key="row.log_id" :class="{active: row.active}">
           <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
             <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
-            <md-button v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)" class="md-raised">{{$t('play')}}</md-button>
+            <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)">
+              <md-icon>ondemand_video</md-icon>
+            </md-button>
           </md-table-cell>
         </md-table-row>
       </md-table-body>
@@ -50,6 +52,10 @@ export default {
           name: 'sequence',
           text: '#',
           valueProcessor: ({row, rows}) => rows.indexOf(row) + 1
+        },
+        {
+          'name': 'warning_vdo_id',
+          text: this.$t('video')
         },
         {
           'name': 'warningType',
@@ -102,10 +108,6 @@ export default {
         {
           'name': 'near_hw',
           'text': this.$t('nearHw')
-        },
-        {
-          'name': 'warning_vdo_id',
-          text: this.$t('video')
         },
       ],
       rows: [],
