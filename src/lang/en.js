@@ -84,6 +84,8 @@ export default {
   chart1: 'Chart1',
   chart2: 'Chart2',
   driver: 'Driver',
+  // RealTime.vue
+  realTime: 'Real Time',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',

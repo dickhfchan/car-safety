@@ -84,6 +84,8 @@ export default {
   chart1: '圖表1',
   chart2: '圖表2',
   driver: '司機',
+  // RealTime.vue
+  realTime: '實時',
   // columns
   startDate: '開始日期',
   drvDistance: '公裏數',
