@@ -1,6 +1,8 @@
 import { titleCase } from 'helper-js'
 import config from '@/config.js'
 
+const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date', 'create_ts', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
+
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
     baseURL: store.state.urls.server.base,
@@ -10,6 +12,25 @@ export function initAxios(axios, Vue, store, config) {
   Vue.http = Vue.prototype.$http = axiosInstance
   axiosInstance.interceptors.response.use((response) => {
     // Do something with response data
+    // convert timestamp to 13
+    let dataJSON
+    try {
+      dataJSON = response.data.JSON
+    } catch (e) {
+      dataJSON = null
+    }
+    if (dataJSON) {
+      dataJSON.forEach(row => {
+        dateTimeFields.forEach(fld => {
+          if (row[fld]) {
+            const str = row[fld] + ''
+            if (str.length === 10) {
+              row[fld] = parseInt(str + '000')
+            }
+          }
+        })
+      })
+    }
     return response
   }, (error) => {
     // Do something with response error
@@ -142,7 +163,6 @@ export function initRows(vm, rows, columns) {
   }
 }
 
-const dateTimeFields = ['create_ts', 'start_date', 'end_date', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
 export function getRowData(row) {
   const item = {}
   Object.keys(row).filter(key => key !== 'visible').forEach(key => {
