@@ -5,12 +5,10 @@
         <h2 class="md-title">{{$t('realTime')}}</h2>
 
         <div class="relative flex-1 overflow-hidden-y map-wrapper">
-          <Google-Map-Real-Time v-if="mapType === 'googleMap'"
-          ref="gmrt" :points="points" :ak="$store.state.googleMapAK"
-          :active-color="activeColor" :expired-color="expiredColor" class="w-100 h-100"></Google-Map-Real-Time>
-          <Baidu-Map-Real-Time  v-if="mapType === 'baiduMap'"
-          ref="bmrt" :points="points" :ak="$store.state.baiduMapAK"
-          :active-color="activeColor" :expired-color="expiredColor" class="w-100 h-100"></Baidu-Map-Real-Time>
+          <Google-Map-Real-Time v-if="mapType === 'googleMap'" ref="gmrt"
+          :points="points" :ak="$store.state.googleMapAK" class="w-100 h-100"></Google-Map-Real-Time>
+          <Baidu-Map-Real-Time  v-if="mapType === 'baiduMap'" ref="bmrt"
+          :points="points" :ak="$store.state.baiduMapAK" class="w-100 h-100"></Baidu-Map-Real-Time>
           <!-- <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
           </div> -->
@@ -38,8 +36,6 @@ export default {
     return {
       title: this.$t('realTime'),
       points: [],
-      activeColor: '#FF0000',
-      expiredColor: '#737373'
     }
   },
   computed: {
@@ -59,13 +55,10 @@ export default {
           p => p.lat && p.lng &&
           p.company_id === this.$store.state.user.company_id
         )
-        points.sort((a, b) => b.last_loc_update_ts - a.last_loc_update_ts)
         const now = new Date()
         const expiredAt = subMinutes(now, 10).getTime()
         points.forEach(p => {
-          if (p.last_loc_update_ts < expiredAt) {
-            p.expired = true
-          }
+          p.online = p.last_loc_update_ts > expiredAt
         })
         this.points = points
       })

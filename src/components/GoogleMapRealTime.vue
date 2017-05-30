@@ -6,20 +6,19 @@
 <script>
 import runtime from '@/runtime.js'
 import GoogleMapTrackRender from './GoogleMapTrackRender.vue'
+import onlineIcon from '@/assets/img/map/ONline.png'
+import offlineIcon from '@/assets/img/map/OFFline.png'
 //
 export default {
   props: {
     points: {}, //
     ak: {},
-    activeColor: {},
-    expiredColor: {}
   },
   data() {
     return {
       id: 'GoogleMapRealTime' + this._uid,
       google: null,
       map: null,
-      pathPolyline: null,
       googleApiLoading: true,
       overLays: [],
     }
@@ -40,37 +39,28 @@ export default {
               this.autoCenterAndZoom(map, points, google)
             }
             //
-            const latestPoint = new google.maps.Marker({
-              position: points[0],
-              // label: 'A'
-            })
-            overLays.push(latestPoint)
             // track
-            const expiredPoints = []
-            const activePoints = []
-            points.forEach(p => {
-              if (p.expired) {
-                expiredPoints.push(p)
-              } else {
-                activePoints.push(p)
-              }
+            let prevOpenedInfoWindow
+            points.forEach(point => {
+              const marker = new google.maps.Marker({
+                position: point,
+                icon: point.online ? onlineIcon : offlineIcon
+              })
+              overLays.push(marker)
+              const infowindow = new google.maps.InfoWindow({
+                content: `
+<pre>
+${point.vrm_id}
+</pre>`
+              })
+              marker.addListener('click', () => {
+                if (prevOpenedInfoWindow) {
+                  prevOpenedInfoWindow.close()
+                }
+                prevOpenedInfoWindow = infowindow
+                infowindow.open(map, marker)
+              })
             })
-            const expiredPathPolyline = new google.maps.Polyline({
-              path: expiredPoints,
-              geodesic: true,
-              strokeColor: this.expiredColor,
-              strokeOpacity: 1.0,
-              strokeWeight: 3,
-            })
-            overLays.push(expiredPathPolyline)
-            const activePathPolyline = new google.maps.Polyline({
-              path: activePoints,
-              geodesic: true,
-              strokeColor: this.activeColor,
-              strokeOpacity: 1.0,
-              strokeWeight: 3,
-            })
-            overLays.push(activePathPolyline)
             //
             overLays.forEach(v => { v.setMap(map) })
           })

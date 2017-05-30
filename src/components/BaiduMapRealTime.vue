@@ -6,14 +6,13 @@
 <script>
 import runtime from '@/runtime.js'
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
-import mapMarkerIcon from '@/assets/img/map/map-marker.png'
+import onlineIcon from '@/assets/img/map/ONline.png'
+import offlineIcon from '@/assets/img/map/OFFline.png'
 //
 export default {
   props: {
     points: {}, //
     ak: {},
-    activeColor: {},
-    expiredColor: {},
     coordinateConversionLimit: { default: 10 },
   },
   data() {
@@ -36,45 +35,37 @@ export default {
         //
         if (points && points.length > 0) {
           this.mapReady().then(({BMap, map}) => {
-            const activePoints = []
-            const expiredPoints = []
-            points.forEach(p => {
-              if (p.expired) {
-                expiredPoints.push(p)
-              } else {
-                activePoints.push(p)
-              }
-            })
             // convertPoints
-            Promise.all([
-              this.convertPoints(activePoints, BMap),
-              this.convertPoints(expiredPoints, BMap),
-            ]).then((arr) => {
-              const activePoints = arr[0].points
-              const expiredPoints = arr[1].points
-              const allBMapPoints = activePoints.concat(expiredPoints)
-              this.BMapPoints = allBMapPoints
+            this.convertPoints(points, BMap).then((data) => {
+              const bmPoints = this.BMapPoints = data.points
               if (!this._autoCenterAndZoomed) {
                 this._autoCenterAndZoomed = true
-                this.autoCenterAndZoom(map, allBMapPoints, BMap)
+                this.autoCenterAndZoom(map, bmPoints, BMap)
               }
               //
-              const BMapIcon = new BMap.Icon(mapMarkerIcon, new BMap.Size(26, 26), {
-                anchor: new BMap.Size(13, 26),
+              const BMapIconOnline = new BMap.Icon(onlineIcon, new BMap.Size(46, 46), {
+                anchor: new BMap.Size(23, 46),
               })
-              const latestPoint = new BMap.Marker(allBMapPoints[0], {icon: BMapIcon})
-              map.addOverlay(latestPoint)
-              // track
-              const activePathPolyline = new BMap.Polyline(
-                activePoints,
-                {strokeColor: this.activeColor, strokeWeight: 3, strokeOpacity: 1.0}
-              )
-              map.addOverlay(activePathPolyline)
-              const expiredPathPolyline = new BMap.Polyline(
-                expiredPoints,
-                {strokeColor: this.expiredColor, strokeWeight: 3, strokeOpacity: 1.0}
-              )
-              map.addOverlay(expiredPathPolyline)
+              const BMapIconOffline = new BMap.Icon(offlineIcon, new BMap.Size(46, 46), {
+                anchor: new BMap.Size(23, 46),
+              })
+              bmPoints.forEach((bmPoint, index) => {
+                const point = points[index] // origin point data
+                const marker = new BMap.Marker(bmPoint, {icon: point.online ? BMapIconOnline : BMapIconOffline})
+                map.addOverlay(marker)
+                const infoWindow = new BMap.InfoWindow(`
+<pre>
+${point.vrm_id}
+</pre>`,
+                  {
+                    width: 200,
+                    height: 60,
+                  }
+                )
+                marker.addEventListener('click', () => {
+                  map.openInfoWindow(infoWindow, bmPoint)
+                })
+              })
             })
           })
         }
