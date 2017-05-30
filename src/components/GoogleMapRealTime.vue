@@ -35,7 +35,10 @@ export default {
         //
         if (points && points.length > 0) {
           this.mapReady().then(({google, map}) => {
-            this.autoCenterAndZoom(map, points, google)
+            if (!this._autoCenterAndZoomed) {
+              this._autoCenterAndZoomed = true
+              this.autoCenterAndZoom(map, points, google)
+            }
             //
             const latestPoint = new google.maps.Marker({
               position: points[0],

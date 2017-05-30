@@ -54,7 +54,10 @@ export default {
               const expiredPoints = arr[1].points
               const allBMapPoints = activePoints.concat(expiredPoints)
               this.BMapPoints = allBMapPoints
-              this.autoCenterAndZoom(map, allBMapPoints, BMap)
+              if (!this._autoCenterAndZoomed) {
+                this._autoCenterAndZoomed = true
+                this.autoCenterAndZoom(map, allBMapPoints, BMap)
+              }
               //
               const BMapIcon = new BMap.Icon(mapMarkerIcon, new BMap.Size(26, 26), {
                 anchor: new BMap.Size(13, 26),
