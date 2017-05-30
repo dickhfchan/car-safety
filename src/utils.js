@@ -1,7 +1,9 @@
-import { titleCase } from 'helper-js'
+import { titleCase, windowLoaded, unset } from 'helper-js'
 import config from '@/config.js'
 
-const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date', 'create_ts', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
+const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date',
+  'create_ts', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts',
+  'active_end_date', 'active_start_date', 'last_access_ts', 'last_loc_update_ts']
 
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
@@ -246,4 +248,34 @@ export function generateExcel(JSONData, FileName, ShowLabel) {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+}
+
+// about map
+
+export function loadGoogleMap(ak) {
+  if (window.google && window.google.maps) {
+    return Promise.resolve(window.google)
+  }
+  const fun = loadGoogleMap
+  return windowLoaded().then(() => {
+    if (fun.loaded) {
+      return window.google
+    } else {
+      if (!fun.requested) {
+        fun.requested = true
+        window._GoogleMapLoadedCallback = () => { fun.loaded = true; unset(window, '_GoogleMapLoadedCallback') }
+        const script = document.createElement('script')
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${ak}&callback=_GoogleMapLoadedCallback`
+        document.body.appendChild(script)
+      }
+      return new Promise(function(resolve, reject) {
+        const requestInterval = window.setInterval(function () {
+          if (fun.loaded) {
+            window.clearInterval(requestInterval)
+            resolve(window.google)
+          }
+        }, 10)
+      })
+    }
+  })
 }

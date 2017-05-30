@@ -56,6 +56,11 @@ export default [
     ]
   },
   {
+    text: 'realTime',
+    icon: '',
+    routeName: 'realTime'
+  },
+  {
     text: 'settings',
     icon: 'analysis',
     routeName: 'datatables'

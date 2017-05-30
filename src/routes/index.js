@@ -12,6 +12,7 @@ export default [
   { path: '/d1', name: 'd1', component: (resolve) => require(['../views/D1.vue'], resolve) },
   { path: '/d2', name: 'd2', component: (resolve) => require(['../views/D2.vue'], resolve) },
   { path: '/report2', name: 'report2', component: (resolve) => require(['../views/Report2.vue'], resolve) },
+  { path: '/real-time', name: 'realTime', component: (resolve) => require(['../views/RealTime.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]
