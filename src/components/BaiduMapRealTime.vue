@@ -12,6 +12,7 @@ import offlineIcon from '@/assets/img/map/OFFline.png'
 export default {
   props: {
     points: {}, //
+    vehicles: {},
     ak: {},
     coordinateConversionLimit: { default: 10 },
   },
@@ -54,12 +55,12 @@ export default {
                 const marker = new BMap.Marker(bmPoint, {icon: point.online ? BMapIconOnline : BMapIconOffline})
                 map.addOverlay(marker)
                 const infoWindow = new BMap.InfoWindow(`
-<pre>
-${point.vrm_id}
-</pre>`,
+<div class="text-center">
+${this.getVrmMarkCodeByID(point.vrm_id)}
+</div>`,
                   {
-                    width: 200,
-                    height: 60,
+                    width: 60,
+                    height: 30,
                   }
                 )
                 marker.addEventListener('click', () => {
@@ -76,6 +77,10 @@ ${point.vrm_id}
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
     mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
+    getVrmMarkCodeByID(vrmId) {
+      const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
+      return found && found.vrm_mark_code
+    },
     convertPoints(points, BMap) {
       const convertor = new BMap.Convertor()
       //

@@ -6,9 +6,9 @@
 
         <div class="relative flex-1 overflow-hidden-y map-wrapper">
           <Google-Map-Real-Time v-if="mapType === 'googleMap'" ref="gmrt"
-          :points="points" :ak="$store.state.googleMapAK" class="w-100 h-100"></Google-Map-Real-Time>
+          :points="points" :vehicles="vehicles" :ak="$store.state.googleMapAK" class="w-100 h-100"></Google-Map-Real-Time>
           <Baidu-Map-Real-Time  v-if="mapType === 'baiduMap'" ref="bmrt"
-          :points="points" :ak="$store.state.baiduMapAK" class="w-100 h-100"></Baidu-Map-Real-Time>
+          :points="points" :vehicles="vehicles" :ak="$store.state.baiduMapAK" class="w-100 h-100"></Baidu-Map-Real-Time>
           <!-- <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
           </div> -->
@@ -36,6 +36,7 @@ export default {
     return {
       title: this.$t('realTime'),
       points: [],
+      vehicles: null,
     }
   },
   computed: {
@@ -47,8 +48,12 @@ export default {
     })
   },
   methods: {
-    getPoints() {
-      retry(() => this.$http.get('dao/mob_device'))()
+    async getPoints() {
+      const promise = retry(() => this.$http.get('dao/mob_device'))()
+      if (!this.vehicles) {
+        await this.getVehicles()
+      }
+      promise
       .then(({data}) => {
         const points = data.JSON
         .filter(
@@ -61,6 +66,17 @@ export default {
           p.online = p.last_loc_update_ts > expiredAt
         })
         this.points = points
+      })
+    },
+    getVehicles() {
+      return retry(() => this.$http.get('dao/veh_reg_mark'))()
+      .then(({data}) => {
+        // sort by vrm_mark_code asc
+        const vehicles = data.JSON
+        this.vehicles = vehicles
+      }).catch((e) => {
+        this.$alert(this.$t('getVehiclesFailed'))
+        throw e
       })
     },
     onMapCardFullscreen() {

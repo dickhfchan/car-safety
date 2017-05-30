@@ -12,6 +12,7 @@ import offlineIcon from '@/assets/img/map/OFFline.png'
 export default {
   props: {
     points: {}, //
+    vehicles: {}, //
     ak: {},
   },
   data() {
@@ -49,9 +50,9 @@ export default {
               overLays.push(marker)
               const infowindow = new google.maps.InfoWindow({
                 content: `
-<pre>
-${point.vrm_id}
-</pre>`
+<div class="text-center">
+${this.getVrmMarkCodeByID(point.vrm_id)}
+</div>`,
               })
               marker.addListener('click', () => {
                 if (prevOpenedInfoWindow) {
@@ -72,6 +73,10 @@ ${point.vrm_id}
     autoCenterAndZoom(...args) { GoogleMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
     mapReady() { return GoogleMapTrackRender.methods.mapReady.apply(this) },
     checkSize() { GoogleMapTrackRender.methods.checkSize.apply(this) },
+    getVrmMarkCodeByID(vrmId) {
+      const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
+      return found && found.vrm_mark_code
+    },
   },
   created() {
     this.mapReady().then(({google, map}) => {
