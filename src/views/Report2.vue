@@ -123,7 +123,7 @@
 </template>
 <script>
 import { retry, windowLoaded } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
 import { format } from 'date-functions'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
@@ -294,8 +294,8 @@ export default {
     },
     getRows1() {
       const dateRange = this.dateRange
-      const start = new Date(`${dateRange[0]} 00:00:00`).getTime()
-      const end = new Date(`${dateRange[1]} 23:59:59`).getTime()
+      const start = newDate(`${dateRange[0]} 00:00:00`).getTime()
+      const end = newDate(`${dateRange[1]} 23:59:59`).getTime()
       this.rows1 = this.originRows1
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
@@ -337,8 +337,8 @@ export default {
     },
     getRows2() {
       const dateRange = this.dateRange
-      const start = new Date(`${dateRange[0]} 00:00:00`).getTime()
-      const end = new Date(`${dateRange[1]} 23:59:59`).getTime()
+      const start = newDate(`${dateRange[0]} 00:00:00`).getTime()
+      const end = newDate(`${dateRange[1]} 23:59:59`).getTime()
       this.rows2 = this.originRows2
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)

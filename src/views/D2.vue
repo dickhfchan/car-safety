@@ -83,7 +83,7 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
 
 export default {
   components: {},
@@ -163,8 +163,8 @@ export default {
   methods: {
     getData() {
       const dateRange = this.dateRange
-      const start = new Date(`${dateRange[0]} 00:00:00`).getTime()
-      const end = new Date(`${dateRange[1]} 23:59:59`).getTime()
+      const start = newDate(`${dateRange[0]} 00:00:00`).getTime()
+      const end = newDate(`${dateRange[1]} 23:59:59`).getTime()
       this.loading = true
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {

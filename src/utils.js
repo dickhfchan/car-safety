@@ -279,3 +279,15 @@ export function loadGoogleMap(ak) {
     }
   })
 }
+/**
+ * [newDate description]
+ * @param  {[type]} str [format: yyyy-MM-dd HH:mm:ss]
+ * @return [type]       [description]
+ */
+export function newDate(str) {
+  const t = str.split(' ')
+  const args = t[0].split('-').map(v => parseInt(v))
+  args[1]-- // convert month to 0 -11
+  t[1].split(':').forEach(v => { args.push(parseInt(v)) })
+  return new Date(...args)
+}

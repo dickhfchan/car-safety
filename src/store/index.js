@@ -4,6 +4,7 @@ import config from '../config.js'
 import urls from './modules/urls.js'
 import menu from './menu.js'
 import * as dateFunctions from 'date-functions'
+import { newDate } from '@/utils.js'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 
 Vue.use(Vuex)
@@ -136,8 +137,8 @@ const store = new Vuex.Store({
       }
     },
     getTripsInDateRange({state}) {
-      const start = new Date(`${state.dateRange[0]} 00:00:00`).getTime()
-      const end = new Date(`${state.dateRange[1]} 23:59:59`).getTime()
+      const start = newDate(`${state.dateRange[0]} 00:00:00`).getTime()
+      const end = newDate(`${state.dateRange[1]} 23:59:59`).getTime()
       const trips = state.allTrips
       // filter by date range
       .filter(v => start <= v.start_time && v.start_time <= end)
