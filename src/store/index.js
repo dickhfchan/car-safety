@@ -42,6 +42,7 @@ const store = new Vuex.Store({
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
     authenticated: storagedUser != null,
     user: storagedUser || {},
+    companyCode: window.localStorage.getItem('companyCode'),
     menu,
     dateRange: [tenDaysBefore, today],
     vehicle: storagedDefaultVehicles[0].vrm_id,
@@ -78,6 +79,7 @@ const store = new Vuex.Store({
     user(state, data) {
       state.user = data
     },
+    companyCode(state, val) { state.companyCode = val; window.localStorage.setItem('companyCode', val) },
     dateRange(state, val) { state.dateRange = val },
     vehicle(state, val) {
       window.localStorage.setItem('vehicles', JSON.stringify([state.vehicles.find(v => v.vrm_id === val)]))
@@ -100,10 +102,11 @@ const store = new Vuex.Store({
     alertInformationWarningType(state, val) { state.alertInformationWarningType = val },
   },
   actions: {
-    logout({commit}) {
+    logout({commit, state}) {
       commit('authenticated', false)
       commit('user', {})
       window.localStorage.removeItem('user')
+      runtime.app.$router.push({name: 'login', params: {companyCode: state.companyCode}})
     },
     getTrips (context) {
       const vehicle = context.state.vehicle

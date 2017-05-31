@@ -13,6 +13,8 @@ export default [
   { path: '/d2', name: 'd2', component: (resolve) => require(['../views/D2.vue'], resolve) },
   { path: '/report2', name: 'report2', component: (resolve) => require(['../views/Report2.vue'], resolve) },
   { path: '/real-time', name: 'realTime', component: (resolve) => require(['../views/RealTime.vue'], resolve) },
+  { path: '/login/:companyCode', name: 'login', component: (resolve) => require(['../views/Login.vue'], resolve) },
+  { path: '/unauthorized', name: 'unauthorized', component: (resolve) => require(['../views/Unauthorized.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]

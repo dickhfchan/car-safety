@@ -75,12 +75,13 @@
    methods: {
      submit() {
        this.validation.check().then((data) => {
-         this.$http.get(`/dao/authentication/${data.name}?password=${data.password}&company_code=demo`).then(({data}) => {
+         this.$http.get(`/dao/authentication/${data.name}?password=${data.password}&company_code=${this.$route.params.companyCode}`).then(({data}) => {
            if (data && data.message === 'Success') {
              this.$store.commit('authenticated', true)
              const user = data.JSON[0]
              this.$store.commit('user', user)
              this.$store.commit('lang', user.lang)
+             this.$router.push({name: 'dashboard'})
              this.$emit('success', user)
            } else {
              this.$alert(this.$t('loginFailed'))
@@ -95,6 +96,7 @@
    },
    created() {
      this.$validate(this.validation, this.fields)
+     this.$store.commit('companyCode', this.$route.params.companyCode)
    }
  }
 

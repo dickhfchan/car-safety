@@ -58,6 +58,17 @@ export function initRouter(Router, Vue, store, config, routes) {
     base: config.clientBaseUrl,
     routes
   })
+  router.beforeEach((to, from, next) => {
+    if (store.state.authenticated) {
+      next()
+    } else {
+      if (to.name === 'unauthorized' || (to.name === 'login' && to.params.companyCode)) {
+        next()
+      } else {
+        next({name: 'unauthorized'})
+      }
+    }
+  })
   return router
 }
 

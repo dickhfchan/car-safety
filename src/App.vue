@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="container">
-    <Login v-if="!$store.state.authenticated"></Login>
-    <template v-else>
+    <router-view v-if="$route.name==='login'||$route.name==='unauthorized'"></router-view>
+    <template v-else-if="$store.state.authenticated">
       <md-whiteframe class="menu-layer top-menu">
         <md-toolbar md-theme="blue">
           <md-button class="md-icon-button" @click.native="toggleLeftSidenav">
@@ -90,10 +90,8 @@
             <span>{{$store.state.user.fullname}}</span>
             <br>
             <md-button class="md-raised md-warn m-x-0" @click.native="$store.dispatch('logout')">{{$t('logout')}}</md-button>
-          </div>
-          <form novalidate @submit.stop.prevent="updateSettings">
-            <md-subheader class="md-inset">{{$t('settings')}}</md-subheader>
-            <div style="padding:0 1em;">
+            <form novalidate @submit.stop.prevent="updateSettings">
+              <md-subheader class="md-inset">{{$t('settings')}}</md-subheader>
               <md-input-container>
                 <label for="mapSelect">{{$t('map')}}</label>
                 <md-select name="map" id="mapSelect" v-model="settings.map">
@@ -109,9 +107,9 @@
                   <md-option value="zh-tw">{{$t('traditionalChinese')}}</md-option>
                 </md-select>
               </md-input-container>
-            </div>
-            <md-button class="md-raised md-primary" type="submit">{{$t('update')}}</md-button>
-          </form>
+              <md-button class="md-raised md-primary m-a-0" type="submit">{{$t('update')}}</md-button>
+            </form>
+          </div>
 
       </md-sidenav>
 
@@ -138,13 +136,12 @@
 </template>
 
 <script>
-import Login from '@/components/Login.vue'
 import MapFilters from '@/components/MapFilters.vue'
 import DateRangePickerInTop from '@/components/DateRangePickerInTop.vue'
 import Select2 from '@/components/Select2.vue'
 
 export default {
-  components: { Login, MapFilters, DateRangePickerInTop, Select2 },
+  components: { MapFilters, DateRangePickerInTop, Select2 },
   data () {
     const state = this.$store.state
     return {
