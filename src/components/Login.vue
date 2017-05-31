@@ -75,8 +75,7 @@
    methods: {
      submit() {
        this.validation.check().then((data) => {
-        //  this.$http.get(`/dao/authentication/${data.name}?password=${data.password}&company_code=22`).then(({data}) => {
-         this.$http.get(`dao/authentication/${data.name}?password=${data.password}`).then(({data}) => {
+         this.$http.get(`/dao/authentication/${data.name}?password=${data.password}&company_code=demo`).then(({data}) => {
            if (data && data.message === 'Success') {
              this.$store.commit('authenticated', true)
              const user = data.JSON[0]

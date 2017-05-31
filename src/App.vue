@@ -2,7 +2,7 @@
   <div id="app" class="container">
     <Login v-if="!$store.state.authenticated"></Login>
     <template v-else>
-      <md-whiteframe class="menu-layer">
+      <md-whiteframe class="menu-layer top-menu">
         <md-toolbar md-theme="blue">
           <md-button class="md-icon-button" @click.native="toggleLeftSidenav">
             <md-icon>menu</md-icon>
@@ -89,7 +89,7 @@
           <div class="p-a">
             <span>{{$store.state.user.fullname}}</span>
             <br>
-            <a href="#" @click.prevent="$store.dispatch('logout')">{{$t('logout')}}</a>
+            <md-button class="md-raised md-warn m-x-0" @click.native="$store.dispatch('logout')">{{$t('logout')}}</md-button>
           </div>
           <form novalidate @submit.stop.prevent="updateSettings">
             <md-subheader class="md-inset">{{$t('settings')}}</md-subheader>
@@ -282,6 +282,15 @@ body, html{
 
 <!-- other -->
 <style lang="scss">
+.top-menu{
+  .md-avatar{
+    min-width: initial;
+    min-height: initial;
+    $side : 24px;
+    width: $side;
+    height: $side;
+  }
+}
 .logo-wrapper{
   display: block;
   text-align: center;

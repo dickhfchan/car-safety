@@ -1,4 +1,6 @@
 require('./check-versions')()
+var fs = require('fs')
+var dateFunctions = require('date-functions')
 
 process.env.NODE_ENV = 'production'
 
@@ -16,6 +18,9 @@ spinner.start()
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
   if (err) throw err
   webpack(webpackConfig, function (err, stats) {
+    // append time to index.html
+    fs.appendFileSync('./dist/index.html', `\n<!-- build at: ${dateFunctions.format(new Date())} -->`)
+
     spinner.stop()
     if (err) throw err
     process.stdout.write(stats.toString({
