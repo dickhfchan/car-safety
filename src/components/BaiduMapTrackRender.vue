@@ -44,11 +44,12 @@ export default {
   data() {
     return {
       id: 'BaiduMapTrackRender' + this._uid,
-      BMap: null,
-      map: null,
-      pathPolyline: null,
       BMapApiLoading: true,
-      BMapPoints: null
+      // don't observe
+      // BMap: null,
+      // map: null,
+      // pathPolyline: null,
+      // BMapPoints: null
     }
   },
   watch: {
@@ -113,9 +114,11 @@ export default {
       })
     },
     checkSize() {
-      if (this.BMap && this.map && this.map) {
-        this.autoCenterAndZoom(this.map, this.BMapPoints, this.BMap)
-      }
+      this.$nextTick(() => {
+        if (this.BMap && this.map && this.map) {
+          this.autoCenterAndZoom(this.map, this.BMapPoints, this.BMap)
+        }
+      })
     }
   },
   created() {

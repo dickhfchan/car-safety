@@ -135,4 +135,7 @@ export default {
   avgWarnId: 'avgWarnId',
   vrmGrpId: 'vrmGrpId',
   driverName: '司機名',
+  // store
+  getTripsFailed: '獲取行程失敗',
+  getPointsFailed: '獲取歷史軌跡失敗',
 }

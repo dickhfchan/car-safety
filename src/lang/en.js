@@ -135,4 +135,7 @@ export default {
   avgWarnId: 'avgWarnId',
   vrmGrpId: 'vrmGrpId',
   driverName: 'Driver Name',
+  // store
+  getTripsFailed: 'Get trips failed',
+  getPointsFailed: 'Get points failed',
 }

@@ -18,10 +18,7 @@ export default {
   data() {
     return {
       id: 'GoogleMapRealTime' + this._uid,
-      google: null,
-      map: null,
       googleApiLoading: true,
-      overLays: [],
     }
   },
   watch: {
@@ -29,6 +26,7 @@ export default {
       immediate: true,
       handler(points) {
         // clear overlays
+        this.overLays = this.overLays || []
         const overLays = this.overLays
         overLays.forEach(v => { v.setMap(null) })
         overLays.length = 0
@@ -79,6 +77,10 @@ ${this.getVrmMarkCodeByID(point.vrm_id)}
     },
   },
   created() {
+    // don't observe
+    this.google = null
+    this.map = null
+    this.overLays = this.overLays || []
     this.mapReady().then(({google, map}) => {
       this.google = google
       this.googleApiLoading = false

@@ -5,6 +5,7 @@ import urls from './modules/urls.js'
 import menu from './menu.js'
 import * as dateFunctions from 'date-functions'
 import { newDate } from '@/utils.js'
+import runtime from '@/runtime.js'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 
 Vue.use(Vuex)
@@ -130,7 +131,7 @@ const store = new Vuex.Store({
           if (e.toString() !== 'Cancel') {
             context.commit('tripsLoading', false)
             context.commit('tripsFailed', true)
-            Vue.alert('get trips failed')
+            Vue.alert(runtime.app.$t('getTripsFailed'))
             throw e
           }
         })
@@ -185,7 +186,7 @@ const store = new Vuex.Store({
           if (e.toString() !== 'Cancel') {
             commit('pointsLoading', false)
             commit('pointsFailed', true)
-            Vue.alert('get points failed')
+            Vue.alert(runtime.app.$t('getPointsFailed'))
             throw e
           }
         })

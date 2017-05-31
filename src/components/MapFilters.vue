@@ -64,7 +64,6 @@ export default {
           return 0
         })
         this.$store.commit('vehicles', vehicles)
-        this.getTrips()
       }).catch((e) => {
         this.$alert(this.$t('getVehiclesFailed'))
         throw e

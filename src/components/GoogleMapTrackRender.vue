@@ -16,11 +16,7 @@ export default {
   data() {
     return {
       id: 'GoogleMapTrackRender' + this._uid,
-      google: null,
-      map: null,
-      pathPolyline: null,
       googleApiLoading: true,
-      overLays: []
     }
   },
   watch: {
@@ -28,6 +24,7 @@ export default {
       immediate: true,
       handler(points) {
         // clear overlays
+        this.overLays = this.overLays || []
         const overLays = this.overLays
         overLays.forEach(v => { v.setMap(null) })
         overLays.length = 0
@@ -108,12 +105,21 @@ export default {
       })
     },
     checkSize() {
-      if (this.google && this.google.maps && this.map) {
-        this.google.maps.event.trigger(this.map, 'resize')
-      }
+      this.$nextTick(() => {
+        if (this.google && this.google.maps && this.map) {
+          this.google.maps.event.trigger(this.map, 'resize')
+        }
+      })
     }
   },
   created() {
+    // don't observe
+    Object.assign(this, {
+      google: null,
+      map: null,
+      pathPolyline: null,
+    })
+    this.overLays = this.overLays || []
     this.mapReady().then(({google, map}) => {
       this.google = google
       this.googleApiLoading = false

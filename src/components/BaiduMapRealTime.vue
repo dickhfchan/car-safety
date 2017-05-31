@@ -19,12 +19,12 @@ export default {
   data() {
     return {
       id: 'BaiduMapRealTime' + this._uid,
-      BMap: null,
-      map: null,
-      pathPolyline: null,
       BMapApiLoading: true,
-      BMapPoints: null,
-      convertedPoints: {},
+      // don't observe
+      // BMap: null,
+      // map: null,
+      // pathPolyline: null,
+      // BMapPoints: null,
     }
   },
   watch: {
@@ -121,6 +121,9 @@ ${this.getVrmMarkCodeByID(point.vrm_id)}
     },
   },
   created() {
+    // don't observe
+    this.convertedPoints = {}
+    //
     this.mapReady().then(({BMap, map}) => {
       this.BMap = BMap
       this.BMapApiLoading = false
