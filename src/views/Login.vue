@@ -36,6 +36,9 @@
               </md-input-container>
 
               <md-button type="submit" class="md-raised md-primary m-a-0">{{$t('signIn')}}</md-button>
+              <div class="m-t grey" v-if="$store.state.builtAt">
+                <small>Built at: {{$store.state.builtAt}}</small>
+              </div>
             </form>
 
           </md-card-content>

@@ -2,6 +2,7 @@
   <div id="app" class="container">
     <router-view v-if="$route.name==='login'||$route.name==='unauthorized'"></router-view>
     <template v-else-if="$store.state.authenticated">
+      <!-- top menu -->
       <md-whiteframe class="menu-layer top-menu">
         <md-toolbar md-theme="blue">
           <md-button class="md-icon-button" @click.native="toggleLeftSidenav">
@@ -87,11 +88,13 @@
             </div>
           </md-toolbar>
           <div class="p-a">
-            <span>{{$store.state.user.fullname}}</span>
-            <br>
+            <div>{{$store.state.user.fullname}}</div>
+            <div v-if="$store.state.userCompany">
+              <small>Company: {{$store.state.userCompany.company_name}}</small>
+            </div>
             <md-button class="md-raised md-warn m-x-0" @click.native="$store.dispatch('logout')">{{$t('logout')}}</md-button>
             <form novalidate @submit.stop.prevent="updateSettings">
-              <md-subheader class="md-inset">{{$t('settings')}}</md-subheader>
+              <md-subheader class="md-inset p-l-0">{{$t('settings')}}</md-subheader>
               <md-input-container>
                 <label for="mapSelect">{{$t('map')}}</label>
                 <md-select name="map" id="mapSelect" v-model="settings.map">
@@ -176,6 +179,10 @@ export default {
       set(value) { this.$store.commit('dateRangeInReport2', value) },
     },
   },
+  watch: {
+    '$store.state.user'() { this.$store.dispatch('updateUserCompany') },
+    '$store.state.companies'() { this.$store.dispatch('updateUserCompany') },
+  },
   methods: {
     toggleLeftSidenav() {
       this.$refs.leftSidenav.toggle()
@@ -237,6 +244,8 @@ export default {
         this.confirm.reject = reject
       })
     }
+    //
+    this.$store.dispatch('getCompanies')
   }
 }
 

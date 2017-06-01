@@ -1,7 +1,7 @@
 require('./check-versions')()
 var fs = require('fs')
 var dateFunctions = require('date-functions')
-
+// fs.writeFileSync('./dist/aa','666')
 process.env.NODE_ENV = 'production'
 
 var ora = require('ora')
@@ -18,8 +18,8 @@ spinner.start()
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
   if (err) throw err
   webpack(webpackConfig, function (err, stats) {
-    // append time to index.html
-    fs.appendFileSync('./dist/index.html', `\n<!-- build at: ${dateFunctions.format(new Date())} -->`)
+    // write builtAt to index.html
+    fs.writeFileSync('./dist/index.html', fs.readFileSync('./dist/index.html').toString().replace('<head>', `<head><script>window.builtAt='${dateFunctions.format(new Date())}'</script>`))
 
     spinner.stop()
     if (err) throw err

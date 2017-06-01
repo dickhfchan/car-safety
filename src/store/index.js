@@ -42,8 +42,10 @@ const store = new Vuex.Store({
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
     authenticated: storagedUser != null,
     user: storagedUser || {},
+    userCompany: null,
     companyCode: window.localStorage.getItem('companyCode'),
     menu,
+    companies: [],
     dateRange: [tenDaysBefore, today],
     vehicle: storagedDefaultVehicles[0].vrm_id,
     vehicles: storagedDefaultVehicles,
@@ -61,6 +63,7 @@ const store = new Vuex.Store({
     report2Drivers: [],
     dateRangeInReport2: [fourteenDaysBefore, today],
     alertInformationWarningType: 'all',
+    builtAt: window.builtAt,
   },
   mutations: {
     map(state, val) {
@@ -79,7 +82,9 @@ const store = new Vuex.Store({
     user(state, data) {
       state.user = data
     },
+    userCompany(state, val) { state.userCompany = val },
     companyCode(state, val) { state.companyCode = val; window.localStorage.setItem('companyCode', val) },
+    companies(state, val) { state.companies = val },
     dateRange(state, val) { state.dateRange = val },
     vehicle(state, val) {
       window.localStorage.setItem('vehicles', JSON.stringify([state.vehicles.find(v => v.vrm_id === val)]))
@@ -102,6 +107,17 @@ const store = new Vuex.Store({
     alertInformationWarningType(state, val) { state.alertInformationWarningType = val },
   },
   actions: {
+    getCompanies({commit}) {
+      const http = Vue.http
+      http.get('dao/company').then(({data}) => {
+        commit('companies', data.JSON)
+      })
+    },
+    updateUserCompany({state, commit}) {
+      if (state.user && state.companies.length > 0) {
+        commit('userCompany', state.companies.find(v => v.company_id === state.user.company_id))
+      }
+    },
     logout({commit, state}) {
       commit('authenticated', false)
       commit('user', {})
@@ -156,10 +172,10 @@ const store = new Vuex.Store({
       if (state.trips.length === 0) {
         commit('tripId', null)
       }
-      // trip dont exists in trips list
-      else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
-        commit('tripId', state.trips[0].veh_trip_id)
-      }
+      // !!disabled trip dont exists in trips list
+      // else if (state.tripId == null || !state.trips.find(v => v.veh_trip_id === state.tripId)) {
+      //   commit('tripId', state.trips[0].veh_trip_id)
+      // }
     },
     // get map points
     getPoints({state, commit}) {
