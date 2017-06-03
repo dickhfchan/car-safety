@@ -197,9 +197,15 @@ const store = new Vuex.Store({
           cancelToken: new CancelToken((c) => { local.cancelPrevgetPointsRequest = c })
         }).then(({data}) => {
           // convert result point format and store
-          commit('points', data.JSON.map(v => {
-            return { lat: v.location.latitude, lng: v.location.longitude }
-          }))
+          if (state.map === 'googleMap') {
+            commit('points', data.JSON.map(v => {
+              return { lat: v.location.latitude, lng: v.location.longitude }
+            }))
+          } else {
+            commit('points', data.JSON.map(v => {
+              return { lat: v[0], lng: v[1] }
+            }))
+          }
           commit('pointsLoading', false)
           commit('pointsExpired', false)
         }).catch((e) => {
