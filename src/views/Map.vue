@@ -163,6 +163,7 @@ export default {
   },
   watch: {
     '$store.state.tripId'() { this.getPoints() },
+    'mapType'() { this.getPoints() },
   },
   mounted() {
     this.$nextTick(() => {

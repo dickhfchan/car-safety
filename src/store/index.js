@@ -192,7 +192,8 @@ const store = new Vuex.Store({
         commit('pointsFailed', false)
         commit('pointsExpired', true)
         // http
-        http.get('google/' + tripId, {
+        const url = (state.map === 'googleMap' ? 'google/' : 'baidu/') + tripId
+        http.get(url, {
           cancelToken: new CancelToken((c) => { local.cancelPrevgetPointsRequest = c })
         }).then(({data}) => {
           // convert result point format and store
