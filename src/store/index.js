@@ -203,7 +203,7 @@ const store = new Vuex.Store({
             }))
           } else {
             commit('points', data.JSON.map(v => {
-              return { lat: v[0], lng: v[1] }
+              return { lat: v[0], lng: v[1], time: v[2] * 1000 }
             }))
           }
           commit('pointsLoading', false)

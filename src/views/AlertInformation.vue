@@ -36,7 +36,7 @@
   </div>
 </template>
 <script>
-import { retry, waitFor, camelCase } from 'helper-js'
+import { retry, waitFor, camelCase, binarySearch } from 'helper-js'
 import { format } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
@@ -75,14 +75,14 @@ export default {
           valueProcessor: ({row}) => this.warningTypesI18n[row.wt]
         },
         {
-          'name': 'start_time',
+          'name': 'startTimeDisplay',
           text: this.$t('startTime'),
-          valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
+          valueProcessor: ({row}) => format(new Date(row.start_time), 'HH:mm')
         },
         {
-          'name': 'end_time',
+          'name': 'endTimeDisplay',
           text: this.$t('endTime'),
-          valueProcessor: ({value}) => format(new Date(value), 'HH:mm')
+          valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm')
         },
         {
           'name': 'duration',
@@ -272,8 +272,16 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
           const rows = this.rows
           let prevOpenedInfoWindow = null
           let prevRowOfOpenedInfoWindow = null
+          const pointsClone = this.$store.state.points.slice(0)
+          pointsClone.sort((a, b) => a.time - b.time)
           rows.forEach(row => {
-            const point = new BMap.Point(row.lng, row.lat)
+            // find nearest point by time with binarySearch
+            let nearest
+            binarySearch(pointsClone, item => {
+              nearest = item
+              return row.start_time - item.time
+            })
+            const point = new BMap.Point(nearest.lng, nearest.lat)
             const icon = mapIcons[row.warningType]
             const BMapIcon = new BMap.Icon(icon, new BMap.Size(26, 26), {
               anchor: new BMap.Size(13, 26),
