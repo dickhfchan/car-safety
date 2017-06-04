@@ -5,7 +5,39 @@
 </template>
 <script>
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
+import { windowLoaded } from 'helper-js'
 //
+function loadBaiduMapDrawingManager() {
+  const isLoaded = () => window.BMapLib && window.BMapLib.DrawingManager
+  if (isLoaded()) {
+    return Promise.resolve()
+  }
+  const fun = loadBaiduMapDrawingManager
+  return windowLoaded().then(() => {
+    if (fun.loaded) {
+      return Promise.resolve()
+    } else {
+      if (!fun.requested) {
+        fun.requested = true
+        const script = document.createElement('script')
+        script.src = `http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js`
+        document.body.appendChild(script)
+        const script2 = document.createElement('script')
+        script2.src = `http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js`
+        document.body.appendChild(script2)
+      }
+      return new Promise(function(resolve, reject) {
+        const requestInterval = window.setInterval(function () {
+          if (isLoaded()) {
+            window.clearInterval(requestInterval)
+            resolve()
+          }
+        }, 10)
+      })
+    }
+  })
+}
+
 export default {
   props: {
     // points: {}, //
@@ -25,118 +57,80 @@ export default {
     }
   },
   watch: {
-//     points: {
-//       immediate: true,
-//       handler(points) {
-//         // clear overlays
-//         this.map && this.map.clearOverlays()
-//         //
-//         if (points && points.length > 0) {
-//           this.mapReady().then(({BMap, map}) => {
-//             // convertPoints
-//             this.convertPoints(points, BMap).then((data) => {
-//               const bmPoints = this.BMapPoints = data.points
-//               if (!this._autoCenterAndZoomed) {
-//                 this._autoCenterAndZoomed = true
-//                 this.autoCenterAndZoom(map, bmPoints, BMap)
-//               }
-//               //
-//               const BMapIconOnline = new BMap.Icon(onlineIcon, new BMap.Size(46, 46), {
-//                 anchor: new BMap.Size(23, 46),
-//               })
-//               const BMapIconOffline = new BMap.Icon(offlineIcon, new BMap.Size(46, 46), {
-//                 anchor: new BMap.Size(23, 46),
-//               })
-//               bmPoints.forEach((bmPoint, index) => {
-//                 const point = points[index] // origin point data
-//                 const marker = new BMap.Marker(bmPoint, {icon: point.online ? BMapIconOnline : BMapIconOffline})
-//                 map.addOverlay(marker)
-//                 const infoWindow = new BMap.InfoWindow(`
-// <div class="text-center">
-// ${this.getVrmMarkCodeByID(point.vrm_id)}
-// </div>`,
-//                   {
-//                     width: 60,
-//                     height: 30,
-//                   }
-//                 )
-//                 marker.addEventListener('click', () => {
-//                   map.openInfoWindow(infoWindow, bmPoint)
-//                 })
-//               })
-//             })
-//           })
-//         }
-//       }
-//     }
   },
   methods: {
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
     mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
-    // getVrmMarkCodeByID(vrmId) {
-    //   const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
-    //   return found && found.vrm_mark_code
-    // },
-    // convertPoints(points, BMap) {
-    //   const convertor = new BMap.Convertor()
-    //   //
-    //   const converted = this.convertedPoints
-    //   const resultPoints = []
-    //   const inConverted = []
-    //   const inConvertedIndexes = []
-    //   points.forEach((p, index) => {
-    //     const key = JSON.stringify(p)
-    //     if (converted[key]) {
-    //       resultPoints[index] = new BMap.Point(converted[key].lng, converted[key].lat)
-    //     } else {
-    //       inConverted.push(p)
-    //       inConvertedIndexes.push(index)
-    //     }
-    //   })
-    //   const BMapPoints = inConverted.map(point => new BMap.Point(point.lng, point.lat))
-    //   //
-    //   const promises = []
-    //   const n = this.coordinateConversionLimit
-    //   while (BMapPoints.length > 0) {
-    //     promises.push(new Promise((resolve, reject) => {
-    //       convertor.translate(BMapPoints.splice(0, n), 1, 5, (data) => { resolve(data) })
-    //     }))
-    //   }
-    //   return Promise.all(promises).then((datas) => {
-    //     let i = 0
-    //     for (const data of datas) {
-    //       for (const point of data.points) {
-    //         const index = inConvertedIndexes[i]
-    //         resultPoints[index] = point
-    //         converted[JSON.stringify(inConverted[i])] = inConverted[i]
-    //         i++
-    //       }
-    //     }
-    //     return { points: resultPoints, dataArr: datas }
-    //   })
-    // },
   },
   created() {
     // // don't observe
     // this.convertedPoints = {}
     //
     this.mapReady().then(({BMap, map}) => {
-      this.BMap = BMap
-      this.BMapApiLoading = false
-      //
-      map.centerAndZoom(new BMap.Point(116.404, 39.915), 15)
-	    map.enableScrollWheelZoom()
-      map.clearOverlays()
-      const polygon = new BMap.Polygon([
-        new BMap.Point(116.387112, 39.920977),
-        new BMap.Point(116.385243, 39.913063),
-        new BMap.Point(116.394226, 39.917988),
-        new BMap.Point(116.401772, 39.921364),
-        new BMap.Point(116.41248, 39.927893),
-    	], {strokeColor: 'blue', strokeWeight: 2, strokeOpacity: 0.5})  //
-      polygon.enableEditing()
-    	map.addOverlay(polygon)   //
+      loadBaiduMapDrawingManager().then(() => {
+        const DrawingManager = window.BMapLib.DrawingManager
+        this.BMap = BMap
+        this.BMapApiLoading = false
+          //
+        map.clearOverlays()
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 15)
+        map.enableScrollWheelZoom()
+        map.addControl(new BMap.CityListControl({
+          anchor: window.BMAP_ANCHOR_TOP_LEFT,
+          offset: new BMap.Size(10, 20),
+        // 切换城市之间事件
+        // onChangeBefore: function(){
+        //    alert('before');
+        // },
+        // 切换城市之后事件
+        // onChangeAfter:function(){
+        //   alert('after');
+        // }
+        }))
+        var overlays = []
+        var overlaycomplete = function(e) {
+          overlays.push(e.overlay)
+        }
+        var styleOptions = {
+          strokeColor: 'blue',    // 边线颜色。
+          fillColor: 'blue',      // 填充颜色。当参数为空时，圆形将没有填充效果。
+          strokeWeight: 3,       // 边线的宽度，以像素为单位。
+          strokeOpacity: 0.8,     // 边线透明度，取值范围0 - 1。
+          fillOpacity: 0.6,      // 填充的透明度，取值范围0 - 1。
+          strokeStyle: 'solid' // 边线的样式，solid或dashed。
+        }
+       // 实例化鼠标绘制工具
+        var drawingManager = new DrawingManager(map, {
+          isOpen: false, // 是否开启绘制模式
+          enableDrawingTool: true, // 是否显示工具栏
+          drawingToolOptions: {
+            anchor: window.BMAP_ANCHOR_TOP_RIGHT, // 位置
+            offset: new BMap.Size(5, 5), //偏离值
+          },
+          circleOptions: styleOptions, // 圆的样式
+          polylineOptions: styleOptions, // 线的样式
+          polygonOptions: styleOptions, // 多边形的样式
+          rectangleOptions: styleOptions // 矩形的样式
+        })
+      // 添加鼠标绘制工具监听事件，用于获取绘制结果
+        drawingManager.addEventListener('overlaycomplete', overlaycomplete)
+        // function clearAll() {
+        //   for (var i = 0; i < overlays.length; i++) {
+        //     map.removeOverlay(overlays[i])
+        //   }
+        //   overlays.length = 0
+        // }
+          // const polygon = new BMap.Polygon([
+          //   new BMap.Point(116.387112, 39.920977),
+          //   new BMap.Point(116.385243, 39.913063),
+          //   new BMap.Point(116.394226, 39.917988),
+          //   new BMap.Point(116.401772, 39.921364),
+          //   new BMap.Point(116.41248, 39.927893),
+          // ], {strokeColor: 'blue', strokeWeight: 2, strokeOpacity: 0.5})  //
+          // polygon.enableEditing()
+          // map.addOverlay(polygon)   //
+      })
     })
     window.addEventListener('resize', this.checkSize)
   },
@@ -146,7 +140,8 @@ export default {
 }
 
 </script>
-
+<!-- <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" /> -->
 <style lang="scss">
 .baidu-map-fencing{
   width: 100%;
@@ -160,5 +155,20 @@ export default {
 .baidu-map-fencing__map{
   width: 100%;
   height: 100%;
+}
+// city
+.BMap_CityListCtrl.BMap_noprint.anchorTL {
+  a{
+    color: #000;
+  }
+  .citylist_popup_main .city_content_top{
+    height: auto;
+  }
+}
+// drawing
+@import url("http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css");
+@import url("http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css");
+.BMapLib_box.BMapLib_marker{
+  display: none;
 }
 </style>
