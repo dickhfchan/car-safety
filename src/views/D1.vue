@@ -103,7 +103,7 @@ export default {
     return {
       title: this.$t('analysis'),
       columns: [
-        { name: 'vrm_grp_id', text: this.$t('vrmGrpId') },
+        { name: 'vrm_grp_id', text: this.$t('group') },
         { name: 'total_score',
           text: this.$t('totalScore')
         },
@@ -192,9 +192,9 @@ export default {
   watch: {
     groupBy() {
       if (this.groupBy === 'vrm_grp_id') {
-        Object.assign(this.columns[0], { name: 'vrm_grp_id', text: 'Group' })
+        Object.assign(this.columns[0], { name: 'vrm_grp_id', text: this.$t('group') })
       } else {
-        Object.assign(this.columns[0], { name: 'vrm_id', text: 'Vehicle' })
+        Object.assign(this.columns[0], { name: 'vrm_mark_code', text: this.$t('vehicle') })
       }
       this.getData()
     },
