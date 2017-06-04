@@ -165,6 +165,10 @@ export default {
     height: auto;
   }
 }
+// info window
+.BMap_bubble_content{
+  box-sizing: border-box;
+}
 // drawing
 @import url("http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css");
 @import url("http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css");
