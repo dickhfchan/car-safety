@@ -61,6 +61,11 @@ export default [
     routeName: 'realTime'
   },
   {
+    text: 'fencing',
+    icon: '',
+    routeName: 'fencing'
+  },
+  {
     text: 'settings',
     icon: 'analysis',
     routeName: 'datatables'

@@ -86,6 +86,8 @@ export default {
   driver: '司机',
   // RealTime.vue
   realTime: '实时',
+  // Fencing.vue
+  fencing: '地理围栏',
   // columns
   startDate: '开始日期',
   drvDistance: '公里数',

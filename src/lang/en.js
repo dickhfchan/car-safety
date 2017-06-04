@@ -86,6 +86,8 @@ export default {
   driver: 'Driver',
   // RealTime.vue
   realTime: 'Real Time',
+  // Fencing.vue
+  fencing: 'Fencing',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',
