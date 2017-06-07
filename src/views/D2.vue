@@ -85,6 +85,10 @@
 import { retry } from 'helper-js'
 import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
 
+function GetRound(num, len) {
+  return Math.round(num * Math.pow(10, len)) / Math.pow(10, len)
+}
+
 export default {
   components: {},
   data() {
@@ -194,7 +198,7 @@ export default {
         // average
         groupedRows.forEach(row => {
           toAggregrate.forEach(field => {
-            row[field] = Math.round(row[field] / row._count)
+            row[field] = GetRound(row[field] / row._count, 1)
           })
         })
         this.rows1 = groupedRows
