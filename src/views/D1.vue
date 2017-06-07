@@ -32,7 +32,7 @@
         <div class="card-buttons">
           <md-select v-model="groupBy" class="m-r">
             <md-option value="vrm_grp_id">{{$t('group')}}</md-option>
-            <md-option value="vrm_id">{{$t('vehicle')}}</md-option>
+            <md-option value="vrm_mark_code">{{$t('vehicle')}}</md-option>
          </md-select>
           <md-select v-model="dateRange">
             <md-option :value="1">{{$t('lastDate')}}</md-option>
