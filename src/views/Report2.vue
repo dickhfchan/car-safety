@@ -14,7 +14,7 @@
 
            <md-table-body>
              <md-table-row v-for="row in rows1" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index === 1 && 'rank' + row.scoreRank">
+               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index === 1 && 'rank' + (row.scoreRank > 20 ? 20 : row.scoreRank)">
                  {{ row[col.name] }}
                </md-table-cell>
              </md-table-row>
@@ -317,7 +317,7 @@ export default {
         if (cell !== prev) {
           rank++
         }
-        this.$set(row, 'scoreRank', rank > 20 ? 20 : rank)
+        this.$set(row, 'scoreRank', rank)
         prev = cell
       })
       windowLoaded().then(() => this.renderChart1())

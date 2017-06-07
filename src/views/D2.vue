@@ -54,7 +54,7 @@
 
            <md-table-body>
              <md-table-row v-for="row in rows1Ranking" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index > 1 && 'rank' + row[col.name]">
+               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index > 1 && 'rank' + (row[col.name] > 20 ? 20 : row[col.name])">
                  {{ row[col.name] }}
                </md-table-cell>
              </md-table-row>
@@ -220,7 +220,7 @@ export default {
               if (cell !== prev) {
                 rank++
               }
-              row[col.name] = rank > 20 ? 20 : rank
+              row[col.name] = rank
               prev = cell
             })
           }
