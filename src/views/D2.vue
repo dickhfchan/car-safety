@@ -169,13 +169,35 @@ export default {
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading = false
-        this.rows1 = data.JSON
+        const filteredRows = data.JSON
         .filter(row => start <= row.start_date && row.start_date <= end)
         .filter(row => row.company_id === this.$store.state.user.company_id)
         // compute hmw
-        this.rows1.forEach(row => {
+        filteredRows.forEach(row => {
           row.hmw = row.hmw_h + row.hmw_m + row.hmw_l
         })
+        // group by driver name
+        const groupedRows = []
+        const toAggregrate = this.columns1.filter(col => ['name', '車牌'].indexOf(col.name) === -1).map(col => col.name)
+        filteredRows.forEach(row => {
+          let row0 = groupedRows.find(v => v.name === row.name)
+          if (!row0) {
+            row0 = Object.assign({ _count: 0 }, row)
+            groupedRows.push(row0)
+          } else {
+            toAggregrate.forEach(field => {
+              row0[field] = (row0[field] || 0) + (row[field] || 0)
+            })
+          }
+          row0._count++
+        })
+        // average
+        groupedRows.forEach(row => {
+          toAggregrate.forEach(field => {
+            row[field] = Math.round(row[field] / row._count)
+          })
+        })
+        this.rows1 = groupedRows
         // get ranking
         this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
         initRows(this, this.rows1, this.columns1)
@@ -184,7 +206,9 @@ export default {
           if (i > 1) {
             const ranking = this.rows1Ranking.slice(0)
             ranking.sort((a, b) => a[col.name] - b[col.name])
-            ranking.reverse()
+            if (col.name === 'total_score') {
+              ranking.reverse()
+            }
             let prev = -1
             let rank = 0
             ranking.forEach(row => {
