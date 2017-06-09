@@ -302,3 +302,34 @@ export function newDate(str) {
   t[1].split(':').forEach(v => { args.push(parseInt(v)) })
   return new Date(...args)
 }
+
+export function getRankColor(rank, max, order = 'asc') {
+  const blue = 30
+  const min = 1
+  if (max === min) {
+    return order === 'asc' ? `rgb(0, 255, ${blue})` : `rgb(255, 0, ${blue})`
+  }
+  const halfL = Math.floor((max - min + 1) / 2)
+  const halfR = max - min + 1 - halfL
+  const unitL = 255 / halfL
+  const unitR = 255 / halfR
+  const center = halfL + min - 1
+  let red, green
+  if (rank <= center) {
+    red = Math.round((rank - min) * unitL)
+    green = 255
+  } else {
+    red = 255
+    green = Math.round(255 - (rank - center) * unitR)
+  }
+  if (order === 'desc') {
+    const t = red
+    red = green
+    green = t
+  }
+  return `rgb(${red}, ${green}, 30)`
+}
+
+export function getMaxRank(rows, colName) {
+  return Math.max(...rows.map(row => row[colName]))
+}

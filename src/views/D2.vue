@@ -54,7 +54,8 @@
 
            <md-table-body>
              <md-table-row v-for="row in rows1Ranking" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index > 1 && 'rank' + (row[col.name] > 20 ? 20 : row[col.name])">
+               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name"
+                :style="getColorStyle(rows1Ranking, row, col)">
                  {{ row[col.name] }}
                </md-table-cell>
              </md-table-row>
@@ -83,11 +84,13 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getMaxRank } from '../utils.js'
 
 function GetRound(num, len) {
   return Math.round(num * Math.pow(10, len)) / Math.pow(10, len)
 }
+
+const notScoreCols = ['name', '車牌']
 
 export default {
   components: {},
@@ -182,7 +185,7 @@ export default {
         })
         // group by driver name
         const groupedRows = []
-        const toAggregrate = this.columns1.filter(col => ['name', '車牌'].indexOf(col.name) === -1).map(col => col.name)
+        const toAggregrate = this.columns1.filter(col => notScoreCols.indexOf(col.name) === -1).map(col => col.name)
         filteredRows.forEach(row => {
           let row0 = groupedRows.find(v => v.name === row.name)
           if (!row0) {
@@ -231,6 +234,15 @@ export default {
         throw e
       })
     },
+    getRankColor,
+    getMaxRank,
+    getColorStyle(rows, row, col, order = 'asc') {
+      if (notScoreCols.indexOf(col.name) === -1) {
+        const max = this.getMaxRank(rows, col.name)
+        const color = this.getRankColor(row[col.name], max, order)
+        return { backgroundColor: color }
+      }
+    },
     onSort(e, rows, columns) {
       sortRows(e, rows, columns)
     },
@@ -251,23 +263,4 @@ export default {
 }
 </script>
 <style lang="scss">
-.md-table-cell, .md-table tbody .md-table-row:hover .md-table-cell{
-  $total : 20;
-  $half : $total / 2;
-  $unit : 255 / $half;
-  @for $i from 1 through $total{
-    &.rank#{$i}{
-      @if $i <= $half {
-        $red : ($i - 1) * $unit;
-        $green: 255;
-        background-color: rgb($red, $green, 30);
-      }
-      @else {
-        $red : 255;
-        $green: 255 - ($i - 10) * $unit;
-        background-color: rgb($red, $green, 30);
-      }
-    }
-  }
-}
 </style>

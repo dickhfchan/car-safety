@@ -14,7 +14,8 @@
 
            <md-table-body>
              <md-table-row v-for="row in rows1" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name" :class="index === 1 && 'rank' + (row.scoreRank > 20 ? 20 : row.scoreRank)">
+               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name"
+               :style="getColorStyle(rows1, row, col)">
                  {{ row[col.name] }}
                </md-table-cell>
              </md-table-row>
@@ -123,7 +124,7 @@
 </template>
 <script>
 import { retry, windowLoaded } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getMaxRank } from '../utils.js'
 import { format } from 'date-functions'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
@@ -352,6 +353,15 @@ export default {
     onSort(e, rows, columns) {
       sortRows(e, rows, columns)
     },
+    getRankColor,
+    getMaxRank,
+    getColorStyle(rows, row, col, order = 'asc') {
+      if (col.name === 'total_score') {
+        const max = this.getMaxRank(rows, 'scoreRank')
+        const color = this.getRankColor(row[col.name], max, order)
+        return { backgroundColor: color }
+      }
+    },
     exportExcel(rows, columns, title) {
       const cols = columns
       const data = rows.map(row => {
@@ -408,25 +418,6 @@ export default {
 </script>
 <style lang="scss">
 .report2{
-  .md-table-cell, .md-table tbody .md-table-row:hover .md-table-cell{
-    $total : 20;
-    $half : $total / 2;
-    $unit : 255 / $half;
-    @for $i from 1 through $total{
-      &.rank#{$i}{
-        @if $i <= $half {
-          $red : ($i - 1) * $unit;
-          $green: 255;
-          background-color: rgb($red, $green, 30);
-        }
-        @else {
-          $red : 255;
-          $green: 255 - ($i - 10) * $unit;
-          background-color: rgb($red, $green, 30);
-        }
-      }
-    }
-  }
   .chart1{
     line.ct-bar{
       stroke: #2196f3;
