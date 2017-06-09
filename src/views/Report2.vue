@@ -124,7 +124,7 @@
 </template>
 <script>
 import { retry, windowLoaded } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getMaxRank } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
 import { format } from 'date-functions'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
@@ -309,18 +309,13 @@ export default {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
       initRows(this, this.rows1, this.columns1)
-      const rows1Sorted = this.rows1.slice(0).sort((a, b) => a.total_score - b.total_score)
-      rows1Sorted.reverse()
-      let prev = -1
-      let rank = 0
-      rows1Sorted.forEach(row => {
-        const cell = parseFloat(row.total_score)
-        if (cell !== prev) {
-          rank++
-        }
-        this.$set(row, 'scoreRank', rank)
-        prev = cell
+      // set scoreRank column
+      const oneCol = this.rows1.map(row => row['total_score'])
+      const ranks = getRanks(oneCol, 'desc')
+      this.rows1.forEach((row, i) => {
+        this.$set(row, 'scoreRank', ranks[i])
       })
+      // render chart1
       windowLoaded().then(() => this.renderChart1())
     },
     getData2() {
@@ -354,10 +349,9 @@ export default {
       sortRows(e, rows, columns)
     },
     getRankColor,
-    getMaxRank,
     getColorStyle(rows, row, col, order = 'asc') {
       if (col.name === 'total_score') {
-        const max = this.getMaxRank(rows, 'scoreRank')
+        const max = Math.max(...rows.map(row => row['scoreRank']))
         const color = this.getRankColor(row[col.name], max, order)
         return { backgroundColor: color }
       }

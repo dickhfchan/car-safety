@@ -84,7 +84,7 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getMaxRank } from '../utils.js'
+import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
 
 function GetRound(num, len) {
   return Math.round(num * Math.pow(10, len)) / Math.pow(10, len)
@@ -206,27 +206,19 @@ export default {
         })
         this.rows1 = groupedRows
         // get ranking
+
         this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
         initRows(this, this.rows1, this.columns1)
         initRows(this, this.rows1Ranking, this.columns1)
-        this.columns1.forEach((col, i) => {
-          if (i > 1) {
-            const ranking = this.rows1Ranking.slice(0)
-            ranking.sort((a, b) => a[col.name] - b[col.name])
-            if (col.name === 'total_score') {
-              ranking.reverse()
-            }
-            let prev = -1
-            let rank = 0
-            ranking.forEach(row => {
-              const cell = parseFloat(row[col.name])
-              if (cell !== prev) {
-                rank++
-              }
-              row[col.name] = rank
-              prev = cell
-            })
+        this.columns1.forEach(col => {
+          if (notScoreCols.indexOf(col.name) > -1) {
+            return
           }
+          const oneCol = this.rows1Ranking.map(row => row[col.name])
+          const ranks = getRanks(oneCol, col.name === 'total_score' ? 'desc' : 'asc')
+          this.rows1Ranking.forEach((row, i) => {
+            row[col.name] = ranks[i]
+          })
         })
       }).catch((e) => {
         this.loading = false
@@ -235,10 +227,9 @@ export default {
       })
     },
     getRankColor,
-    getMaxRank,
     getColorStyle(rows, row, col, order = 'asc') {
       if (notScoreCols.indexOf(col.name) === -1) {
-        const max = this.getMaxRank(rows, col.name)
+        const max = Math.max(...rows.map(row => row[col.name]))
         const color = this.getRankColor(row[col.name], max, order)
         return { backgroundColor: color }
       }

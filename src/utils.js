@@ -330,6 +330,11 @@ export function getRankColor(rank, max, order = 'asc') {
   return `rgb(${red}, ${green}, 30)`
 }
 
-export function getMaxRank(rows, colName) {
-  return Math.max(...rows.map(row => row[colName]))
+export function getRanks(arr0, order = 'asc') {
+  const arr = arr0.slice(0)
+  arr.sort((a, b) => a - b)
+  if (order === 'desc') {
+    arr.reverse()
+  }
+  return arr0.map(item => arr.indexOf(item) + 1)
 }
