@@ -201,10 +201,7 @@ export default {
         // average
         groupedRows.forEach(row => {
           toAggregrate.forEach(field => {
-            row[field] = row[field] / row._count
-            // per 100 km
-            row[field] = Math.round(((row[field] || 0) / (row.drv_distance / 100)) * 100000)
-            row[field] = GetRound(row[field], 1)
+            row[field] = GetRound(row[field] / row._count, 1)
           })
         })
         this.rows1 = groupedRows
