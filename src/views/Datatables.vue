@@ -134,13 +134,13 @@ export default {
               'name': 'contact_phone_no'
             },
             {
-              'name': 'create_ts'
-            },
-            {
               'name': 'status'
             },
             {
               'name': 'timezone'
+            },
+            {
+              'name': 'create_ts'
             },
             {
               'name': 'version'
@@ -151,9 +151,6 @@ export default {
           'columns': [
             {
               'name': 'company_id'
-            },
-            {
-              'name': 'create_ts'
             },
             {
               'name': 'create_user'
@@ -183,23 +180,14 @@ export default {
               'name': 'phone_office'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             }
           ]
         },
-        driver_group: {
-          columns: [
+        'driver_group': {
+          'columns': [
             {
               'name': 'company_id'
-            },
-            {
-              'name': 'create_ts'
             },
             {
               'name': 'create_user'
@@ -214,21 +202,12 @@ export default {
               'name': 'grp_descpt'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             }
-          ],
+          ]
         },
         'driver_group_dtl': {
           'columns': [
-            {
-              'name': 'create_ts'
-            },
             {
               'name': 'create_user'
             },
@@ -242,18 +221,12 @@ export default {
               'name': 'drv_grp_id'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             }
           ]
         },
-        mob_device: {
-          columns: [
+        'mob_device': {
+          'columns': [
             {
               'name': 'active_end_date'
             },
@@ -274,9 +247,6 @@ export default {
             },
             {
               'name': 'company_id'
-            },
-            {
-              'name': 'create_ts'
             },
             {
               'name': 'create_user'
@@ -303,13 +273,7 @@ export default {
               'name': 'status'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             },
             {
               'name': 'vrm_id'
@@ -320,9 +284,6 @@ export default {
           'columns': [
             {
               'name': 'company_id'
-            },
-            {
-              'name': 'create_ts'
             },
             {
               'name': 'fullname'
@@ -350,9 +311,6 @@ export default {
             },
             {
               'name': 'username'
-            },
-            {
-              'name': 'version'
             }
           ]
         },
@@ -382,8 +340,8 @@ export default {
             }
           ]
         },
-        users: {
-          columns: [
+        'users': {
+          'columns': [
             {
               'name': 'company'
             },
@@ -419,9 +377,6 @@ export default {
               'name': 'company_id'
             },
             {
-              'name': 'create_ts'
-            },
-            {
               'name': 'create_user'
             },
             {
@@ -449,16 +404,10 @@ export default {
               'name': 'run_duration'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
             },
             {
               'name': 'vehicle_id'
-            },
-            {
-              'name': 'version'
             },
             {
               'name': 'year'
@@ -471,9 +420,6 @@ export default {
               'name': 'company_id'
             },
             {
-              'name': 'create_ts'
-            },
-            {
               'name': 'create_user'
             },
             {
@@ -483,16 +429,10 @@ export default {
               'name': 'status'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
             },
             {
               'name': 'vehicle_id'
-            },
-            {
-              'name': 'version'
             },
             {
               'name': 'vrm_id'
@@ -508,9 +448,6 @@ export default {
               'name': 'company_id'
             },
             {
-              'name': 'create_ts'
-            },
-            {
               'name': 'create_user'
             },
             {
@@ -520,13 +457,7 @@ export default {
               'name': 'grp_descpt'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             },
             {
               'name': 'vrm_grp_id'
@@ -536,19 +467,10 @@ export default {
         'veh_reg_mark_group_dtl': {
           'columns': [
             {
-              'name': 'create_ts'
-            },
-            {
               'name': 'create_user'
             },
             {
-              'name': 'update_ts'
-            },
-            {
               'name': 'update_user'
-            },
-            {
-              'name': 'version'
             },
             {
               'name': 'vrm_grp_dtl_id'
@@ -604,6 +526,15 @@ export default {
       }
       initColumns(this, dt.columns)
     }
+    const dataTables = {}
+    for (const key in this.datatables) {
+      // const dt = this.datatables[key]
+      dataTables[key] = null
+      this.$http.get('dao/' + key).then(({data}) => {
+        dataTables[key] = Object.keys(data.JSON[0])
+      })
+    }
+    window.dataTables = dataTables
   },
   mounted() {
     this.$nextTick(() => {

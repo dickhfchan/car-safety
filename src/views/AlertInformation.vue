@@ -110,6 +110,22 @@ export default {
           'text': this.$t('nearHw')
         },
         {
+          'name': 'wt',
+          'text': this.$t('wt')
+        },
+        {
+          'name': 'ss',
+          'text': this.$t('ss')
+        },
+        {
+          'name': 'alt',
+          'text': this.$t('alt')
+        },
+        {
+          'name': 'bearing',
+          'text': this.$t('bearing')
+        },
+        {
           'name': 'lat',
           'text': this.$t('lat')
         },

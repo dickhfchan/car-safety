@@ -8,6 +8,7 @@ import runtime from '@/runtime.js'
 import GoogleMapTrackRender from './GoogleMapTrackRender.vue'
 import onlineIcon from '@/assets/img/map/ONline.png'
 import offlineIcon from '@/assets/img/map/OFFline.png'
+import { format } from 'date-functions'
 //
 export default {
   props: {
@@ -46,10 +47,12 @@ export default {
                 icon: point.online ? onlineIcon : offlineIcon
               })
               overLays.push(marker)
+              const detail = this.getPointByID(point.vrm_id) || {}
               const infowindow = new google.maps.InfoWindow({
                 content: `
-<div class="text-center">
-${this.getVrmMarkCodeByID(point.vrm_id)}
+<div class="text-center" style="font-size:14px;line-height:30px;">
+${this.getVrmMarkCodeByID(point.vrm_id)}<br />
+Last active: ${format(new Date(detail.last_loc_update_ts))}
 </div>`,
               })
               marker.addListener('click', () => {
@@ -74,6 +77,9 @@ ${this.getVrmMarkCodeByID(point.vrm_id)}
     getVrmMarkCodeByID(vrmId) {
       const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
       return found && found.vrm_mark_code
+    },
+    getPointByID(vrmId) {
+      return this.points && this.points.find(p => p.vrm_id === vrmId)
     },
   },
   created() {

@@ -51,7 +51,9 @@ export default {
       retry(() => this.$http.get('dao/veh_reg_mark'))()
       .then(({data}) => {
         // sort by vrm_mark_code asc
-        const vehicles = data.JSON.sort((a, b) => {
+        const vehicles = data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
+        .sort((a, b) => {
           const aCode = a.vrm_mark_code
           const bCode = b.vrm_mark_code
           if (aCode < bCode) {

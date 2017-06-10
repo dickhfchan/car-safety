@@ -137,6 +137,10 @@ export default {
   avgWarnId: 'avgWarnId',
   vrmGrpId: 'avgWarnId',
   driverName: '司机名',
+  wt: 'Wt',
+  ss: 'Ss',
+  alt: 'Alt',
+  bearing: 'Bearing',
   // store
   getTripsFailed: '获取行程失败',
   getPointsFailed: '获取历史轨迹失败',

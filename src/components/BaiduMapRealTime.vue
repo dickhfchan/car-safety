@@ -8,6 +8,7 @@ import runtime from '@/runtime.js'
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
 import onlineIcon from '@/assets/img/map/ONline.png'
 import offlineIcon from '@/assets/img/map/OFFline.png'
+import { format } from 'date-functions'
 //
 export default {
   props: {
@@ -54,13 +55,16 @@ export default {
                 const point = points[index] // origin point data
                 const marker = new BMap.Marker(bmPoint, {icon: point.online ? BMapIconOnline : BMapIconOffline})
                 map.addOverlay(marker)
+                const detail = this.getPointByID(point.vrm_id) || {}
                 const infoWindow = new BMap.InfoWindow(`
 <div class="text-center">
-${this.getVrmMarkCodeByID(point.vrm_id)}
+${this.getVrmMarkCodeByID(point.vrm_id)}<br />
+Last active: ${format(new Date(detail.last_loc_update_ts))}
 </div>`,
                   {
                     width: 60,
                     height: 30,
+                    offset: new BMap.Size(0, -46)
                   }
                 )
                 marker.addEventListener('click', () => {
@@ -80,6 +84,9 @@ ${this.getVrmMarkCodeByID(point.vrm_id)}
     getVrmMarkCodeByID(vrmId) {
       const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
       return found && found.vrm_mark_code
+    },
+    getPointByID(vrmId) {
+      return this.points && this.points.find(p => p.vrm_id === vrmId)
     },
     convertPoints(points, BMap) {
       const convertor = new BMap.Convertor()
