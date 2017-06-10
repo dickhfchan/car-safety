@@ -11,7 +11,7 @@
         <md-table-row v-for="row in filteredRows" :key="row.log_id" :class="{active: row.active}">
           <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
             <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
-            <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row[col.name]" @click.native="playAlertVideo(row)">
+            <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row.warning_vdo_ready==='Y'" @click.native="playAlertVideo(row)">
               <md-icon>ondemand_video</md-icon>
             </md-button>
           </md-table-cell>
@@ -82,19 +82,12 @@ export default {
         {
           'name': 'endTimeDisplay',
           text: this.$t('endTime'),
+          visible: false,
           valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm')
         },
         {
           'name': 'duration',
           text: this.$t('duration')
-        },
-        {
-          'name': 'lat',
-          'text': this.$t('lat')
-        },
-        {
-          'name': 'lng',
-          'text': this.$t('lng')
         },
         {
           'name': 'start_spd',
@@ -115,6 +108,14 @@ export default {
         {
           'name': 'near_hw',
           'text': this.$t('nearHw')
+        },
+        {
+          'name': 'lat',
+          'text': this.$t('lat')
+        },
+        {
+          'name': 'lng',
+          'text': this.$t('lng')
         },
       ],
       rows: [],
