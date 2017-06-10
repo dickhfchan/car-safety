@@ -60,11 +60,11 @@ export default {
         this.map && this.map.clearOverlays()
         //
         if (points && points.length > 0) {
-          // pick one point out of 10 if distance more than 100km
-          const trip = this.$store.state.trips.find(item => item.veh_trip_id === this.$store.state.tripId)
-          if (trip && trip.drv_distance / 100000 > 100) {
-            points = points.filter((p, i) => i % 10 === 0)
-          }
+          // !!disabled pick one point out of 10 if distance more than 100km
+          // const trip = this.$store.state.trips.find(item => item.veh_trip_id === this.$store.state.tripId)
+          // if (trip && trip.drv_distance / 100000 > 100) {
+          //   points = points.filter((p, i) => i % 10 === 0)
+          // }
           this.mapReady().then(({BMap, map}) => {
             points = points.map(p => new BMap.Point(p.lng, p.lat))
             this.BMapPoints = points
