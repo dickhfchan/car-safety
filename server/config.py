@@ -1,6 +1,6 @@
 ##DATABASE CONNECTION PARAMETERS:
 db_username = "root"
-db_password = "Knode$2017"
+db_password = "123"
 db_name = "gds_frontend"
 host = '127.0.0.1'
 port = 3306

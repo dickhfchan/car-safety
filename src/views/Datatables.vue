@@ -138,12 +138,6 @@ export default {
             },
             {
               'name': 'timezone'
-            },
-            {
-              'name': 'create_ts'
-            },
-            {
-              'name': 'version'
             }
           ]
         },
@@ -526,15 +520,19 @@ export default {
       }
       initColumns(this, dt.columns)
     }
-    const dataTables = {}
-    for (const key in this.datatables) {
-      // const dt = this.datatables[key]
-      dataTables[key] = null
-      this.$http.get('dao/' + key).then(({data}) => {
-        dataTables[key] = Object.keys(data.JSON[0])
-      })
-    }
-    window.dataTables = dataTables
+    // get datatables with columns
+    // const dataTables = {}
+    // for (const key in this.datatables) {
+    //   // const dt = this.datatables[key]
+    //   dataTables[key] = null
+    //   this.$http.get('dao/' + key).then(({data}) => {
+    //     dataTables[key] = Object.keys(data.JSON[0])
+    //     if (dataTables[key].indexOf('version')) {
+    //       console.log(key)
+    //     }
+    //   })
+    // }
+    // window.dataTables = dataTables
   },
   mounted() {
     this.$nextTick(() => {

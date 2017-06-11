@@ -55,17 +55,17 @@ dt_columns = ['create_ts','start_date', 'end_date', 'update_ts', 'last_loc_updat
 
 class Google_JSON(Resource):
     def get(self, veh_trip_id):
-    
+
         id_Exist = check_veh_trip_id(conn, veh_trip_id)
 
         if id_Exist:
-            # If id is found, return the data from google_snap_gps table 
+            # If id is found, return the data from google_snap_gps table
             query = "SELECT * FROM google_snap_gps WHERE veh_trip_id = %s" % veh_trip_id
             json = generate_dict_from_sql(query, conn)
-            json = [{'location':{'latitude': x['lat'], 'longitude': x['lng']}, 'originalIndex':x['originalIndex'], 'placeId':x['placeId']} for x in json] 
+            json = [{'location':{'latitude': x['lat'], 'longitude': x['lng']}, 'originalIndex':x['originalIndex'], 'placeId':x['placeId']} for x in json]
             message = "%s records retrieved from google_snap_gps"% len(json)
             return {"message": message, 'JSON': json}, 200, default_headers
-        
+
         else:
             # if id is not found, prepare data for GOOGLE API, message can be printed for troubleshoot purpose
             table, message = clean_veh_trip_table(conn, veh_trip_id)
@@ -122,10 +122,10 @@ class Tables_JSON(Resource):
             print key
 
             if key is not None and password is not None:
-                results, message = retrieve_table([table_name, key, password], conn, json_format=True)         
+                results, message = retrieve_table([table_name, key, password], conn, json_format=True)
                 return {'message': message,'JSON': results}, 200, default_headers
             else:
-                return {'message':'please check your key, password', 'JSON':[]}, 400,{'message': "Check your query string"}                
+                return {'message':'please check your key, password', 'JSON':[]}, 400,{'message': "Check your query string"}
 
         elif table_name == 'log_data':
             ##Log_data table: please add <start_date> and <end_date> in query string
@@ -136,12 +136,12 @@ class Tables_JSON(Resource):
             args = parser.parse_args()
             start_time = args.get('start_time')
             end_time = args.get('end_time')
-	        print start_time
-	        start_time = start_time - timedelta(hours=8)
-	        print start_time
+	        # print start_time
+	        # start_time = start_time - timedelta(hours=8)
+	        # print start_time
             end_time   = end_time - timedelta(hours=8)
 
-            if key is not None and type(start_time) is datetime and type(end_time) is datetime: 
+            if key is not None and type(start_time) is datetime and type(end_time) is datetime:
                 ##Validation for key, start_time and end_time
                 results, message = retrieve_table([table_name, key, start_time, end_time], conn, json_format=True)
                 return {'message': message,'JSON': results}, 200, default_headers
@@ -184,7 +184,7 @@ class Tables_JSON(Resource):
                         json[each] = datetime.fromtimestamp(json[each]).strftime('%Y-%m-%d %H:%M:%S')
                     else:
                         continue
-            
+
             #Query database if this pk alrdy exists
             _dict = generate_dict_from_sql("SELECT * FROM %s WHERE %s = %s"%(table_name, pk_name, pk_value), conn, False)
 
@@ -196,7 +196,7 @@ class Tables_JSON(Resource):
                 values = tuple(json.values())
                 sql = "INSERT INTO %s (%s) VALUES (%s)"%(table_name, columns, placeholders)
                 print sql
-                
+
                 cursor = conn.cursor()
                 try:
                     cursor.execute(sql,values)
@@ -208,16 +208,16 @@ class Tables_JSON(Resource):
 
             #Perform Update if the pk alrdy exists
             else:
-                
+
                 sql = "UPDATE %s SET %s WHERE %s = %s"
-                
+
                 placeholders = ""
                 for k,v in json.items():
                     if type(v) is str or type(v) is unicode:
                         placeholders += "%s = '%s',"%(k,v)
                     else:
                         placeholders += "%s = %s,"%(k,v)
-                
+
                 #Construct Update statement
                 sql = sql%(table_name, placeholders[:-1], pk_name, pk_value)
 
@@ -279,5 +279,4 @@ api.add_resource(Google_JSON, '/api/google/<int:veh_trip_id>')
 api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080, debug=True)
-
+    app.run(host='0.0.0.0',port=8081, debug=True)

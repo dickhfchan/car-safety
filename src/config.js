@@ -8,7 +8,7 @@ const config = {
   },
   //
   clientBaseUrl: '/',
-  serverBaseUrl: window.serverBaseUrl || 'http://dev4.neshmobilog.com:48080/api', //'http://54.255.227.246:8080/api/',
+  serverBaseUrl: window.serverBaseUrl || 'http://dev4.neshmobilog.com:48080/api', // ' http://54.255.227.246:8080/api/',
   clientLoginUrl: null,
 }
 switch (process.env.NODE_ENV) {
