@@ -1,7 +1,8 @@
 const bodyParser = require('body-parser')
 const axios = require('axios')
+const config = require('../config.js')
 const http = axios.create({
-  baseURL: 'http://54.255.227.246:8080/api/',
+  baseURL: config.serverBaseUrl,
   // withCredentials: config.isCROS
 })
 

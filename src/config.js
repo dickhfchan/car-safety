@@ -1,3 +1,9 @@
+let customServerBaseUrl
+try {
+  customServerBaseUrl = window.serverBaseUrl
+} catch (e) {
+}
+
 const config = {
   isDevelopment: false,
   isCROS: false,
@@ -8,7 +14,7 @@ const config = {
   },
   //
   clientBaseUrl: '/',
-  serverBaseUrl: window.serverBaseUrl || 'http://dev4.neshmobilog.com:48080/api', // ' http://54.255.227.246:8080/api/',
+  serverBaseUrl: customServerBaseUrl || 'http://127.0.0.1:8081/api', // 'http://dev4.neshmobilog.com:48080/api', // ' http://54.255.227.246:8080/api/',
   clientLoginUrl: null,
 }
 switch (process.env.NODE_ENV) {
@@ -22,4 +28,4 @@ switch (process.env.NODE_ENV) {
     })
     break
 }
-export default config
+module.exports = config
