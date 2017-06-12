@@ -89,15 +89,16 @@
   height: 100%;
   line-height: 36px;
 }
-$paddingX: 8px;
+$paddingLeft: 16px;
+$paddingRIght: 8px;
 $paddingLeftFirst: 16px;
 .md-table .md-table-cell .md-table-cell-container {
-  padding-left: $paddingX;
-  padding-right: $paddingX;
+  padding-left: $paddingLeft;
+  padding-right: $paddingRIght;
 }
 .md-table .md-table-head-text{
-  padding-left: $paddingX;
-  padding-right: $paddingX;
+  padding-left: $paddingLeft;
+  padding-right: $paddingRIght;
 }
 
 .md-table .md-table-head:first-child .md-table-head-text {
