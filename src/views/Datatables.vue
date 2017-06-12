@@ -62,7 +62,7 @@
           <form novalidate @submit.stop.prevent="saveNew()">
             <md-layout :md-gutter="16">
               <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
-                <md-input-container>
+                <md-input-container v-if="field.visible">
                   <label>{{field.text}}</label>
                   <md-input v-model="newRow[field.name]"></md-input>
                 </md-input-container>
@@ -83,7 +83,7 @@
           <form novalidate @submit.stop.prevent="saveEditing()">
             <md-layout :md-gutter="16">
               <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
-                <md-input-container>
+                <md-input-container  v-if="field.visible">
                   <label>{{field.text}}</label>
                   <md-input v-model="editingRow[field.name]"></md-input>
                 </md-input-container>
@@ -138,6 +138,10 @@ export default {
             },
             {
               'name': 'timezone'
+            },
+            {
+              'name': 'version',
+              'visible': false
             }
           ]
         },
@@ -175,6 +179,10 @@ export default {
             },
             {
               'name': 'update_user'
+            },
+            {
+              'name': 'version',
+              'visible': false
             }
           ]
         },
@@ -197,6 +205,10 @@ export default {
             },
             {
               'name': 'update_user'
+            },
+            {
+              'name': 'version',
+              'visible': false
             }
           ]
         },
@@ -216,6 +228,10 @@ export default {
             },
             {
               'name': 'update_user'
+            },
+            {
+              'name': 'version',
+              'visible': false
             }
           ]
         },
@@ -270,12 +286,19 @@ export default {
               'name': 'update_user'
             },
             {
+              'name': 'version',
+              'visible': false
+            },
+            {
               'name': 'vrm_id'
             }
           ]
         },
         'user_account': {
           'columns': [
+            {
+              'name': 'company'
+            },
             {
               'name': 'company_id'
             },
@@ -292,6 +315,9 @@ export default {
               'name': 'last_login_ts'
             },
             {
+              'name': 'map'
+            },
+            {
               'name': 'password'
             },
             {
@@ -305,6 +331,10 @@ export default {
             },
             {
               'name': 'username'
+            },
+            {
+              'name': 'version',
+              'visible': false
             }
           ]
         },
@@ -365,48 +395,52 @@ export default {
         'vehicle': {
           'columns': [
             {
-              'name': 'brand'
+              'name': 'brand',
             },
             {
-              'name': 'company_id'
+              'name': 'company_id',
             },
             {
-              'name': 'create_user'
+              'name': 'create_user',
             },
             {
-              'name': 'fuel_usage'
+              'name': 'fuel_usage',
             },
             {
-              'name': 'idle_duration_non-trf'
+              'name': 'idle_duration_non-trf',
             },
             {
-              'name': 'idle_duration_trf'
+              'name': 'idle_duration_trf',
             },
             {
-              'name': 'latest_trip_distance'
+              'name': 'latest_trip_distance',
             },
             {
-              'name': 'latest_trip_duration'
+              'name': 'latest_trip_duration',
             },
             {
-              'name': 'model'
+              'name': 'model',
             },
             {
-              'name': 'run_distance'
+              'name': 'run_distance',
             },
             {
-              'name': 'run_duration'
+              'name': 'run_duration',
             },
             {
-              'name': 'update_user'
+              'name': 'update_user',
             },
             {
-              'name': 'vehicle_id'
+              'name': 'vehicle_id',
             },
             {
-              'name': 'year'
-            }
-          ]
+              'name': 'year',
+            },
+            {
+              'name': 'version',
+              'visible': false
+            },
+          ],
         },
         'veh_reg_mark': {
           'columns': [
@@ -427,6 +461,10 @@ export default {
             },
             {
               'name': 'vehicle_id'
+            },
+            {
+              'name': 'version',
+              'visible': false
             },
             {
               'name': 'vrm_id'
@@ -454,6 +492,10 @@ export default {
               'name': 'update_user'
             },
             {
+              'name': 'version',
+              'visible': false
+            },
+            {
               'name': 'vrm_grp_id'
             }
           ]
@@ -465,6 +507,10 @@ export default {
             },
             {
               'name': 'update_user'
+            },
+            {
+              'name': 'version',
+              'visible': false
             },
             {
               'name': 'vrm_grp_dtl_id'
@@ -480,12 +526,12 @@ export default {
         'warning_type': {
           'columns': [
             {
-              'name': 'warn_type_code'
+              'name': 'warn_type_code',
             },
             {
-              'name': 'warn_type_id'
+              'name': 'warn_type_id',
             }
-          ]
+          ],
         }
       },
       rows: [],
@@ -526,11 +572,29 @@ export default {
     //   // const dt = this.datatables[key]
     //   dataTables[key] = null
     //   this.$http.get('dao/' + key).then(({data}) => {
-    //     dataTables[key] = Object.keys(data.JSON[0])
-    //     if (dataTables[key].indexOf('version')) {
-    //       console.log(key)
+    //     if (data.JSON[0]) {
+    //       dataTables[key] = Object.keys(data.JSON[0]).filter(v => v !== 'create_ts' && v !== 'update_ts')
+    //       dataTables[key] = {
+    //         columns: dataTables[key].map(v => {
+    //           return { name: v }
+    //         })
+    //       }
+    //     } else {
+    //       dataTables[key] = this.datatables[key]
     //     }
+    //     // if (dataTables[key].indexOf('version')) {
+    //     //   console.log(key)
+    //     // }
     //   })
+    // }
+    // window.dataTablesGot = () => {
+    //   for (var k in dataTables) {
+    //     dataTables[k].columns.forEach(v => {
+    //       if (v.name === 'version') {
+    //         v.visible = false
+    //       }
+    //     })
+    //   }
     // }
     // window.dataTables = dataTables
   },
@@ -557,6 +621,9 @@ export default {
     add() {
       const newRow = {}
       this.currentColumns.forEach(col => { newRow[col.name] = null })
+      if (newRow.hasOwnProperty('version')) {
+        newRow.version = 0
+      }
       this.newRow = newRow
       this.$refs.dialogAdd.open()
     },
