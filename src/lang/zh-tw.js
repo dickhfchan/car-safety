@@ -62,6 +62,7 @@ export default {
   noRecordsFound: '沒有找到數據',
   getAlertInformationFailed: '獲取警告數據失敗',
   getWarningTypesFailed: '獲取警告類型失敗',
+  showInMap: '標注',
   // Analysis.vue
   scoreColumn: '分數列',
   export: '導出',

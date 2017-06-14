@@ -157,22 +157,22 @@ export default {
       immediate: true,
       handler() { this.getData() }
     },
-    '$store.state.points': {
-      immediate: true,
-      handler() { this.renderAlertPoint() }
-    },
-    '$store.state.pointsFromTripDetail': {
-      immediate: true,
-      handler() { this.renderAlertPoint() }
-    },
-    '$store.state.map': {
-      immediate: true,
-      handler() { this.renderAlertPoint() }
-    },
-    'rows': {
-      immediate: true,
-      handler() { this.renderAlertPoint() }
-    },
+    // '$store.state.points': {
+    //   immediate: true,
+    //   handler() { this.renderAlertPoint() }
+    // },
+    // '$store.state.pointsFromTripDetail': {
+    //   immediate: true,
+    //   handler() { this.renderAlertPoint() }
+    // },
+    // '$store.state.map': {
+    //   immediate: true,
+    //   handler() { this.renderAlertPoint() }
+    // },
+    // 'rows': {
+    //   immediate: true,
+    //   handler() { this.renderAlertPoint() }
+    // },
   },
   created() {
     initColumns(this, this.columns)

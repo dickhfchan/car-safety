@@ -47,6 +47,7 @@ export default {
   reload: 'Reload',
   alertInformation: 'Alert Information',
   all: 'All',
+  showInMap: 'Show In Map',
   // MapFilters.vue
   vehicle: 'Vehicle',
   getVehiclesFailed: 'Get vehicle failed',
