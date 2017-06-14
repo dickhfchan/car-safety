@@ -107,3 +107,7 @@ $paddingLeftFirst: 16px;
 .md-table .md-table-cell:first-child .md-table-cell-container{
   padding-left: $paddingLeftFirst;
 }
+.md-table .md-sortable:first-of-type .md-sortable-icon {
+  left: 0;
+  right: initial;
+}
