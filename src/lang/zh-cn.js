@@ -3,6 +3,7 @@ export default {
   // top nav
   nineBoxes: '九宫格',
   profile: '个人资料',
+  search: '搜索',
   // settings
   settings: '设置',
   setting: '设置',

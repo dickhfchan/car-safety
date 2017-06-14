@@ -11,14 +11,14 @@
 
           <h2 class="md-title">{{$t('brand')}}</h2>
 
-          <Map-Filters v-if="$route.name === 'map'"></Map-Filters>
-          <Date-Range-Picker-In-Top v-else-if="$route.name === 'd2'" v-model="dateRangeInD2" class="d2-date-range"></Date-Range-Picker-In-Top>
-          <div v-else-if="$route.name === 'report2'"  class="report2-select-wrapper">
-            <label for="vehicle_select" class="m-r-sm">{{$t('driver')}}</label>
-            <Select2 :options="$store.state.report2Drivers" value-key="driver_id" text-key="name" v-model="report2DriverId"></Select2>
-            <Date-Range-Picker-In-Top v-model="dateRangeInReport2" class="m-l report2-date-range"></Date-Range-Picker-In-Top>
+          <div class="flex-1">
+            <Search-Box v-if="window.width >= 800"></Search-Box>
           </div>
-          <span v-else class="flex-1"></span>
+
+          <md-button class="md-icon-button" v-if="searchBtnVisible" @click.native="searchBoxVisibleInSm=!searchBoxVisibleInSm">
+           <md-icon>search</md-icon>
+           <md-tooltip md-direction="bottom">{{$t('search')}}</md-tooltip>
+          </md-button>
 
           <md-button class="md-icon-button" @click.native="">
            <md-icon>apps</md-icon>
@@ -39,6 +39,8 @@
             <img src="./assets/img/avatar.png" alt="Avatar">
             <md-tooltip md-direction="bottom">{{$t('profile')}}</md-tooltip>
           </md-avatar>
+
+          <Search-Box class="search-box-sm" v-if="window.width < 800 && searchBoxVisibleInSm"></Search-Box>
 
         </md-toolbar>
       </md-whiteframe>
@@ -139,15 +141,16 @@
 </template>
 
 <script>
-import MapFilters from '@/components/MapFilters.vue'
-import DateRangePickerInTop from '@/components/DateRangePickerInTop.vue'
-import Select2 from '@/components/Select2.vue'
+import SearchBox from '@/components/SearchBox.vue'
+import WindowSizeListener from '@/components/WindowSizeListener.vue'
 
 export default {
-  components: { MapFilters, DateRangePickerInTop, Select2 },
+  components: { SearchBox },
+  mixins: [ WindowSizeListener ],
   data () {
     const state = this.$store.state
     return {
+      searchBoxVisibleInSm: false,
       settings: {
         map: state.map,
         lang: state.lang,
@@ -166,18 +169,9 @@ export default {
     }
   },
   computed: {
-    dateRangeInD2: {
-      get() { return this.$store.state.dateRangeInD2 },
-      set(value) { this.$store.commit('dateRangeInD2', value) },
-    },
-    report2DriverId: {
-      get() { return this.$store.state.report2DriverId },
-      set(value) { this.$store.commit('report2DriverId', value) },
-    },
-    dateRangeInReport2: {
-      get() { return this.$store.state.dateRangeInReport2 },
-      set(value) { this.$store.commit('dateRangeInReport2', value) },
-    },
+    searchBtnVisible() {
+      return this.window.width < 800 && ['map', 'report2', 'd2'].indexOf(this.$route.name) > -1
+    }
   },
   watch: {
     '$store.state.user'() { this.$store.dispatch('updateUserCompany') },
@@ -202,6 +196,7 @@ export default {
     onMenuItemClik(item) {
       if (item.routeName) {
         this.$router.push({name: item.routeName})
+        this.$refs.leftSidenav.close()
       }
     },
     updateSettings() {
@@ -310,10 +305,12 @@ body, html{
   flex: 1;
   padding-right: 100px;
 }
-@media (max-width:960px) {
-  .d2-date-range, .report2-select-wrapper{
-    justify-content: flex-end;
-    padding-right: 0;
+.search-box-sm{
+  padding: 10px;
+  width: 100%;
+  display: block;
+  .map-filters, .d2-date-range, .report2-select-wrapper{
+    justify-content: flex-start;
   }
 }
 //

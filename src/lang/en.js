@@ -3,6 +3,7 @@ export default {
   // top nav
   nineBoxes: '9 Boxes',
   profile: 'Profile',
+  search: 'Search',
   // settings
   settings: 'Settings',
   setting: 'Setting',
