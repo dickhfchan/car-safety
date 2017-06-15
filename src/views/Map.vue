@@ -91,7 +91,7 @@
           </div>
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
-            <md-switch class="md-primary" v-model="isShowInMap" @click.native="showInMap" v-show="showInMapToggleVisible">{{$t('showInMap')}}</md-switch>
+            <md-switch class="md-primary" v-model="isAlertInfoShowInMap" @click.native="showInMap" v-show="showInMapToggleVisible">{{$t('showInMap')}}</md-switch>
             <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
               <md-icon>get_app</md-icon>
               <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
@@ -135,7 +135,7 @@ export default {
   data() {
     return {
       title: this.$t('map'),
-      isShowInMap: false,
+      isAlertInfoShowInMap: false,
     }
   },
   computed: {
@@ -164,14 +164,14 @@ export default {
     },
     showInMapToggleVisible() {
       const state = this.$store.state
-      const ai = this.$refs.alertInformation
-      return ai && !ai.rowsExpired && ai.rows.length && !state.pointsExpired && !state.pointsFailed && !state.pointsLoading && state.points.length
+      const ai = this.$refs && this.$refs.alertInformation
+      return !state.alertInformationRowsExpired && !state.pointsExpired && !state.pointsFailed && !state.pointsLoading && state.points.length && ai && ai.rows.length
     }
   },
   watch: {
     '$store.state.tripId'() { this.getPoints() },
     'mapType'() { this.getPoints() },
-    showInMapToggleVisible(v) { if (!v) this.isShowInMap = false },
+    showInMapToggleVisible(v) { if (!v) this.isAlertInfoShowInMap = false },
   },
   mounted() {
     this.$nextTick(() => {
@@ -190,7 +190,11 @@ export default {
       }
     },
     showInMap() {
-      this.$refs.alertInformation.renderAlertPoint()
+      if (this.isAlertInfoShowInMap) {
+        this.$refs.alertInformation.renderAlertPoint()
+      } else {
+        this.$refs.alertInformation.clearMarkers()
+      }
     }
   }
 }

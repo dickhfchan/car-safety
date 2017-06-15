@@ -135,12 +135,16 @@ export default {
         },
       ],
       rows: [],
-      rowsExpired: false, // be turned to expired when request start
       overLays: [], // store alert markers
       videoIframeSrc: null,
     }
   },
   computed: {
+    // be turned to expired when request start
+    rowsExpired: {
+      get() { return this.$store.state.alertInformationRowsExpired },
+      set(val) { this.$store.commit('alertInformationRowsExpired', val) }
+    },
     filteredRows() {
       let wt = this.$store.state.alertInformationWarningType
       if (wt === 'all') {
@@ -176,6 +180,7 @@ export default {
   },
   created() {
     initColumns(this, this.columns)
+    this.baiduMapMarkers = []
   },
   methods: {
     getData() {
@@ -224,6 +229,23 @@ export default {
           break
         case 'baiduMap':
           this.renderAlertPointOnBaiduMap()
+          break
+      }
+    },
+    clearMarkers() {
+      switch (this.$store.state.map) {
+        case 'googleMap':
+          const overLays = this.overLays
+          overLays.forEach(v => v.setMap(null))
+          overLays.length = 0
+          break
+        case 'baiduMap':
+          if (runtime.bmtr && runtime.bmtr.map) {
+            this.baiduMapMarkers.forEach(marker => {
+              runtime.bmtr.map.removeOverlay(marker)
+            })
+            this.baiduMapMarkers = []
+          }
           break
       }
     },
@@ -304,6 +326,7 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
               anchor: new BMap.Size(13, 26),
             })
             const marker = new BMap.Marker(point, {icon: BMapIcon})
+            this.baiduMapMarkers.push(marker)
             map.addOverlay(marker)
             const infoWindow = new BMap.InfoWindow(`
 <pre>

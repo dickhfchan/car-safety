@@ -63,6 +63,7 @@ const store = new Vuex.Store({
     report2Drivers: [],
     dateRangeInReport2: [fourteenDaysBefore, today],
     alertInformationWarningType: 'all',
+    alertInformationRowsExpired: false,
     builtAt: window.builtAt,
   },
   mutations: {
@@ -105,6 +106,7 @@ const store = new Vuex.Store({
     report2Drivers(state, val) { state.report2Drivers = val },
     dateRangeInReport2(state, val) { state.dateRangeInReport2 = val },
     alertInformationWarningType(state, val) { state.alertInformationWarningType = val },
+    alertInformationRowsExpired(state, val) { state.alertInformationRowsExpired = val },
   },
   actions: {
     getCompanies({commit}) {
