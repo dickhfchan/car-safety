@@ -165,7 +165,7 @@ class Tables_JSON(Resource):
             json = request.get_json()
 
             if json is None:
-                return "No JSON object captured"
+                return "No JSON object captured", 200, default_headers
 
             pk_name = primary_keys[table_name]
             columns = json.keys()
@@ -174,7 +174,7 @@ class Tables_JSON(Resource):
             try:
                 pk_value = json[pk_name]
             except KeyError:
-                return "Key %s is not in JSON" % pk_name
+                return "Key %s is not in JSON" % pk_name, 200, default_headers
 
             #Datetime clean up:
             #Convert unix time to UTC time for safe insertion into database
@@ -204,7 +204,7 @@ class Tables_JSON(Resource):
                     return e[1]
                 conn.commit()
                 cursor.close()
-                return "%s %s successfully added to %s table"%(pk_name, pk_value, table_name)
+                return "%s %s successfully added to %s table"%(pk_name, pk_value, table_name), 200, default_headers
 
             #Perform Update if the pk alrdy exists
             else:
@@ -230,9 +230,9 @@ class Tables_JSON(Resource):
                     return e[1]
                 conn.commit()
                 cursor.close()
-                return "Successfully Updated PK %s in table %s"%(pk_value, table_name)
+                return "Successfully Updated PK %s in table %s"%(pk_value, table_name), 200, default_headers
         else:
-            return "POST request denied for this table %s"%(table_name)
+            return "POST request denied for this table %s"%(table_name), 200, default_headers
 
 
     # Handle DELETE event for an insertion/Update event:
@@ -242,7 +242,7 @@ class Tables_JSON(Resource):
         if primary_keys.has_key(table_name):
             json = request.get_json()
             if json is None:
-                return "No JSON object captured"
+                return "No JSON object captured", 200, default_headers
 
             pk_name = primary_keys[table_name]
             columns = json.keys()
@@ -251,7 +251,7 @@ class Tables_JSON(Resource):
             try:
                 pk_value = json[pk_name]
             except KeyError:
-                return "Key %s is not in JSON" % pk_name
+                return "Key %s is not in JSON" % pk_name, 200, default_headers
 
             cursor = conn.cursor()
             sql = "DELETE FROM %s WHERE %s=%s"%(table_name, pk_name, pk_value)
@@ -262,10 +262,10 @@ class Tables_JSON(Resource):
                 return e[1]
             conn.commit()
             cursor.close()
-            return "PK %s successfully removed from table %s"%(pk_value, table_name)
+            return "PK %s successfully removed from table %s"%(pk_value, table_name), 200, default_headers
 
         else:
-            return "DELETE request denied for this table %s" % table_name
+            return "DELETE request denied for this table %s" % table_name, 200, default_headers
 
 
 
