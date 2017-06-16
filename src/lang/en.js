@@ -143,6 +143,7 @@ export default {
   ss: 'Ss',
   alt: 'Alt',
   bearing: 'Bearing',
+  state: 'State',
   // store
   getTripsFailed: 'Get trips failed',
   getPointsFailed: 'Get points failed',

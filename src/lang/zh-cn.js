@@ -143,6 +143,7 @@ export default {
   ss: 'Ss',
   alt: 'Alt',
   bearing: 'Bearing',
+  state: '状态',
   // store
   getTripsFailed: '获取行程失败',
   getPointsFailed: '获取历史轨迹失败',

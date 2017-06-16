@@ -18,6 +18,7 @@
         </md-table-row>
       </md-table-body>
     </md-table>
+
     <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
     <!-- video diaplog -->
@@ -47,6 +48,15 @@ const initRows = (vm, rows, columns) => {
     vm.$set(row, 'active', false)
   })
   initRowsOld(vm, rows, columns)
+}
+
+const statesMap = {
+  '0': '',
+  '1': 'brake',
+  '2': 'left turn signal light',
+  '3': 'brake  and left turn singal light',
+  '4': 'right turn signal light',
+  '5': 'brake and right turn signal light',
 }
 
 export default {
@@ -111,27 +121,38 @@ export default {
         },
         {
           'name': 'wt',
-          'text': this.$t('wt')
+          'text': this.$t('wt'),
+          visible: false,
         },
         {
           'name': 'ss',
-          'text': this.$t('ss')
+          'text': this.$t('ss'),
+          visible: false,
         },
         {
           'name': 'alt',
-          'text': this.$t('alt')
+          'text': this.$t('alt'),
+          visible: false,
         },
         {
           'name': 'bearing',
-          'text': this.$t('bearing')
+          'text': this.$t('bearing'),
+          visible: false,
         },
         {
           'name': 'lat',
-          'text': this.$t('lat')
+          'text': this.$t('lat'),
+          visible: false,
         },
         {
           'name': 'lng',
-          'text': this.$t('lng')
+          'text': this.$t('lng'),
+          visible: false,
+        },
+        {
+          'name': 'state',
+          'text': this.$t('state'),
+          valueProcessor: ({value}) => statesMap[value] || ''
         },
       ],
       rows: [],
