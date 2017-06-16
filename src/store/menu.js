@@ -65,9 +65,9 @@ export default [
     icon: '',
     routeName: 'fencing'
   },
-  {
-    text: 'settings',
-    icon: 'analysis',
-    routeName: 'datatables'
-  },
+  // {
+  //   text: 'settings',
+  //   icon: 'analysis',
+  //   routeName: 'datatables'
+  // },
 ]
