@@ -117,6 +117,12 @@ export default {
         })
       // 添加鼠标绘制工具监听事件，用于获取绘制结果
         drawingManager.addEventListener('overlaycomplete', (e) => { this.map.removeOverlay(this.fence); this.fence = e.overlay })
+        drawingManager.addEventListener('polygoncomplete', (e) => {
+          setTimeout(() => {
+            drawingManager.open()
+            drawingManager.setDrawingMode(window.BMAP_DRAWING_POLYGON)
+          }, 100)
+        })
       })
     })
     window.addEventListener('resize', this.checkSize)

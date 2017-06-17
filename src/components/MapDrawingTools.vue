@@ -1,6 +1,6 @@
 <template>
   <div class="md-button-toggle md-primary box-1 map-drawing-tools md-theme-default">
-    <md-button v-for="(btn, key) in btns" :class="['md-icon-button', {'md-toggle': btn === selected}]" @click.native="onclickBtn(key, btn)">
+    <md-button v-for="(btn, key) in btns" :key="key" :class="['md-icon-button', {'md-toggle': btn === selected}]" @click.native="onclickBtn(key, btn)">
       <md-icon v-if="key!='polygon'">{{btn.icon}}</md-icon>
       <md-icon v-else :md-src="btn === selected ? btn.icon.white : btn.icon.normal"></md-icon>
     </md-button>
