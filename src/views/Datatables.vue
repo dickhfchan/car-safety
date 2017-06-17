@@ -20,7 +20,7 @@
          <md-table-body>
            <md-table-row v-for="row in rows" v-show="row.visible" :key="row.avg_warn_id" :md-item="row">
              <md-table-cell class="datatables-actions">
-               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)">
+               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)"  v-if="current!=='users'">
                  <md-icon>edit</md-icon>
                  <md-tooltip md-direction="bottom">Edit</md-tooltip>
                </md-button>
@@ -45,7 +45,7 @@
       </div>
 
       <div class="card-buttons">
-        <md-button id="addItem" class="md-icon-button" @click.native="add()">
+        <md-button id="addItem" class="md-icon-button" @click.native="add()" v-if="current!=='users'">
           <md-icon>add</md-icon>
           <md-tooltip md-direction="bottom">New</md-tooltip>
         </md-button>
