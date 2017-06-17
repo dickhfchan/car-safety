@@ -1,10 +1,12 @@
 <template>
   <div class="baidu-map-fencing">
     <div class="baidu-map-fencing__map" :id="id"></div>
+    <Map-Drawing-Tools class="baidu-map-fencing-drawing-tools"></Map-Drawing-Tools>
   </div>
 </template>
 <script>
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
+import MapDrawingTools from './MapDrawingTools.vue'
 import { windowLoaded } from 'helper-js'
 //
 function loadBaiduMapDrawingManager() {
@@ -39,6 +41,7 @@ function loadBaiduMapDrawingManager() {
 }
 
 export default {
+  components: { MapDrawingTools },
   props: {
     // points: {}, //
     // vehicles: {},
@@ -54,6 +57,8 @@ export default {
       // map: null,
       // pathPolyline: null,
       // BMapPoints: null,
+      // drawingManager
+      // fence
     }
   },
   watch: {
@@ -62,6 +67,7 @@ export default {
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
     mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
+    removeFence() { this.map.removeOverlay(this.fence) },
   },
   created() {
     // // don't observe
@@ -88,10 +94,6 @@ export default {
         //   alert('after');
         // }
         }))
-        var overlays = []
-        var overlaycomplete = function(e) {
-          overlays.push(e.overlay)
-        }
         var styleOptions = {
           strokeColor: 'blue',    // 边线颜色。
           fillColor: 'blue',      // 填充颜色。当参数为空时，圆形将没有填充效果。
@@ -101,9 +103,9 @@ export default {
           strokeStyle: 'solid' // 边线的样式，solid或dashed。
         }
        // 实例化鼠标绘制工具
-        var drawingManager = new DrawingManager(map, {
+        const drawingManager = this.drawingManager = new DrawingManager(map, {
           isOpen: false, // 是否开启绘制模式
-          enableDrawingTool: true, // 是否显示工具栏
+          enableDrawingTool: false, // 是否显示工具栏
           drawingToolOptions: {
             anchor: window.BMAP_ANCHOR_TOP_RIGHT, // 位置
             offset: new BMap.Size(5, 5), //偏离值
@@ -114,22 +116,7 @@ export default {
           rectangleOptions: styleOptions // 矩形的样式
         })
       // 添加鼠标绘制工具监听事件，用于获取绘制结果
-        drawingManager.addEventListener('overlaycomplete', overlaycomplete)
-        // function clearAll() {
-        //   for (var i = 0; i < overlays.length; i++) {
-        //     map.removeOverlay(overlays[i])
-        //   }
-        //   overlays.length = 0
-        // }
-          // const polygon = new BMap.Polygon([
-          //   new BMap.Point(116.387112, 39.920977),
-          //   new BMap.Point(116.385243, 39.913063),
-          //   new BMap.Point(116.394226, 39.917988),
-          //   new BMap.Point(116.401772, 39.921364),
-          //   new BMap.Point(116.41248, 39.927893),
-          // ], {strokeColor: 'blue', strokeWeight: 2, strokeOpacity: 0.5})  //
-          // polygon.enableEditing()
-          // map.addOverlay(polygon)   //
+        drawingManager.addEventListener('overlaycomplete', (e) => { this.map.removeOverlay(this.fence); this.fence = e.overlay })
       })
     })
     window.addEventListener('resize', this.checkSize)
@@ -170,9 +157,14 @@ export default {
   box-sizing: border-box;
 }
 // drawing
-@import url("http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css");
-@import url("http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css");
-.BMapLib_box.BMapLib_marker{
-  display: none;
+// @import url("http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css");
+// @import url("http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css");
+// .BMapLib_box.BMapLib_marker{
+//   display: none;
+// }
+.baidu-map-fencing-drawing-tools{
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 </style>
