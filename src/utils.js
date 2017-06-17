@@ -193,6 +193,11 @@ export function beforeSave(row) {
       row[fld] = parseInt(row[fld])
     }
   })
+  for (var key in row) {
+    if (row[key] == null) {
+      row[key] = ''
+    }
+  }
   return row
 }
 
