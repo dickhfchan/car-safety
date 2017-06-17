@@ -54,3 +54,8 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
   <div class="md-title">Google Map<fullscreen-button></fullscreen-button></div>
 </md-card-header>
 ```
+## deine api in build
+define global variabel before all scripts. example:
+``` js
+<script> window.serverBaseUrl = '' </script>
+```
