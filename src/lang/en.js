@@ -144,6 +144,8 @@ export default {
   alt: 'Alt',
   bearing: 'Bearing',
   state: 'State',
+  ufcwH: 'UFCW H',
+  ufcwL: 'UFCW L',
   // store
   getTripsFailed: 'Get trips failed',
   getPointsFailed: 'Get points failed',

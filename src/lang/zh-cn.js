@@ -144,6 +144,8 @@ export default {
   alt: 'Alt',
   bearing: 'Bearing',
   state: '状态',
+  ufcwH: 'UFCW H',
+  ufcwL: 'UFCW L',
   // store
   getTripsFailed: '获取行程失败',
   getPointsFailed: '获取历史轨迹失败',
