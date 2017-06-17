@@ -10,15 +10,15 @@ import runtime from '@/runtime.js'
 
 Vue.use(Vuex)
 
-function toInt(val) {
-  return val ? parseInt(val) : 0
-}
+// function toInt(val) {
+//   return val ? parseInt(val) : 0
+// }
 
 const dateFormat = 'yyyy-MM-dd'
 const today = dateFunctions.format(new Date(), dateFormat)
 const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 10), dateFormat)
 const fourteenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 14), dateFormat)
-const storagedVehicleVrmId = toInt(window.localStorage.getItem('vehicle_vrm_id'))
+// const storagedVehicleVrmId = toInt(window.localStorage.getItem('vehicle_vrm_id'))
 const storagedMap = window.localStorage.getItem('map')
 let storagedUser = window.localStorage.getItem('user')
 if (storagedUser) {
@@ -50,12 +50,12 @@ const store = new Vuex.Store({
     menu,
     companies: [],
     dateRange: [tenDaysBefore, today],
-    vehicle: storagedVehicleVrmId,
+    vehicle: null,
     vehicles: [],
     tripId: null,
     allTrips: [],
     trips: [], // filtered trips
-    tripsLoading: true,
+    tripsLoading: false,
     tripsFailed: false,
     points: [],
     pointsLoading: false,
@@ -90,10 +90,7 @@ const store = new Vuex.Store({
     companyCode(state, val) { state.companyCode = val; window.localStorage.setItem('companyCode', val) },
     companies(state, val) { state.companies = val },
     dateRange(state, val) { state.dateRange = val },
-    vehicle(state, val) {
-      window.localStorage.setItem('vehicle_vrm_id', val)
-      state.vehicle = val
-    },
+    vehicle(state, val) { state.vehicle = val },
     vehicles(state, val) { state.vehicles = val },
     tripId(state, val) { state.tripId = val },
     allTrips(state, val) { state.allTrips = val },

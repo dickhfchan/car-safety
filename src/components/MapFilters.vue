@@ -42,13 +42,13 @@ export default {
     },
     vehicle: {
       immediate: true,
-      handler() { this.getTrips() }
+      handler(val, oldVal) { val !== oldVal && this.getTrips() }
     },
   },
   methods: {
     ...mapActions(['getTrips', 'getTripsInDateRange', 'updateTrips']),
     getVehicles() {
-      const { state, commit } = this.$store
+      const { commit } = this.$store
       retry(() => this.$http.get('dao/veh_reg_mark'))()
       .then(({data}) => {
         // sort by vrm_mark_code asc
@@ -67,9 +67,10 @@ export default {
           return 0
         })
         commit('vehicles', vehicles)
-        if (state.vehicles[0] && !state.vehicles.find(v => v.vrm_id === state.vehicle)) {
-          commit('vehicle', state.vehicles[0].vrm_id)
-        }
+        // auto select first vehicle
+        // if (state.vehicles[0] && !state.vehicles.find(v => v.vrm_id === state.vehicle)) {
+        //   commit('vehicle', state.vehicles[0].vrm_id)
+        // }
       }).catch((e) => {
         this.$alert(this.$t('getVehiclesFailed'))
         throw e
