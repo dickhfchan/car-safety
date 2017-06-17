@@ -8,6 +8,7 @@ const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_dat
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
     baseURL: store.state.urls.server.base,
+    timeout: 20000, // 20 seconds
     // withCredentials: config.isCROS
   })
   Vue.Axios = axios
