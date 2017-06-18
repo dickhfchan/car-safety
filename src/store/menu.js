@@ -2,7 +2,7 @@ export default [
   {
     text: 'dashboard',
     icon: 'dashboard',
-    routeName: 'dashboard'
+    routeName: 'dashboard',
   },
   // {
   //   text: 'users',
@@ -22,7 +22,8 @@ export default [
   {
     text: 'map',
     icon: 'map',
-    routeName: 'map'
+    routeName: 'map',
+    permission: 'ADMIN',
   },
   {
     text: 'totalScoreAndAlert',

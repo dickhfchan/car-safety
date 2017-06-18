@@ -59,3 +59,8 @@ define global variabel before all scripts. example:
 ``` js
 <script> window.serverBaseUrl = '' </script>
 ```
+## menu item visible
+define permission to menu item. permission can be follow value:  
+* null || undefined || 0: allow all  
+* name(eg: ADMIN): allow user who's actions include the name  
+* function(user): by its result

@@ -38,6 +38,7 @@ const store = new Vuex.Store({
     urls
   },
   state: {
+    initialized: false,
     map: storagedMap || 'googleMap',
     lang: lang,
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
@@ -45,10 +46,11 @@ const store = new Vuex.Store({
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
     authenticated: storagedUser != null,
     user: storagedUser || {},
-    userCompany: null,
     companyCode: window.localStorage.getItem('companyCode'),
     menu,
     companies: [],
+    userGroups: [],
+    userGroupFuncs: [],
     // Map.vue
     dateRange: [tenDaysBefore, today],
     driver: null,
@@ -74,6 +76,7 @@ const store = new Vuex.Store({
     builtAt: window.builtAt,
   },
   mutations: {
+    initialized(state, val) { state.initialized = val },
     map(state, val) {
       window.localStorage.setItem('map', val)
       state.map = val
@@ -89,10 +92,16 @@ const store = new Vuex.Store({
     },
     user(state, data) {
       state.user = data
+      const {user, companies, userGroupFuncs} = state
+      if (user) {
+        Vue.set(user, 'company', companies.find(v => v.company_id === user.company_id))
+        Vue.set(user, 'actions', userGroupFuncs.filter(v => v.group_id === user.group_id).map(v => v.func_code))
+      }
     },
-    userCompany(state, val) { state.userCompany = val },
     companyCode(state, val) { state.companyCode = val; window.localStorage.setItem('companyCode', val) },
     companies(state, val) { state.companies = val },
+    userGroups(state, val) { state.userGroups = val },
+    userGroupFuncs(state, val) { state.userGroupFuncs = val },
     // Map.vue
     dateRange(state, val) { state.dateRange = val },
     driver(state, val) { state.driver = val },
@@ -118,15 +127,29 @@ const store = new Vuex.Store({
   },
   actions: {
     getCompanies({commit}) {
-      const http = Vue.http
-      http.get('dao/company').then(({data}) => {
+      return Vue.http.get('dao/company').then(({data}) => {
         commit('companies', data.JSON)
       })
     },
-    updateUserCompany({state, commit}) {
-      if (state.user && state.companies.length > 0) {
-        commit('userCompany', state.companies.find(v => v.company_id === state.user.company_id))
-      }
+    getUserGroup({commit}) {
+      return Vue.http.get('dao/user_group').then(({data}) => {
+        commit('userGroups', data.JSON)
+      })
+    },
+    getUserGroupFunc({commit}) {
+      return Vue.http.get('dao/user_group_func').then(({data}) => {
+        commit('userGroupFuncs', data.JSON)
+      })
+    },
+    init({dispatch, commit, state}) {
+      return Promise.all([
+        dispatch('getCompanies'),
+        dispatch('getUserGroup'),
+        dispatch('getUserGroupFunc'),
+      ]).then(() => {
+        commit('user', state.user)
+        commit('initialized', true)
+      })
     },
     logout({commit, state}) {
       commit('authenticated', false)
