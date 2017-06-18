@@ -145,46 +145,54 @@ export default {
           text: this.$t('startDate'),
           valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
         },
-        {
-          name: 'total_score',
+        { name: 'total_score',
           text: this.$t('totalScore')
         },
-        {
-          name: 'drv_distance',
-          text: this.$t('drvDistance')
+        { name: 'pcw',
+          text: this.$t('pcw'),
         },
-        {
-          name: 'hmw',
-          text: this.$t('hmw')
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
         },
-        {
-          name: 'pcw',
-          text: this.$t('pcw')
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
         },
-        {
-          name: 'fcw',
-          text: this.$t('fcw')
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
         },
-        {
-          name: 'ufcw',
-          text: this.$t('ufcw')
+        { name: 'fcw',
+          text: this.$t('fcw'),
         },
-        {
-          name: 'lldw',
-          text: this.$t('lldw')
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
         },
-        {
-          name: 'rldw',
-          text: this.$t('rldw')
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
-        {
-          name: 'aaw',
-          text: this.$t('aaw')
+        { name: 'lldw',
+          text: this.$t('lldw'),
         },
-        {
-          name: 'abw',
-          text: this.$t('abw')
-        }
+        { name: 'rldw',
+          text: this.$t('rldw'),
+        },
+        { name: 'spw',
+          text: this.$t('spw'),
+        },
+        { name: 'aaw',
+          text: this.$t('aaw'),
+        },
+        { name: 'abw',
+          text: this.$t('abw'),
+        },
+        { name: 'atw',
+          text: this.$t('atw'),
+        },
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
+        },
       ],
       originRows1: [],
       rows1: [],
@@ -198,46 +206,54 @@ export default {
           text: this.$t('startDate'),
           valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
         },
-        {
-          name: 'total_score',
+        { name: 'total_score',
           text: this.$t('totalScore')
         },
-        {
-          name: 'drv_distance',
-          text: this.$t('drvDistance')
+        { name: 'pcw',
+          text: this.$t('pcw'),
         },
-        {
-          name: 'hmw',
-          text: this.$t('hmw')
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
         },
-        {
-          name: 'pcw',
-          text: this.$t('pcw')
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
         },
-        {
-          name: 'fcw',
-          text: this.$t('fcw')
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
         },
-        {
-          name: 'ufcw',
-          text: this.$t('ufcw')
+        { name: 'fcw',
+          text: this.$t('fcw'),
         },
-        {
-          name: 'lldw',
-          text: this.$t('lldw')
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
         },
-        {
-          name: 'rldw',
-          text: this.$t('rldw')
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
-        {
-          name: 'aaw',
-          text: this.$t('aaw')
+        { name: 'lldw',
+          text: this.$t('lldw'),
         },
-        {
-          name: 'abw',
-          text: this.$t('abw')
-        }
+        { name: 'rldw',
+          text: this.$t('rldw'),
+        },
+        { name: 'spw',
+          text: this.$t('spw'),
+        },
+        { name: 'aaw',
+          text: this.$t('aaw'),
+        },
+        { name: 'abw',
+          text: this.$t('abw'),
+        },
+        { name: 'atw',
+          text: this.$t('atw'),
+        },
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
+        },
       ],
       originRows2: [],
       rows2: [],

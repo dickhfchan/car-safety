@@ -106,42 +106,54 @@ export default {
           'name': '車牌',
           visible: false,
         },
-        {
-          name: 'total_score',
+        { name: 'total_score',
           text: this.$t('totalScore')
         },
-        {
-          name: 'hmw',
-          text: this.$t('hmw')
+        { name: 'pcw',
+          text: this.$t('pcw'),
         },
-        {
-          name: 'pcw',
-          text: this.$t('pcw')
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
         },
-        {
-          name: 'fcw',
-          text: this.$t('fcw')
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
         },
-        {
-          name: 'ufcw',
-          text: this.$t('ufcw')
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
         },
-        {
-          name: 'lldw',
-          text: this.$t('lldw')
+        { name: 'fcw',
+          text: this.$t('fcw'),
         },
-        {
-          name: 'rldw',
-          text: this.$t('rldw')
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
         },
-        {
-          name: 'aaw',
-          text: this.$t('aaw')
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
-        {
-          name: 'abw',
-          text: this.$t('abw')
-        }
+        { name: 'lldw',
+          text: this.$t('lldw'),
+        },
+        { name: 'rldw',
+          text: this.$t('rldw'),
+        },
+        { name: 'spw',
+          text: this.$t('spw'),
+        },
+        { name: 'aaw',
+          text: this.$t('aaw'),
+        },
+        { name: 'abw',
+          text: this.$t('abw'),
+        },
+        { name: 'atw',
+          text: this.$t('atw'),
+        },
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
+        },
       ],
       rows1: [],
       rows1Ranking: [],
