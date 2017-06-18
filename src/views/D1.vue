@@ -122,10 +122,10 @@ export default {
         { name: 'fcw',
           text: this.$t('fcw'),
         },
-        { name: 'ufcw_H',
+        { name: 'ufcw_h',
           text: this.$t('ufcwH'),
         },
-        { name: 'ufcw_L',
+        { name: 'ufcw_l',
           text: this.$t('ufcwL'),
         },
         { name: 'lldw',
@@ -263,7 +263,7 @@ export default {
       const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date <= end)
       // aggregrate by vrm_grp_id
       const groupedRows = []
-      const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
+      const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'ucfw_h', 'ucfw_l', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
       const groupBy = this.groupBy
       filteredRows.forEach(row => {
         let row0 = groupedRows.find(v => v[groupBy] === row[groupBy])
