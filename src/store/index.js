@@ -53,6 +53,7 @@ const store = new Vuex.Store({
     userGroupFuncs: [],
     // Map.vue
     dateRange: [tenDaysBefore, today],
+    vehicleOrDriver: 'vehicle',
     driver: null,
     drivers: [],
     vehicle: null,
@@ -104,6 +105,7 @@ const store = new Vuex.Store({
     userGroupFuncs(state, val) { state.userGroupFuncs = val },
     // Map.vue
     dateRange(state, val) { state.dateRange = val },
+    vehicleOrDriver(state, val) { state.vehicleOrDriver = val },
     driver(state, val) { state.driver = val },
     drivers(state, val) { state.drivers = val },
     vehicle(state, val) { state.vehicle = val },
@@ -149,6 +151,9 @@ const store = new Vuex.Store({
       ]).then(() => {
         commit('user', state.user)
         commit('initialized', true)
+      }).catch(e => {
+        Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
+        throw e
       })
     },
     logout({commit, state}) {
@@ -158,8 +163,9 @@ const store = new Vuex.Store({
       runtime.app.$router.push({name: 'login', params: {companyCode: state.companyCode}})
     },
     getTrips (context) {
-      const vehicle = context.state.vehicle
-      if (vehicle != null) {
+      const {state} = context
+      const id = state.vehicleOrDriver === 'vehicle' ? state.vehicle : state.driver
+      if (id != null) {
         // cancel prev request
         if (local.cancelPrevgetTripsRequest) {
           local.cancelPrevgetTripsRequest()
@@ -170,7 +176,7 @@ const store = new Vuex.Store({
         context.commit('tripsLoading', true)
         context.commit('tripsFailed', false)
         // get
-        http.get('dao/veh_trip/' + vehicle, {
+        http.get(`dao/${state.vehicleOrDriver === 'vehicle' ? 'veh_trip' : 'veh_trip_by_driver'}/${id}`, {
           cancelToken: new CancelToken((c) => { local.cancelPrevgetTripsRequest = c })
         }).then(({data}) => {
           // filter out drv_distance === 0

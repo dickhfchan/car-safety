@@ -26,7 +26,6 @@ export default {
         { value: 'vehicle', text: this.$t('vehicle') },
         { value: 'driver', text: this.$t('driver') },
       ],
-      vehicleOrDriver: 'vehicle',
       vehicleGroups: [],
       driverGroups: [],
       vehicleGroup: null,
@@ -37,6 +36,10 @@ export default {
     dateRange: {
       get() { return this.$store.state.dateRange },
       set(value) { this.$store.commit('dateRange', value) }
+    },
+    vehicleOrDriver: {
+      get() { return this.$store.state.vehicleOrDriver },
+      set(value) { this.$store.commit('vehicleOrDriver', value) }
     },
     vehicle: {
       get() { return this.$store.state.vehicle },
@@ -78,6 +81,7 @@ export default {
             this.getDrivers()
             this.getDriverGroups()
           }
+          this.getTrips()
         }
       }
     },
