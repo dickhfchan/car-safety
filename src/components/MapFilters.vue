@@ -1,7 +1,13 @@
 <template>
   <div class="map-filters">
-   <label for="vehicle_select" class="m-r-sm">{{$t('vehicle')}}</label>
-   <Select2 :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Select2>
+    <label>{{$t('group')}}</label>&nbsp;
+    <Select2 v-if="vehicleOrDriver=='vehicle'" :options="vehicleGroups" value-key="vrm_grp_id" text-key="grp_alias" v-model="vehicleGroup" :search-visible="false"></Select2>
+    <Select2 v-else-if="vehicleOrDriver=='driver'" :options="driverGroups" value-key="drv_grp_id" text-key="grp_alias" v-model="driverGroup" :search-visible="false"></Select2>
+    &nbsp;
+    <Select2 :options="vehicleOrDriverOptions" value-key="value" text-key="text" v-model="vehicleOrDriver" :search-visible="false"></Select2>
+    &nbsp;
+    <Select2 v-if="vehicleOrDriver=='vehicle'" :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Select2>
+    <Select2 v-else-if="vehicleOrDriver=='driver'" :options="$store.state.drivers" value-key="driver_id" text-key="name" v-model="driver"></Select2>
 
    <Date-Range-Picker-In-Top class="m-l" v-model="dateRange"></Date-Range-Picker-In-Top>
   </div>
@@ -10,12 +16,21 @@
 import Select2 from '@/components/Select2.vue'
 import DateRangePickerInTop from './DateRangePickerInTop.vue'
 import { mapActions } from 'vuex'
-import { retry } from 'helper-js'
+import { sortRowsByProp } from '@/utils.js'
 
 export default {
   components: { Select2, DateRangePickerInTop },
   data() {
     return {
+      vehicleOrDriverOptions: [
+        { value: 'vehicle', text: this.$t('vehicle') },
+        { value: 'driver', text: this.$t('driver') },
+      ],
+      vehicleOrDriver: 'vehicle',
+      vehicleGroups: [],
+      driverGroups: [],
+      vehicleGroup: null,
+      driverGroup: null,
     }
   },
   computed: {
@@ -26,6 +41,10 @@ export default {
     vehicle: {
       get() { return this.$store.state.vehicle },
       set(value) { this.$store.commit('vehicle', value) }
+    },
+    driver: {
+      get() { return this.$store.state.driver },
+      set(value) { this.$store.commit('driver', value) }
     }
   },
   watch: {
@@ -44,41 +63,106 @@ export default {
       immediate: true,
       handler(val, oldVal) { val !== oldVal && this.getTrips() }
     },
+    driver: {
+      immediate: true,
+      handler(val, oldVal) { val !== oldVal && this.getTrips() }
+    },
+    vehicleOrDriver: {
+      immediate: true,
+      handler(val, oldVal) {
+        if (val !== oldVal) {
+          if (val === 'vehicle') {
+            this.getVehicles()
+            this.getVehicleGroups()
+          } else if (val === 'driver') {
+            this.getDrivers()
+            this.getDriverGroups()
+          }
+        }
+      }
+    },
+    vehicleGroup() { this.filterVehicles() },
+    driverGroup() { this.filterDrivers() },
   },
   methods: {
     ...mapActions(['getTrips', 'getTripsInDateRange', 'updateTrips']),
     getVehicles() {
-      const { commit } = this.$store
-      retry(() => this.$http.get('dao/veh_reg_mark'))()
-      .then(({data}) => {
+      if (!this.veh_reg_mark_group_dtl) {
+        this.veh_reg_mark_group_dtl = this.$http.get('dao/veh_reg_mark_group_dtl')
+      }
+      Promise.all([this.veh_reg_mark_group_dtl, this.$http.get('dao/veh_reg_mark')])
+      .then((responses) => {
+        const groupMapRows = responses[0].data.JSON
+        const groupMap = {}
+        groupMapRows.forEach(row => { groupMap[row.vrm_id] = row.vrm_grp_id })
+        const data = responses[1].data
         // sort by vrm_mark_code asc
         const vehicles = data.JSON
         .filter(row => row.company_id === this.$store.state.user.company_id)
-        .sort((a, b) => {
-          const aCode = a.vrm_mark_code
-          const bCode = b.vrm_mark_code
-          if (aCode < bCode) {
-            return -1
-          }
-          if (aCode > bCode) {
-            return 1
-          }
-          // names must be equal
-          return 0
-        })
-        commit('vehicles', vehicles)
+        sortRowsByProp(vehicles, 'vrm_mark_code')
+        vehicles.forEach(row => { row.group_id = groupMap[row.vrm_id] })
+        this._vehicles = vehicles
+        this.filterVehicles()
         // auto select first vehicle
         // if (state.vehicles[0] && !state.vehicles.find(v => v.vrm_id === state.vehicle)) {
         //   commit('vehicle', state.vehicles[0].vrm_id)
         // }
       }).catch((e) => {
-        this.$alert(this.$t('getVehiclesFailed'))
+        this.$alert(this.$t('errorRefreshOrFeedback'))
         throw e
       })
-    }
+    },
+    getDrivers() {
+      if (!this.driver_group_dtl) {
+        this.driver_group_dtl = this.$http.get('dao/driver_group_dtl')
+      }
+      Promise.all([this.driver_group_dtl, this.$http.get('dao/driver')])
+      .then((responses) => {
+        const groupMapRows = responses[0].data.JSON
+        const groupMap = {}
+        groupMapRows.forEach(row => { groupMap[row.driver_id] = row.drv_grp_id })
+        const items = responses[1].data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
+        sortRowsByProp(items, 'name')
+        items.forEach(row => { row.group_id = groupMap[row.driver_id] })
+        this._drivers = items
+        this.filterDrivers()
+      }).catch((e) => {
+        this.$alert(this.$t('errorRefreshOrFeedback'))
+        throw e
+      })
+    },
+    filterVehicles() {
+      this.$store.commit('vehicles', this.vehicleGroup ? this._vehicles.filter(v => v.group_id === this.vehicleGroup) : this._vehicles)
+    },
+    filterDrivers() {
+      this.$store.commit('drivers', this.driverGroup ? this._drivers.filter(v => v.group_id === this.driverGroup) : this._drivers)
+    },
+    getVehicleGroups() {
+      this.$http.get('dao/veh_reg_mark_group').then(({data}) => {
+        const items = data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
+        sortRowsByProp(items, 'grp_alias')
+        items.splice(0, 0, { vrm_grp_id: null, grp_alias: this.$t('all') })
+        this.vehicleGroups = items
+        this.filterVehicles()
+      })
+    },
+    getDriverGroups() {
+      this.$http.get('dao/driver_group').then(({data}) => {
+        const items = data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
+        sortRowsByProp(items, 'grp_alias')
+        items.splice(0, 0, { drv_grp_id: null, grp_alias: this.$t('all') })
+        this.driverGroups = items
+        this.filterDrivers()
+      })
+    },
   },
   created() {
-    this.getVehicles()
+    // dont observe
+    this._vehicles = []
+    this._drivers = []
   }
 }
 </script>

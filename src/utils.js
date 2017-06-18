@@ -344,3 +344,18 @@ export function getRanks(arr0, order = 'asc') {
   }
   return arr0.map(item => arr.indexOf(item) + 1)
 }
+
+export function sortRowsByProp(rows, prop) {
+  rows.sort((a, b) => {
+    const aProp = a[prop]
+    const bProp = b[prop]
+    if (aProp < bProp) {
+      return -1
+    }
+    if (aProp > bProp) {
+      return 1
+    }
+    // equal
+    return 0
+  })
+}

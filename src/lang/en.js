@@ -1,5 +1,6 @@
 export default {
   brand: 'Green Safety',
+  errorRefreshOrFeedback: 'Error. Please refresh or give us a feed back.',
   // top nav
   nineBoxes: '9 Boxes',
   profile: 'Profile',

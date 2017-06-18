@@ -49,7 +49,10 @@ const store = new Vuex.Store({
     companyCode: window.localStorage.getItem('companyCode'),
     menu,
     companies: [],
+    // Map.vue
     dateRange: [tenDaysBefore, today],
+    driver: null,
+    drivers: [],
     vehicle: null,
     vehicles: [],
     tripId: null,
@@ -62,6 +65,7 @@ const store = new Vuex.Store({
     pointsFailed: false,
     pointsExpired: true, // points belongs to tripId, a new request start, the points expire
     dateRangeInD2: [fourteenDaysBefore, today],
+    //
     report2DriverId: null,
     report2Drivers: [],
     dateRangeInReport2: [fourteenDaysBefore, today],
@@ -89,7 +93,10 @@ const store = new Vuex.Store({
     userCompany(state, val) { state.userCompany = val },
     companyCode(state, val) { state.companyCode = val; window.localStorage.setItem('companyCode', val) },
     companies(state, val) { state.companies = val },
+    // Map.vue
     dateRange(state, val) { state.dateRange = val },
+    driver(state, val) { state.driver = val },
+    drivers(state, val) { state.drivers = val },
     vehicle(state, val) { state.vehicle = val },
     vehicles(state, val) { state.vehicles = val },
     tripId(state, val) { state.tripId = val },
@@ -101,6 +108,7 @@ const store = new Vuex.Store({
     pointsLoading(state, val) { state.pointsLoading = val },
     pointsFailed(state, val) { state.pointsFailed = val },
     pointsExpired(state, val) { state.pointsExpired = val },
+    //
     dateRangeInD2(state, val) { state.dateRangeInD2 = val },
     report2DriverId(state, val) { state.report2DriverId = val },
     report2Drivers(state, val) { state.report2Drivers = val },

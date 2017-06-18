@@ -4,11 +4,11 @@
       <div class="arrow-wrapper">
         <md-icon class="arrow">arrow_drop_down</md-icon>
       </div>
-      <span class="value-text">{{(valueItem && valueItem[textKey]) || '&nbsp;'}}</span>
+      <span :class="['value-text', {'value-text-empty': !valueText}]">{{valueText || '&nbsp;'}}</span>
       <span class="arrow-holder"></span>
     </div>
     <div class="drop-down popup-layer" v-show="dropVisible">
-      <div class="search-wrapper">
+      <div class="search-wrapper" v-show="searchVisible">
         <input type="text" class="search" v-model="search" ref="search">
       </div>
       <div class="items">
@@ -24,6 +24,7 @@
 </template>
 <script>
 import { isDescendantOf } from 'helper-js'
+
 export default {
   // components:
   props: {
@@ -31,6 +32,7 @@ export default {
     textKey: {},
     valueKey: {},
     value: {},
+    searchVisible: { default: true },
   },
   data() {
     return {
@@ -47,7 +49,8 @@ export default {
       } else {
         return this.options
       }
-    }
+    },
+    valueText() { return this.valueItem && this.valueItem[this.textKey] },
   },
   watch: {
     dropVisible() {
@@ -104,6 +107,7 @@ export default {
     text-align: right;
     right: -7px;
     top: -2px;
+    user-select:none;
   }
   .arrow{
     font-size: 18px;
@@ -111,8 +115,12 @@ export default {
   .value-text{
     white-space: nowrap;
   }
+  .value-text-empty{
+    width: 20px;
+  }
   .drop-down{
     position: absolute;
+    min-width: 150px;
     top: 100%;
     left: 0;
     background-color: #fff;
