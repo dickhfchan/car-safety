@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime, timedelta
 import pandas as pd
@@ -12,6 +12,8 @@ from middleware import connect_to_database
 from config import db_name, db_password, db_username, host, port
 from middleware import from_Baidu
 
+# mongo video
+from pymongo import MongoClient
 
 
 app = Flask(__name__)
@@ -269,6 +271,16 @@ class Tables_JSON(Resource):
 
 
 
+class video(Resource):
+    def get(self, video_id):
+        client = MongoClient('dgdsvdodb01:27017')
+        client.warning_video.authenticate('gds_ui', 'GDS_ui_322', mechanism='SCRAM-SHA-1')
+        db = client.warning_video
+        chunks = db.warning_video_chunk.find( { "videoId" : video_id}, { "payload" : 1} ).sort([ ("chunkNum", 1) ])
+        result = ''
+        for chunk in chunks:
+            result += chunk['payload']
+        return Response(result, mimetype='application/octet-stream')
 
 @app.route('/')
 def index():
@@ -277,6 +289,7 @@ def index():
 api.add_resource(Tables_JSON, *table_routes)
 api.add_resource(Google_JSON, '/api/google/<int:veh_trip_id>')
 api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
+api.add_resource(video, '/api/video/<int:video_id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8081, debug=True)

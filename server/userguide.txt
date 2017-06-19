@@ -1,7 +1,7 @@
 To start server: "python run.py"
 
 
-IMPORTANT: 
+IMPORTANT:
 - Before starting server, please make changes to DATABASE CONNECTION PARAMETERS in config.py
 - This server is made thread-safe
 
@@ -24,7 +24,7 @@ run.py:
     2) Improved GET reponse with default HTTP headers
 
 
-#Updates 2/5/2017 21:00:00 
+#Updates 2/5/2017 21:00:00
 -Added Python Calls to functions in middleware are still very clunky. They will be improved upon.
 -More Rounds of testing
 
@@ -35,7 +35,7 @@ run.py:
 ########################################################################################################################################
 #Update 4/5/2017 12:16:
 
-Google API: 
+Google API:
 -Resolved 'originalIndex' issue
 -Return from google_snap_gps table if veh_trip_id is found on google_snap_gps
 -New veh_trip_id will be fed to Google Snap API, and inserted into google_snap_gps table
@@ -56,3 +56,10 @@ http://localhost:8080/api/google/394 (first try: Success)
 http://localhost:8080/api/google/394 (second try: Retrieval Success)
 http://localhost:8080/api/google/392 (first try: Success)
 http://localhost:8080/api/google/392 (second try: Success)
+
+########################################################################################################################################
+#Update 19/6/2017 14:43:
+
+Video API
+eg:
+http://localhost:8081/api/video/4_20170323_140951_FyFcJOO
