@@ -1,45 +1,14 @@
 <template>
   <div class="baidu-map-fencing">
     <div class="baidu-map-fencing__map" :id="id"></div>
-    <Map-Drawing-Tools class="baidu-map-fencing-drawing-tools"></Map-Drawing-Tools>
+    <Map-Drawing-Tools ref="tools" class="baidu-map-fencing-drawing-tools" v-show="toolsReady"></Map-Drawing-Tools>
   </div>
 </template>
 <script>
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
 import MapDrawingTools from './MapDrawingTools.vue'
-import { windowLoaded } from 'helper-js'
+import $script from 'scriptjs'
 //
-function loadBaiduMapDrawingManager() {
-  const isLoaded = () => window.BMapLib && window.BMapLib.DrawingManager
-  if (isLoaded()) {
-    return Promise.resolve()
-  }
-  const fun = loadBaiduMapDrawingManager
-  return windowLoaded().then(() => {
-    if (fun.loaded) {
-      return Promise.resolve()
-    } else {
-      if (!fun.requested) {
-        fun.requested = true
-        const script = document.createElement('script')
-        script.src = `http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js`
-        document.body.appendChild(script)
-        const script2 = document.createElement('script')
-        script2.src = `http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js`
-        document.body.appendChild(script2)
-      }
-      return new Promise(function(resolve, reject) {
-        const requestInterval = window.setInterval(function () {
-          if (isLoaded()) {
-            window.clearInterval(requestInterval)
-            resolve()
-          }
-        }, 10)
-      })
-    }
-  })
-}
-
 export default {
   components: { MapDrawingTools },
   props: {
@@ -52,6 +21,7 @@ export default {
     return {
       id: 'BaiduMapFencinge' + this._uid,
       BMapApiLoading: true,
+      toolsReady: false,
       // don't observe
       // BMap: null,
       // map: null,
@@ -63,18 +33,26 @@ export default {
   },
   watch: {
   },
-  methods: {
-    autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
-    mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
-    checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
-    removeFence() { this.map.removeOverlay(this.fence) },
-  },
   created() {
     // // don't observe
     // this.convertedPoints = {}
+    this.styleOptions = {
+      strokeColor: 'blue',    // 边线颜色。
+      fillColor: 'blue',      // 填充颜色。当参数为空时，圆形将没有填充效果。
+      strokeWeight: 3,       // 边线的宽度，以像素为单位。
+      strokeOpacity: 0.8,     // 边线透明度，取值范围0 - 1。
+      fillOpacity: 0.6,      // 填充的透明度，取值范围0 - 1。
+      strokeStyle: 'solid' // 边线的样式，solid或dashed。
+    }
     //
     this.mapReady().then(({BMap, map}) => {
-      loadBaiduMapDrawingManager().then(() => {
+      $script([
+        'http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js',
+        'http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js',
+        'http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils.js',
+      ],
+      () => {
+        this.toolsReady = true
         const DrawingManager = window.BMapLib.DrawingManager
         this.BMap = BMap
         this.BMapApiLoading = false
@@ -82,6 +60,7 @@ export default {
         map.clearOverlays()
         map.centerAndZoom(new BMap.Point(116.404, 39.915), 15)
         map.enableScrollWheelZoom()
+        this.renderSaved()
         map.addControl(new BMap.CityListControl({
           anchor: window.BMAP_ANCHOR_TOP_LEFT,
           offset: new BMap.Size(10, 20),
@@ -94,14 +73,7 @@ export default {
         //   alert('after');
         // }
         }))
-        var styleOptions = {
-          strokeColor: 'blue',    // 边线颜色。
-          fillColor: 'blue',      // 填充颜色。当参数为空时，圆形将没有填充效果。
-          strokeWeight: 3,       // 边线的宽度，以像素为单位。
-          strokeOpacity: 0.8,     // 边线透明度，取值范围0 - 1。
-          fillOpacity: 0.6,      // 填充的透明度，取值范围0 - 1。
-          strokeStyle: 'solid' // 边线的样式，solid或dashed。
-        }
+        const { styleOptions } = this
        // 实例化鼠标绘制工具
         const drawingManager = this.drawingManager = new DrawingManager(map, {
           isOpen: false, // 是否开启绘制模式
@@ -116,12 +88,16 @@ export default {
           rectangleOptions: styleOptions // 矩形的样式
         })
       // 添加鼠标绘制工具监听事件，用于获取绘制结果
-        drawingManager.addEventListener('overlaycomplete', (e) => { this.map.removeOverlay(this.fence); this.fence = e.overlay })
+        drawingManager.addEventListener('overlaycomplete', (e) => {
+          this.map.removeOverlay(this.fence)
+          this.fence = e.overlay
+          this.save()
+          if (!this.fence.hasOwnProperty('xa')) {
+            this.fence.enableEditing()
+          }
+        })
         drawingManager.addEventListener('polygoncomplete', (e) => {
-          setTimeout(() => {
-            drawingManager.open()
-            drawingManager.setDrawingMode(window.BMAP_DRAWING_POLYGON)
-          }, 100)
+          this.$refs.tools.selectedKey = 'drag'
         })
       })
     })
@@ -129,7 +105,61 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.checkSize)
-  }
+  },
+  methods: {
+    autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
+    mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
+    checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
+    removeFence() { this.map.removeOverlay(this.fence) },
+    save() {
+      const fence = this.fence
+      const temp = {}
+      if (fence.hasOwnProperty('xa')) {
+        // circle
+        temp.type = 'circle'
+        temp.xa = fence.xa
+        temp.point = { lat: fence.point.lat, lng: fence.point.lng }
+      } else {
+        temp.type = 'polygon'
+        temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
+      }
+      window.localStorage.setItem('fence', JSON.stringify(temp))
+    },
+    renderSaved() {
+      const temp = window.localStorage.getItem('fence')
+      const fence = temp && JSON.parse(temp)
+      if (fence) {
+        const { BMap } = window
+        const { map } = this
+        let points
+        if (fence.type === 'circle') {
+          const center = new BMap.Point(fence.point.lng, fence.point.lat)
+          this.fence = new BMap.Circle(center, fence.xa, this.styleOptions)
+          const xa2 = fence.xa / 100000
+          points = [new BMap.Point(center.lng - xa2, center.lat - xa2), new BMap.Point(center.lng + xa2, center.lat + xa2)]
+        } else {
+          points = fence.points.map(p => new BMap.Point(p.lng, p.lat))
+          this.fence = new BMap.Polygon(points, this.styleOptions)
+          this.fence.enableEditing()
+        }
+        map.addOverlay(this.fence)
+        map.setViewport(points, { enableAnimation: false })
+      }
+    },
+    isInFence(lng, lat) {
+      const { fence } = this
+      const { BMap, BMapLib } = window
+      const pt = new BMap.Point(lng, lat)
+      let result
+      if (fence && fence.hasOwnProperty('xa')) {
+        result = BMapLib.GeoUtils.isPointInCircle(pt, fence)
+      } else {
+        const bds = new BMap.Bounds(...fence.po)
+        result = BMapLib.GeoUtils.isPointInRect(pt, bds)
+      }
+      window.alert(`The point is ${result ? 'in' : 'out of'} map`)
+    },
+  },
 }
 
 </script>
