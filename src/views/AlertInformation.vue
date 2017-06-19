@@ -59,6 +59,17 @@ const statesMap = {
   '5': 'brake and right turn signal light',
 }
 
+function keepOneDigital(n) {
+  const str = Math.round(n * 10) + ''
+  const left = str.substr(0, str.length - 1)
+  const right = str.substr(-1)
+  if (right === '0') {
+    return parseInt(left)
+  } else {
+    return parseFloat(`${left}.${right}`)
+  }
+}
+
 export default {
   data() {
     return {
@@ -93,11 +104,12 @@ export default {
           'name': 'endTimeDisplay',
           text: this.$t('endTime'),
           visible: false,
-          valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm')
+          valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm'),
         },
         {
-          'name': 'duration',
-          text: this.$t('duration')
+          'name': 'durationDisplay',
+          text: this.$t('duration'),
+          valueProcessor: ({row}) => keepOneDigital(row.duration / 1000),
         },
         {
           'name': 'start_spd',
