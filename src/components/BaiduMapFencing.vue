@@ -92,9 +92,7 @@ export default {
           this.map.removeOverlay(this.fence)
           this.fence = e.overlay
           this.save()
-          if (!this.fence.hasOwnProperty('xa')) {
-            this.fence.enableEditing()
-          }
+          this.initFence()
         })
         drawingManager.addEventListener('polygoncomplete', (e) => {
           this.$refs.tools.selectedKey = 'drag'
@@ -140,11 +138,17 @@ export default {
         } else {
           points = fence.points.map(p => new BMap.Point(p.lng, p.lat))
           this.fence = new BMap.Polygon(points, this.styleOptions)
-          this.fence.enableEditing()
         }
         map.addOverlay(this.fence)
+        this.initFence()
         map.setViewport(points, { enableAnimation: false })
       }
+    },
+    initFence() {
+      this.fence.enableEditing()
+      this.fence.addEventListener('lineupdate', (e) => {
+        this.save()
+      })
     },
     isInFence(lng, lat) {
       const { fence } = this
