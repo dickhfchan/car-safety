@@ -180,7 +180,7 @@ export default {
   },
   methods: {
     ...mapActions(['getPoints']),
-    tripDate(trip) { return format(new Date(trip.start_time), 'MM-dd HH:mm') },
+    tripDate(trip) { return `${format(new Date(trip.start_time), 'MM-dd HH:mm')}-${format(new Date(trip.end_time), 'HH:mm')}` },
     tripDistance(trip) { return (trip.drv_distance / 100000).toFixed(1) },
     onMapCardFullscreen() {
       if (this.mapType === 'googleMap') {
