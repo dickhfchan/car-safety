@@ -101,8 +101,7 @@ VIEW `v_avg_warning_vrm_co` AS
             
            
 ALTER TABLE `gds_frontend`.`user_account` 
-ADD COLUMN `map` VARCHAR(20) NULL AFTER `version`,
-ADD COLUMN `company` INT(10) NULL AFTER `map`;
+ADD COLUMN `map` VARCHAR(20) NULL AFTER `version`;
 
 
 
