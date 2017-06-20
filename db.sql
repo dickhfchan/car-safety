@@ -37,7 +37,7 @@ CREATE
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`localhost` 
     SQL SECURITY DEFINER
-VIEW `v_warning_vrm_grp_co` AS
+VIEW `v_avg_warning_vrm_grp_co` AS
     SELECT 
         `a`.`avg_warn_id` AS `avg_warn_id`,
         `a`.`vrm_grp_id` AS `vrm_grp_id`,
