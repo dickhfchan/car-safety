@@ -66,6 +66,7 @@ VIEW `v_avg_warning_vrm_grp_co` AS
         `a`.`create_ts` AS `create_ts`,
         `a`.`create_user` AS `create_user`,
         `a`.`version` AS `version`,
+		    `b`.`grp_alias` AS `grp_alias`,
         `b`.`company_id` AS `company_id`
     FROM
         (`avg_warning_vrm_grp` `a`
