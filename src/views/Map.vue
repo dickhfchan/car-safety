@@ -206,7 +206,7 @@ export default {
     display: flex;
     flex-direction: column;
     height: 500px;
-    width: 120px;
+    width: 135px;
   }
   &.fullscreen .trips{
     height: 100%;
