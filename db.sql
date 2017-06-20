@@ -11,15 +11,33 @@ CREATE TABLE `google_snap_gps` (
 ) ENGINE=InnoDB AUTO_INCREMENT=525918 DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `ui_baidu_snap_gps` (
+  `baidu_gps_id` int(11) NOT NULL AUTO_INCREMENT,
+  `veh_trip_id` int(11) DEFAULT NULL,
+  `lat` double DEFAULT NULL,
+  `lng` double DEFAULT NULL,
+  `loc` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`baidu_gps_id`),
+  UNIQUE KEY `baidu_gps_id_UNIQUE` (`baidu_gps_id`),
+  KEY `veh_trip_id` (`veh_trip_id`,`baidu_gps_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=599044 DEFAULT CHARSET=utf8;
+
+
 # Modified to add the VRM_ID index only. Use the mysql admin tool 
 CREATE index on table `veh_trip` (`vrm_id`)
+
+            
+           
+ALTER TABLE `gds_frontend`.`user_account` 
+ADD COLUMN `map` VARCHAR(20) NULL AFTER `version`;
+
 
 
 CREATE 
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`localhost` 
     SQL SECURITY DEFINER
-VIEW `warning_vrm_grp_co` AS
+VIEW `v_avg_warning_vrm_grp_co` AS
     SELECT 
         `a`.`avg_warn_id` AS `avg_warn_id`,
         `a`.`vrm_grp_id` AS `vrm_grp_id`,
@@ -31,22 +49,9 @@ VIEW `warning_vrm_grp_co` AS
         `a`.`idle_duration_trf` AS `idle_duration_trf`,
         `a`.`idle_duration_non_trf` AS `idle_duration_non_trf`,
         `a`.`fuel_usage` AS `fuel_usage`,
-        `a`.`total_score` AS `total_score`,
-        `a`.`fcw_score` AS `fcw_score`,
-        `a`.`ufcw_score` AS `ufcw_score`,
-        `a`.`vb_score` AS `vb_score`,
-        `a`.`hmw_h_score` AS `hmw_h_score`,
-        `a`.`hmw_m_score` AS `hmw_m_score`,
-        `a`.`hmw_l_score` AS `hmw_l_score`,
-        `a`.`pcw_score` AS `pcw_score`,
-        `a`.`lldw_score` AS `lldw_score`,
-        `a`.`rldw_score` AS `rldw_score`,
-        `a`.`spw_score` AS `spw_score`,
-        `a`.`aaw_score` AS `aaw_score`,
-        `a`.`abw_score` AS `abw_score`,
-        `a`.`atw_score` AS `atw_score`,
         `a`.`fcw` AS `fcw`,
-        `a`.`ufcw` AS `ufcw`,
+        `a`.`ufcw_h` AS `ufcw_h`,
+        `a`.`ufcw_l` AS `ufcw_l`,
         `a`.`vb` AS `vb`,
         `a`.`hmw_h` AS `hmw_h`,
         `a`.`hmw_m` AS `hmw_m`,
@@ -61,6 +66,7 @@ VIEW `warning_vrm_grp_co` AS
         `a`.`create_ts` AS `create_ts`,
         `a`.`create_user` AS `create_user`,
         `a`.`version` AS `version`,
+		    `b`.`grp_alias` AS `grp_alias`,
         `b`.`company_id` AS `company_id`
     FROM
         (`avg_warning_vrm_grp` `a`
@@ -74,7 +80,7 @@ CREATE
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`localhost` 
     SQL SECURITY DEFINER
-VIEW `avg_warning_vrm_co` AS
+VIEW `v_avg_warning_vrm_co` AS
     SELECT 
         `a`.`avg_warn_id` AS `avg_warn_id`,
         `a`.`vrm_id` AS `vrm_id`,
@@ -86,23 +92,10 @@ VIEW `avg_warning_vrm_co` AS
         `a`.`idle_duration_trf` AS `idle_duration_trf`,
         `a`.`idle_duration_non_trf` AS `idle_duration_non_trf`,
         `a`.`fuel_usage` AS `fuel_usage`,
-        `a`.`total_score` AS `total_score`,
-        `a`.`pcw_score` AS `pcw_score`,
-        `a`.`fcw_score` AS `fcw_score`,
-        `a`.`ufcw_score` AS `ufcw_score`,
-        `a`.`vb_score` AS `vb_score`,
-        `a`.`hmw_h_score` AS `hmw_h_score`,
-        `a`.`hmw_m_score` AS `hmw_m_score`,
-        `a`.`hmw_l_score` AS `hmw_l_score`,
-        `a`.`lldw_score` AS `lldw_score`,
-        `a`.`rldw_score` AS `rldw_score`,
-        `a`.`spw_score` AS `spw_score`,
-        `a`.`aaw_score` AS `aaw_score`,
-        `a`.`abw_score` AS `abw_score`,
-        `a`.`atw_score` AS `atw_score`,
         `a`.`pcw` AS `pcw`,
         `a`.`fcw` AS `fcw`,
-        `a`.`ufcw` AS `ufcw`,
+        `a`.`ufcw_h` AS `ufcw_h`,
+        `a`.`ufcw_l` AS `ufcw_l`,        
         `a`.`vb` AS `vb`,
         `a`.`hmw_h` AS `hmw_h`,
         `a`.`hmw_m` AS `hmw_m`,
@@ -117,24 +110,52 @@ VIEW `avg_warning_vrm_co` AS
         `a`.`create_user` AS `create_user`,
         `a`.`version` AS `version`,
         `b`.`company_id` AS `company_id`,
-        `b`.`vrm_mark_code` AS `vrm_mark_code`,
-        `c`.`vrm_grp_id` AS `vrm_grp_id`
+        `b`.`vrm_mark_code` AS `vrm_mark_code`
     FROM
         ((`avg_warning_vrm` `a`
-        JOIN `veh_reg_mark` `b`)
-        JOIN `veh_reg_mark_group_dtl` `c`)
+        JOIN `veh_reg_mark` `b`))
     WHERE
-        ((`a`.`vrm_id` = `b`.`vrm_id`)
-            AND (`a`.`vrm_id` = `c`.`vrm_id`))
+        ((`a`.`vrm_id` = `b`.`vrm_id`))
             
-            
-           
-ALTER TABLE `gds_frontend`.`user_account` 
-ADD COLUMN `map` VARCHAR(20) NULL AFTER `version`,
-ADD COLUMN `company` INT(10) NULL AFTER `map`;
 
 
-
-CREATE VIEW `avg_warning_drv_name` AS
-SELECT b.company_id, b.name, a.* FROM gds_frontend.avg_warning_drv a, driver b where a.driver_id =b.driver_id;
-
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `v_avg_warning_drv_name` AS
+    SELECT 
+        `b`.`company_id` AS `company_id`,
+        `b`.`name` AS `name`,
+        `a`.`avg_warn_id` AS `avg_warn_id`,
+        `a`.`driver_id` AS `driver_id`,
+        `a`.`type` AS `type`,
+        `a`.`start_date` AS `start_date`,
+        `a`.`end_date` AS `end_date`,
+        `a`.`drv_distance` AS `drv_distance`,
+        `a`.`drv_duration` AS `drv_duration`,
+        `a`.`idle_duration_trf` AS `idle_duration_trf`,
+        `a`.`idle_duration_non_trf` AS `idle_duration_non_trf`,
+        `a`.`fuel_usage` AS `fuel_usage`,
+        `a`.`pcw` AS `pcw`,
+        `a`.`fcw` AS `fcw`,
+        `a`.`ufcw_h` AS `ufcw_h`,
+        `a`.`ufcw_l` AS `ufcw_l`,
+        `a`.`vb` AS `vb`,
+        `a`.`hmw_h` AS `hmw_h`,
+        `a`.`hmw_m` AS `hmw_m`,
+        `a`.`hmw_l` AS `hmw_l`,
+        `a`.`lldw` AS `lldw`,
+        `a`.`rldw` AS `rldw`,
+        `a`.`spw` AS `spw`,
+        `a`.`aaw` AS `aaw`,
+        `a`.`abw` AS `abw`,
+        `a`.`atw` AS `atw`,
+        `a`.`create_ts` AS `create_ts`,
+        `a`.`create_user` AS `create_user`,
+        `a`.`version` AS `version`
+    FROM
+        (`avg_warning_drv` `a`
+        JOIN `driver` `b`)
+    WHERE
+        (`a`.`driver_id` = `b`.`driver_id`)
