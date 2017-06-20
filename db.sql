@@ -19,7 +19,7 @@ CREATE
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`localhost` 
     SQL SECURITY DEFINER
-VIEW `warning_vrm_grp_co` AS
+VIEW `v_warning_vrm_grp_co` AS
     SELECT 
         `a`.`avg_warn_id` AS `avg_warn_id`,
         `a`.`vrm_grp_id` AS `vrm_grp_id`,
@@ -31,22 +31,9 @@ VIEW `warning_vrm_grp_co` AS
         `a`.`idle_duration_trf` AS `idle_duration_trf`,
         `a`.`idle_duration_non_trf` AS `idle_duration_non_trf`,
         `a`.`fuel_usage` AS `fuel_usage`,
-        `a`.`total_score` AS `total_score`,
-        `a`.`fcw_score` AS `fcw_score`,
-        `a`.`ufcw_score` AS `ufcw_score`,
-        `a`.`vb_score` AS `vb_score`,
-        `a`.`hmw_h_score` AS `hmw_h_score`,
-        `a`.`hmw_m_score` AS `hmw_m_score`,
-        `a`.`hmw_l_score` AS `hmw_l_score`,
-        `a`.`pcw_score` AS `pcw_score`,
-        `a`.`lldw_score` AS `lldw_score`,
-        `a`.`rldw_score` AS `rldw_score`,
-        `a`.`spw_score` AS `spw_score`,
-        `a`.`aaw_score` AS `aaw_score`,
-        `a`.`abw_score` AS `abw_score`,
-        `a`.`atw_score` AS `atw_score`,
         `a`.`fcw` AS `fcw`,
-        `a`.`ufcw` AS `ufcw`,
+        `a`.`ufcw_h` AS `ufcw_h`,
+        `a`.`ufcw_l` AS `ufcw_l`,
         `a`.`vb` AS `vb`,
         `a`.`hmw_h` AS `hmw_h`,
         `a`.`hmw_m` AS `hmw_m`,
