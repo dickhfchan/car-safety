@@ -319,7 +319,7 @@ export default {
       .map(row => Object.assign({}, row)) // clone row
       // foramt count columns
       this.rows1.forEach(row => {
-        this.columns1.slice(3).forEach(col => {
+        this.columns1.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
           row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
         })
         row.drv_distance = Math.round(row.drv_distance / 100000)

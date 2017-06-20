@@ -216,6 +216,13 @@ export default {
             row[field] = GetRound(row[field] / row._count, 1)
           })
         })
+        // foramt count columns
+        groupedRows.forEach(row => {
+          this.columns1.slice(2).filter(col => col.name !== 'drv_distance').forEach(col => {
+            row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+          })
+          row.drv_distance = Math.round(row.drv_distance / 100000)
+        })
         this.rows1 = groupedRows
         // get ranking
 
