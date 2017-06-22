@@ -289,7 +289,7 @@ def index():
 api.add_resource(Tables_JSON, *table_routes)
 api.add_resource(Google_JSON, '/api/google/<int:veh_trip_id>')
 api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
-api.add_resource(video, '/api/video/<int:video_id>')
+api.add_resource(video, '/api/video/<video_id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8081, debug=True)
