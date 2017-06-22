@@ -22,13 +22,12 @@
     <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
     <!-- video diaplog -->
-    <md-dialog ref="dialogVideo" @close="videoIframeSrc=null" class="alert-information dialog-video">
+    <md-dialog ref="dialogVideo" @close="$refs.video && $refs.video.pause()" class="alert-information dialog-video">
       <md-dialog-content>
-        <div class="relative iframe-wrapper">
-          <div class="relative iframe-wrapper2">
-            <iframe :src="videoIframeSrc" frameborder="0" scrolling="no" style="width:3000px;height:2000px;"></iframe>
-          </div>
-        </div>
+        <video style="width:100%;" controls="controls" ref="video">
+          <source :src="videoSrc" type="video/mp4" />
+          Your browser does not support HTML5 video.
+        </video>
         <md-button class="md-icon-button md-raised md-dense video-close-button"  @click.native="$refs.dialogVideo.close()">
           <md-icon>close</md-icon>
         </md-button>
@@ -42,6 +41,7 @@ import { format } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
 import { initColumns, initRows as initRowsOld, generateExcel } from '../utils.js'
+import config from '@/config.js'
 
 const initRows = (vm, rows, columns) => {
   rows.forEach(row => {
@@ -169,7 +169,7 @@ export default {
       ],
       rows: [],
       overLays: [], // store alert markers
-      videoIframeSrc: null,
+      videoSrc: null,
     }
   },
   computed: {
@@ -401,13 +401,14 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
       generateExcel(data, 'Alert Information', titleLabels)
     },
     playAlertVideo(row) {
-      this.videoIframeSrc = `http://dev3.neshmobilog.com:28080/CarTracker_040405/api/getVideoFile.jsp?videoId=${row.warning_vdo_id}`
+      this.videoSrc = config.serverBaseUrl.replace(/\/$/, '') + `/video/${row.warning_vdo_id}`
       this.$refs.dialogVideo.open()
     },
   }
 }
 
 </script>
+
 
 <style lang="scss">
 .alert-information{
@@ -418,31 +419,18 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
     }
   }
   &.dialog-video{
-    .iframe-wrapper2{
-      position:absolute;top:-150px;left:-150px;
-    }
-    .iframe-wrapper{
-      // width: 1430px;
-      width: 1280px;
-      height: 720px;
-      overflow: hidden;
-    }
     .md-dialog{
-      max-width: initial;
-      max-height: initial;
-      width: 1280px;
-      height: 720px;
+      max-width: 96%;
       overflow: visible;
     }
     .md-dialog-content{
       padding: 0;
-      width: 1280px;
-      height: 720px;
+      width: 100%;
       overflow: visible;
     }
     .video-close-button{
-      right: -13px;
-      top: -13px;
+      right: -10px;
+      top: -10px;
       background: #fff;
       position: absolute;
       margin: 0;
