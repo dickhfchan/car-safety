@@ -153,6 +153,7 @@ export default {
         },
         { name: 'drv_distance',
           text: this.$t('drvDistance'),
+          visible: false,
         },
       ],
       rows1: [],
