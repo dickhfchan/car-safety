@@ -24,8 +24,7 @@
     <!-- video diaplog -->
     <md-dialog ref="dialogVideo" @close="$refs.video && $refs.video.pause()" class="alert-information dialog-video">
       <md-dialog-content>
-        <video style="width:100%;" controls="controls" ref="video">
-          <source :src="videoSrc" type="video/mp4" />
+        <video style="width:100%;" :src="videoSrc" controls="controls" ref="video">
           Your browser does not support HTML5 video.
         </video>
         <md-button class="md-icon-button md-raised md-dense video-close-button"  @click.native="$refs.dialogVideo.close()">
