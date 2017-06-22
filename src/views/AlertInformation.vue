@@ -419,7 +419,7 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
   }
   &.dialog-video{
     .md-dialog{
-      max-width: 96%;
+      width: 1000px; // md-dialog max-width is 80%
       overflow: visible;
     }
     .md-dialog-content{
