@@ -91,7 +91,7 @@
           </div>
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
-            <md-switch class="md-primary" v-model="isAlertInfoShowInMap" @click.native="showInMap" v-show="showInMapToggleVisible">{{$t('showInMap')}}</md-switch>
+            <md-switch class="md-primary" v-model="isAlertInfoShowInMap" @click.native="toggleShowInMap" v-show="showInMapToggleVisible">{{$t('showInMap')}}</md-switch>
             <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
               <md-icon>get_app</md-icon>
               <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
@@ -172,6 +172,11 @@ export default {
     '$store.state.tripId'() { this.getPoints() },
     'mapType'() { this.getPoints() },
     showInMapToggleVisible(v) { if (!v) this.isAlertInfoShowInMap = false },
+    '$store.state.points'() {
+      try {
+        this.$refs.alertInformation.clearMarkers()
+      } catch (e) {}
+    }
   },
   mounted() {
     this.$nextTick(() => {
@@ -189,7 +194,7 @@ export default {
         this.$refs.bmtr.checkSize()
       }
     },
-    showInMap() {
+    toggleShowInMap() {
       if (this.isAlertInfoShowInMap) {
         this.$refs.alertInformation.renderAlertPoint()
       } else {
