@@ -70,7 +70,7 @@ export default {
       }
       this.$http.post('dao/ui_fence_setup', {
         company_id: this.$store.state.user.company.company_id,
-        created_by: this.$store.state.user.id,
+        created_by: this.$store.state.user.user_id,
         fence_baidu: temp,
         fence: null,
       }).then(() => {
