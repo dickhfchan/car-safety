@@ -13,7 +13,7 @@ from config import db_name, db_password, db_username, host, port
 from middleware import from_Baidu
 
 # mongo video
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
 
 app = Flask(__name__)

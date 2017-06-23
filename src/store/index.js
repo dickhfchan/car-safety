@@ -233,7 +233,8 @@ const store = new Vuex.Store({
         // http
         const url = (state.map === 'googleMap' ? 'google/' : 'baidu/') + tripId
         http.get(url, {
-          cancelToken: new CancelToken((c) => { local.cancelPrevgetPointsRequest = c })
+          cancelToken: new CancelToken((c) => { local.cancelPrevgetPointsRequest = c }),
+          timeout: 60 * 1000,
         }).then(({data}) => {
           // convert result point format and store
           if (state.map === 'googleMap') {
