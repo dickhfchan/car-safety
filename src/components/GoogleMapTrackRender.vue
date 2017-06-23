@@ -6,7 +6,7 @@
 <script>
 import {arrayLast} from 'helper-js'
 import runtime from '@/runtime.js'
-import { loadGoogleMap } from '@/utils.js'
+import { googleMapReady as mapReady } from '@/utils.js'
 
 export default {
   props: {
@@ -86,24 +86,7 @@ export default {
       map.fitBounds(bounds)
       map.panToBounds(bounds)
     },
-    mapReady() {
-      return loadGoogleMap(this.ak).then(google => {
-        if (!this.map) {
-          this.map = new google.maps.Map(document.getElementById(this.id), {
-            zoom: 15,
-            mapTypeId: 'roadmap',
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-              mapTypeIds: [
-                google.maps.MapTypeId.ROADMAP,
-                google.maps.MapTypeId.SATELLITE
-              ]
-            }
-          })
-        }
-        return Promise.resolve({google, map: this.map})
-      })
-    },
+    mapReady,
     checkSize() {
       this.$nextTick(() => {
         if (this.google && this.google.maps && this.map) {

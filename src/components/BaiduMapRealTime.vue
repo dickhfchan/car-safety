@@ -9,6 +9,7 @@ import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
 import onlineIcon from '@/assets/img/map/ONline.png'
 import offlineIcon from '@/assets/img/map/OFFline.png'
 import { format } from 'date-functions'
+import { baiduMapReady as mapReady } from '@/utils.js'
 //
 export default {
   props: {
@@ -79,7 +80,7 @@ Last active: ${format(new Date(detail.last_loc_update_ts))}
   },
   methods: {
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
-    mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
+    mapReady,
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
     getVrmMarkCodeByID(vrmId) {
       const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)

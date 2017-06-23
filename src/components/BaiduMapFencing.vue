@@ -8,6 +8,7 @@
 import BaiduMapTrackRender from './BaiduMapTrackRender.vue'
 import MapDrawingTools from './MapDrawingTools.vue'
 import $script from 'scriptjs'
+import { baiduMapReady as mapReady } from '@/utils.js'
 //
 export default {
   components: { MapDrawingTools },
@@ -106,7 +107,7 @@ export default {
   },
   methods: {
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
-    mapReady() { return BaiduMapTrackRender.methods.mapReady.apply(this) },
+    mapReady,
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
     removeFence() { this.map.removeOverlay(this.fence) },
     save() {

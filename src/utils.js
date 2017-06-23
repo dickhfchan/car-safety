@@ -359,3 +359,70 @@ export function sortRowsByProp(rows, prop) {
     return 0
   })
 }
+
+export function loadBaiduMap(ak) {
+  if (window.BMap) {
+    return Promise.resolve(window.BMap)
+  }
+  const fun = loadBaiduMap
+  return windowLoaded().then(() => {
+    if (fun.loaded) {
+      return Promise.resolve(window.BMap)
+    } else {
+      if (!fun.requested) {
+        fun.requested = true
+        window._BaiduMapLoadedCallback = () => { fun.loaded = true; unset(window, '_BaiduMapLoadedCallback') }
+        const script = document.createElement('script')
+        script.src = `http://api.map.baidu.com/api?v=2.0&ak=${ak}&callback=_BaiduMapLoadedCallback`
+        document.body.appendChild(script)
+      }
+      return new Promise(function(resolve, reject) {
+        const requestInterval = window.setInterval(function () {
+          if (fun.loaded) {
+            window.clearInterval(requestInterval)
+            resolve(window.BMap)
+          }
+        }, 10)
+      })
+    }
+  })
+}
+
+/**
+ * [baiduMapReady must be under vm]
+ * @return [type] [description]
+ */
+export function baiduMapReady() {
+  return loadBaiduMap(this.ak).then(BMap => {
+    this.BMap = BMap
+    if (!this.map) {
+      this.map = new BMap.Map(this.id)
+      this.map.enableScrollWheelZoom()
+    }
+    this.map.addControl(new BMap.NavigationControl({anchor: window.BMAP_ANCHOR_BOTTOM_RIGHT, type: window.BMAP_NAVIGATION_CONTROL_ZOOM}))
+    return Promise.resolve({BMap, map: this.map})
+  })
+}
+
+/**
+ * [googleMapReady must be under vm]
+ * @return [type] [description]
+ */
+export function googleMapReady() {
+  return loadGoogleMap(this.ak).then(google => {
+    if (!this.map) {
+      this.map = new google.maps.Map(document.getElementById(this.id), {
+        zoom: 15,
+        mapTypeId: 'roadmap',
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          mapTypeIds: [
+            google.maps.MapTypeId.ROADMAP,
+            google.maps.MapTypeId.SATELLITE
+          ]
+        }
+      })
+    }
+    return Promise.resolve({google, map: this.map})
+  })
+}

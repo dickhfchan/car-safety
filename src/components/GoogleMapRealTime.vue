@@ -9,6 +9,7 @@ import GoogleMapTrackRender from './GoogleMapTrackRender.vue'
 import onlineIcon from '@/assets/img/map/ONline.png'
 import offlineIcon from '@/assets/img/map/OFFline.png'
 import { format } from 'date-functions'
+import { googleMapReady as mapReady } from '@/utils.js'
 //
 export default {
   props: {
@@ -72,7 +73,7 @@ Last active: ${format(new Date(detail.last_loc_update_ts))}
   },
   methods: {
     autoCenterAndZoom(...args) { GoogleMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
-    mapReady() { return GoogleMapTrackRender.methods.mapReady.apply(this) },
+    mapReady,
     checkSize() { GoogleMapTrackRender.methods.checkSize.apply(this) },
     getVrmMarkCodeByID(vrmId) {
       const found = this.vehicles && this.vehicles.find(p => p.vrm_id === vrmId)
