@@ -23,6 +23,17 @@ CREATE TABLE `ui_baidu_snap_gps` (
 ) ENGINE=InnoDB AUTO_INCREMENT=599044 DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `gds_frontend`.`ui_fence_setup` (
+  `fence_id` INT NOT NULL,
+  `company_id` INT NULL,
+  `created_by` INT NULL,
+  `fence_baidu` JSON NULL,
+  `fence` JSON NULL,
+  `created_ts` TIMESTAMP NULL,
+  PRIMARY KEY (`fence_id`));
+
+
+
 # Modified to add the VRM_ID index only. Use the mysql admin tool 
 CREATE index on table `veh_trip` (`vrm_id`)
 
