@@ -92,8 +92,8 @@ export default {
         drawingManager.addEventListener('overlaycomplete', (e) => {
           this.map.removeOverlay(this.fence)
           this.fence = e.overlay
-          this.save()
           this.initFence()
+          this.$emit('changed')
         })
         drawingManager.addEventListener('polygoncomplete', (e) => {
           this.$refs.tools.selectedKey = 'drag'
@@ -110,20 +110,6 @@ export default {
     mapReady,
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
     removeFence() { this.map.removeOverlay(this.fence) },
-    save() {
-      const fence = this.fence
-      const temp = {}
-      if (fence.hasOwnProperty('xa')) {
-        // circle
-        temp.type = 'circle'
-        temp.xa = fence.xa
-        temp.point = { lat: fence.point.lat, lng: fence.point.lng }
-      } else {
-        temp.type = 'polygon'
-        temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
-      }
-      window.localStorage.setItem('fence', JSON.stringify(temp))
-    },
     renderSaved() {
       const temp = window.localStorage.getItem('fence')
       const fence = temp && JSON.parse(temp)
@@ -141,15 +127,18 @@ export default {
           this.fence = new BMap.Polygon(points, this.styleOptions)
         }
         map.addOverlay(this.fence)
-        this.initFence()
         map.setViewport(points, { enableAnimation: false })
+        this.initFence()
       }
     },
     initFence() {
       this.fence.enableEditing()
-      this.fence.addEventListener('lineupdate', (e) => {
-        this.save()
-      })
+      // prevent emiting 'changed' event when init
+      setTimeout(() => {
+        this.fence.addEventListener('lineupdate', (e) => {
+          this.$emit('changed')
+        })
+      }, 100)
     },
     isInFence(lng, lat) {
       const { fence } = this

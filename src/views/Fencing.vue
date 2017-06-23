@@ -6,12 +6,14 @@
 
         <div class="relative flex-1 overflow-hidden-y">
           <div class="map-wrapper">
-            <Baidu-Map-Fencing ref="bmf" :ak="$store.state.baiduMapAK" class="w-100 h-100"></Baidu-Map-Fencing>
+            <Baidu-Map-Fencing ref="bmf" :ak="$store.state.baiduMapAK" @changed="changed=true" class="w-100 h-100"></Baidu-Map-Fencing>
           </div>
           <!-- <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
           </div> -->
           <form novalidate @submit.prevent="checkFence" class="check">
+            <md-button class="md-raised md-primary" :disabled="!changed" @click.native="save">Save</md-button>
+
             <md-input-container>
               <label>Longitude</label>
               <md-input type="number" v-model="checkPoints.lng"></md-input>
@@ -33,11 +35,13 @@
 </template>
 <script>
 import BaiduMapFencing from '../components/BaiduMapFencing.vue'
+
 export default {
   components: { BaiduMapFencing },
   data() {
     return {
       title: this.$t('fencing'),
+      changed: false,
       checkPoints: {
         lng: 116.404,
         lat: 39.915,
@@ -52,6 +56,26 @@ export default {
   methods: {
     checkFence() {
       this.$refs.bmf.isInFence(this.checkPoints.lng, this.checkPoints.lat)
+    },
+    save() {
+      const { fence } = this.$refs.bmf
+      const temp = {}
+      if (fence.hasOwnProperty('xa')) {
+        // circle
+        temp.xa = fence.xa
+        temp.point = { lat: fence.point.lat, lng: fence.point.lng }
+      } else {
+        // polygon
+        temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
+      }
+      this.$http.post('dao/ui_fence_setup', {
+        company_id: this.$store.state.user.company.company_id,
+        created_by: this.$store.state.user.id,
+        fence_baidu: temp,
+        fence: null,
+      }).then(() => {
+        this.changed = false
+      })
     }
   }
 }
