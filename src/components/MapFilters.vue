@@ -8,8 +8,8 @@
     &nbsp;
     <Select2 v-if="vehicleOrDriver=='vehicle'" :options="$store.state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle"></Select2>
     <Select2 v-else-if="vehicleOrDriver=='driver'" :options="$store.state.drivers" value-key="driver_id" text-key="name" v-model="driver"></Select2>
-
-   <Date-Range-Picker-In-Top class="m-l" v-model="dateRange"></Date-Range-Picker-In-Top>
+    &nbsp;
+   <Date-Range-Picker-In-Top v-model="dateRange"></Date-Range-Picker-In-Top>
   </div>
 </template>
 <script>
@@ -175,6 +175,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   flex: 1;
   padding-right: 150px;
   .md-select{

@@ -261,7 +261,7 @@ export default {
     }
   }
 }
-.alert-information-card{
+.alert-information-card.md-card{
   .title-left{
     align-items: center;
   }
@@ -276,6 +276,11 @@ export default {
     .md-select-value{
       font-size: 14px;
       color: grey;
+    }
+  }
+  .card-buttons{
+    @media(max-width: 500px){
+      top:20px;
     }
   }
 }
