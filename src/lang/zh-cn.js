@@ -91,6 +91,8 @@ export default {
   realTime: '实时',
   // Fencing.vue
   fencing: '地理围栏',
+  // Datatables.vue
+  company: '公司',
   // columns
   startDate: '开始日期',
   drvDistance: '公里数',

@@ -82,7 +82,7 @@
             <div class="filters">
               <div class="type-filter" v-if="$refs && $refs.alertInformation">
                 <label class="m-l grey">{{$t('type')}}:</label>
-                <md-select class="m-l-sm warning-type-select" v-model="alertInformationWarningType">
+                <md-select class="m-l-sm inline-md warning-type-select" v-model="alertInformationWarningType">
                   <md-option value="all">{{$t('all')}}</md-option>
                   <md-option v-for="(val, key) in $refs.alertInformation.warningTypesI18n" :key="key" :value="key">{{val}}</md-option>
                 </md-select>
@@ -270,9 +270,6 @@ export default {
     align-items: center;
   }
   .warning-type-select{
-    display: inline-block;
-    width: auto;
-    min-width: initial;
     .md-select-value{
       font-size: 14px;
       color: grey;

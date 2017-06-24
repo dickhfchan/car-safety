@@ -1,11 +1,22 @@
 <template>
-  <md-card  class="m-a card-1">
+  <md-card  class="m-a card-1 datatables">
     <md-card-content>
-      <md-input-container md-inline class="datatables-select">
-        <md-select name="datatableSelect" v-model="current">
-          <md-option :value="dt.name" v-for="dt in datatables" :key="dt.name">{{dt.text}}</md-option>
-        </md-select>
-      </md-input-container>
+      <div class="card-title-wrapper">
+        <div class="datatables-select-wrapper">
+          <md-select name="datatableSelect" v-model="current" class="datatables-select inline-md">
+            <md-option :value="dt.name" v-for="dt in datatables" :key="dt.name">{{dt.text}}</md-option>
+          </md-select>
+        </div>
+        <div class="filters">
+          <div class="company-filter" v-if="companyDropDownVisible">
+            <label class="m-l grey">{{$t('company')}}:</label>
+            <md-select class="m-l-sm inline-md company-select" v-model="company">
+              <md-option :value="null">{{$t('all')}}</md-option>
+              <md-option v-for="cpn in companies" :key="cpn.company_id" :value="cpn.company_id">{{cpn.company_name}}</md-option>
+            </md-select>
+          </div>
+        </div>
+      </div>
 
       <div class="relative overflow-hidden-y">
 
@@ -18,9 +29,9 @@
          </md-table-header>
 
          <md-table-body>
-           <md-table-row v-for="row in rows" v-show="row.visible" :key="row.avg_warn_id" :md-item="row">
+           <md-table-row v-for="row in filteredRows" v-show="row.visible" :key="row.avg_warn_id" :md-item="row">
              <md-table-cell class="datatables-actions">
-               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)"  v-if="current!=='users'">
+               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)">
                  <md-icon>edit</md-icon>
                  <md-tooltip md-direction="bottom">Edit</md-tooltip>
                </md-button>
@@ -36,7 +47,7 @@
          </md-table-body>
        </md-table>
 
-       <Datatable-Footer :rows="rows"></Datatable-Footer>
+       <Datatable-Footer :rows="filteredRows"></Datatable-Footer>
 
 
         <div class="absolute-backdrop center-wrapper" v-show="loading">
@@ -45,7 +56,7 @@
       </div>
 
       <div class="card-buttons">
-        <md-button id="addItem" class="md-icon-button" @click.native="add()" v-if="current!=='users'">
+        <md-button id="addItem" class="md-icon-button" @click.native="add()">
           <md-icon>add</md-icon>
           <md-tooltip md-direction="bottom">New</md-tooltip>
         </md-button>
@@ -61,8 +72,8 @@
         <md-dialog-content>
           <form novalidate @submit.stop.prevent="saveNew()">
             <md-layout :md-gutter="16">
-              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
-                <md-input-container v-if="field.visible">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.visible && field.addAble">
+                <md-input-container>
                   <label>{{field.text}}</label>
                   <md-input v-model="newRow[field.name]"></md-input>
                 </md-input-container>
@@ -82,10 +93,10 @@
         <md-dialog-content>
           <form novalidate @submit.stop.prevent="saveEditing()">
             <md-layout :md-gutter="16">
-              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name">
-                <md-input-container  v-if="field.visible">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.visible">
+                <md-input-container>
                   <label>{{field.text}}</label>
-                  <md-input v-model="editingRow[field.name]"></md-input>
+                  <md-input v-model="editingRow[field.name]" :disabled="!field.editAble"></md-input>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -112,6 +123,7 @@ export default {
   data() {
     return {
       title: this.$t('settings'),
+      company: null,
       datatables: {
         // 'company': {
         //   'columns': [
@@ -151,7 +163,8 @@ export default {
               'name': 'company_id'
             },
             {
-              'name': 'create_user'
+              'name': 'create_user',
+              visible: false,
             },
             {
               'name': 'dob'
@@ -160,7 +173,9 @@ export default {
               'name': 'driver_code'
             },
             {
-              'name': 'driver_id'
+              'name': 'driver_id',
+              addAble: false,
+              editAble: false,
             },
             {
               'name': 'is_default'
@@ -178,11 +193,12 @@ export default {
               'name': 'phone_office'
             },
             {
-              'name': 'update_user'
+              'name': 'update_user',
+              visible: false,
             },
             {
               'name': 'version',
-              'visible': false
+              visible: false,
             }
           ]
         },
@@ -543,7 +559,16 @@ export default {
   },
   computed: {
     currentColumns() { return this.datatables[this.current].columns },
-    api() { return `dao/${this.current}` }
+    api() { return `dao/${this.current}` },
+    companies() { return this.$store.state.companies },
+    companyDropDownVisible() { return this.currentColumns.find(v => v.name === 'company_id') },
+    filteredRows() {
+      if (this.companyDropDownVisible && this.company != null) {
+        return this.rows.filter(row => row.company_id === this.company)
+      } else {
+        return this.rows
+      }
+    },
   },
   watch: {
     current: {
@@ -551,6 +576,7 @@ export default {
       handler(val, oldVal) {
         this.rows = []
         this.getData()
+        this.company = null
       }
     },
   },
@@ -564,6 +590,14 @@ export default {
       if (!dt.text) {
         this.$set(dt, 'text', titleCase(dt.name))
       }
+      dt.columns.forEach(col => {
+        if (!col.hasOwnProperty('addAble')) {
+          this.$set(col, 'addAble', true)
+        }
+        if (!col.hasOwnProperty('editAble')) {
+          this.$set(col, 'editAble', true)
+        }
+      })
       initColumns(this, dt.columns)
     }
     // get datatables with columns
@@ -693,20 +727,39 @@ export default {
 }
 </script>
 <style lang="scss">
-.datatables-select{
-  width: auto;
-  display: inline-flex;
-  margin: 0;
-  padding: 0;
-  height: 41px;
-  min-height: initial;
-  padding-left: 5px;
-  align-items: center;
-  .md-select-value{
-    font-size: 20px;
+.datatables{
+  .card-title-wrapper{
+    display: flex;
+    height: 41px;
+    padding-left: 5px;
+    align-items: center;
   }
-}
-.datatables-actions .md-table-cell-container{
-  padding-left: 12px!important;
+
+  .datatables-select-wrapper{
+    display: flex;
+    align-items: center;
+  }
+  .datatables-select{
+    .md-select-value{
+      font-size: 20px;
+    }
+  }
+  //
+  .filters{
+    display: inline-block;
+  }
+  .company-filter{
+    display: flex;
+    align-items: center;
+  }
+  .company-select{
+    .md-select-value{
+      font-size: 14px;
+      color: grey;
+    }
+  }
+  .datatables-actions .md-table-cell-container{
+    padding-left: 12px!important;
+  }
 }
 </style>

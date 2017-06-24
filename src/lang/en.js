@@ -91,6 +91,8 @@ export default {
   realTime: 'Real Time',
   // Fencing.vue
   fencing: 'Fencing',
+  // Datatables.vue
+  company: 'Company',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',
