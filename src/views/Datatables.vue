@@ -113,38 +113,38 @@ export default {
     return {
       title: this.$t('settings'),
       datatables: {
-        'company': {
-          'columns': [
-            {
-              'name': 'company_code'
-            },
-            {
-              'name': 'company_id'
-            },
-            {
-              'name': 'company_key'
-            },
-            {
-              'name': 'company_name'
-            },
-            {
-              'name': 'contact_name'
-            },
-            {
-              'name': 'contact_phone_no'
-            },
-            {
-              'name': 'status'
-            },
-            {
-              'name': 'timezone'
-            },
-            {
-              'name': 'version',
-              'visible': false
-            }
-          ]
-        },
+        // 'company': {
+        //   'columns': [
+        //     {
+        //       'name': 'company_code'
+        //     },
+        //     {
+        //       'name': 'company_id'
+        //     },
+        //     {
+        //       'name': 'company_key'
+        //     },
+        //     {
+        //       'name': 'company_name'
+        //     },
+        //     {
+        //       'name': 'contact_name'
+        //     },
+        //     {
+        //       'name': 'contact_phone_no'
+        //     },
+        //     {
+        //       'name': 'status'
+        //     },
+        //     {
+        //       'name': 'timezone'
+        //     },
+        //     {
+        //       'name': 'version',
+        //       'visible': false
+        //     }
+        //   ]
+        // },
         'driver': {
           'columns': [
             {
@@ -235,65 +235,65 @@ export default {
             }
           ]
         },
-        'mob_device': {
-          'columns': [
-            {
-              'name': 'active_end_date'
-            },
-            {
-              'name': 'active_start_date'
-            },
-            {
-              'name': 'apps_id'
-            },
-            {
-              'name': 'apps_timezone'
-            },
-            {
-              'name': 'apps_ts'
-            },
-            {
-              'name': 'apps_ver_no'
-            },
-            {
-              'name': 'company_id'
-            },
-            {
-              'name': 'create_user'
-            },
-            {
-              'name': 'last_access_ts'
-            },
-            {
-              'name': 'last_loc_update_ts'
-            },
-            {
-              'name': 'lat'
-            },
-            {
-              'name': 'lng'
-            },
-            {
-              'name': 'md_id'
-            },
-            {
-              'name': 'md_sn'
-            },
-            {
-              'name': 'status'
-            },
-            {
-              'name': 'update_user'
-            },
-            {
-              'name': 'version',
-              'visible': false
-            },
-            {
-              'name': 'vrm_id'
-            }
-          ]
-        },
+        // 'mob_device': {
+        //   'columns': [
+        //     {
+        //       'name': 'active_end_date'
+        //     },
+        //     {
+        //       'name': 'active_start_date'
+        //     },
+        //     {
+        //       'name': 'apps_id'
+        //     },
+        //     {
+        //       'name': 'apps_timezone'
+        //     },
+        //     {
+        //       'name': 'apps_ts'
+        //     },
+        //     {
+        //       'name': 'apps_ver_no'
+        //     },
+        //     {
+        //       'name': 'company_id'
+        //     },
+        //     {
+        //       'name': 'create_user'
+        //     },
+        //     {
+        //       'name': 'last_access_ts'
+        //     },
+        //     {
+        //       'name': 'last_loc_update_ts'
+        //     },
+        //     {
+        //       'name': 'lat'
+        //     },
+        //     {
+        //       'name': 'lng'
+        //     },
+        //     {
+        //       'name': 'md_id'
+        //     },
+        //     {
+        //       'name': 'md_sn'
+        //     },
+        //     {
+        //       'name': 'status'
+        //     },
+        //     {
+        //       'name': 'update_user'
+        //     },
+        //     {
+        //       'name': 'version',
+        //       'visible': false
+        //     },
+        //     {
+        //       'name': 'vrm_id'
+        //     }
+        //   ]
+        // },
         'user_account': {
           'columns': [
             {
@@ -364,84 +364,84 @@ export default {
             }
           ]
         },
-        'users': {
-          'columns': [
-            {
-              'name': 'company'
-            },
-            {
-              'name': 'def_lang'
-            },
-            {
-              'name': 'def_map'
-            },
-            {
-              'name': 'first_name'
-            },
-            {
-              'name': 'id'
-            },
-            {
-              'name': 'last_name'
-            },
-            {
-              'name': 'login_name'
-            },
-            {
-              'name': 'password'
-            }
-          ]
-        },
-        'vehicle': {
-          'columns': [
-            {
-              'name': 'brand',
-            },
-            {
-              'name': 'company_id',
-            },
-            {
-              'name': 'create_user',
-            },
-            {
-              'name': 'fuel_usage',
-            },
-            {
-              'name': 'idle_duration_non-trf',
-            },
-            {
-              'name': 'idle_duration_trf',
-            },
-            {
-              'name': 'latest_trip_distance',
-            },
-            {
-              'name': 'latest_trip_duration',
-            },
-            {
-              'name': 'model',
-            },
-            {
-              'name': 'run_distance',
-            },
-            {
-              'name': 'run_duration',
-            },
-            {
-              'name': 'update_user',
-            },
-            {
-              'name': 'vehicle_id',
-            },
-            {
-              'name': 'year',
-            },
-            {
-              'name': 'version',
-              'visible': false
-            },
-          ],
-        },
+        // 'users': {
+        //   'columns': [
+        //     {
+        //       'name': 'company'
+        //     },
+        //     {
+        //       'name': 'def_lang'
+        //     },
+        //     {
+        //       'name': 'def_map'
+        //     },
+        //     {
+        //       'name': 'first_name'
+        //     },
+        //     {
+        //       'name': 'id'
+        //     },
+        //     {
+        //       'name': 'last_name'
+        //     },
+        //     {
+        //       'name': 'login_name'
+        //     },
+        //     {
+        //       'name': 'password'
+        //     }
+        //   ]
+        // },
+        // 'vehicle': {
+        //   'columns': [
+        //     {
+        //       'name': 'brand',
+        //     },
+        //     {
+        //       'name': 'company_id',
+        //     },
+        //     {
+        //       'name': 'create_user',
+        //     },
+        //     {
+        //       'name': 'fuel_usage',
+        //     },
+        //     {
+        //       'name': 'idle_duration_non-trf',
+        //     },
+        //     {
+        //       'name': 'idle_duration_trf',
+        //     },
+        //     {
+        //       'name': 'latest_trip_distance',
+        //     },
+        //     {
+        //       'name': 'latest_trip_duration',
+        //     },
+        //     {
+        //       'name': 'model',
+        //     },
+        //     {
+        //       'name': 'run_distance',
+        //     },
+        //     {
+        //       'name': 'run_duration',
+        //     },
+        //     {
+        //       'name': 'update_user',
+        //     },
+        //     {
+        //       'name': 'vehicle_id',
+        //     },
+        //     {
+        //       'name': 'year',
+        //     },
+        //     {
+        //       'name': 'version',
+        //       'visible': false
+        //     },
+        //   ],
+        // },
         'veh_reg_mark': {
           'columns': [
             {
@@ -523,19 +523,19 @@ export default {
             }
           ]
         },
-        'warning_type': {
-          'columns': [
-            {
-              'name': 'warn_type_code',
-            },
-            {
-              'name': 'warn_type_id',
-            }
-          ],
-        }
+        // 'warning_type': {
+        //   'columns': [
+        //     {
+        //       'name': 'warn_type_code',
+        //     },
+        //     {
+        //       'name': 'warn_type_id',
+        //     }
+        //   ],
+        // }
       },
       rows: [],
-      current: 'company',
+      current: 'driver',
       loading: false,
       newRow: {},
       editingRow: {},
