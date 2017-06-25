@@ -10,7 +10,7 @@
         <div class="filters">
           <div class="company-filter" v-if="companyDropDownVisible">
             <label class="m-l grey">{{$t('company')}}:</label>
-            <md-select class="m-l-sm inline-md company-select" v-model="company">
+            <md-select class="m-l-sm inline-md company-select" v-model="company" disabled>
               <md-option :value="null">{{$t('all')}}</md-option>
               <md-option v-for="cpn in companies" :key="cpn.company_id" :value="cpn.company_id">{{cpn.company_name}}</md-option>
             </md-select>
@@ -123,7 +123,7 @@ export default {
   data() {
     return {
       title: this.$t('settings'),
-      company: null,
+      company: this.$store.state.user.company_id,
       datatables: {
         // 'company': {
         //   'columns': [
@@ -576,7 +576,6 @@ export default {
       handler(val, oldVal) {
         this.rows = []
         this.getData()
-        this.company = null
       }
     },
   },
