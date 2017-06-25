@@ -113,9 +113,9 @@
   </md-card>
 </template>
 <script>
+import Vue from 'vue'
 import DatatableFooter from '../components/DatatableFooter.vue'
-import { retry, titleCase } from 'helper-js'
-// import { format } from 'date-functions'
+import { titleCase } from 'helper-js'
 import { initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
 
 export default {
@@ -638,16 +638,26 @@ export default {
   },
   methods: {
     getData(table) {
+      // cancel prev request
+      if (this.cancelPrevgetDataRequest) {
+        this.cancelPrevgetDataRequest()
+        this.cancelPrevgetDataRequest = null
+      }
+      const CancelToken = Vue.Axios.CancelToken
       this.loading = true
-      retry(() => this.$http.get(this.api))()
+      this.$http.get(this.api, {
+        cancelToken: new CancelToken((c) => { this.cancelPrevgetDataRequest = c }),
+      })
       .then(({data}) => {
         this.rows = data.JSON
         initRows(this, this.rows, this.currentColumns)
         this.loading = false
       }).catch((e) => {
-        this.loading = false
-        this.$alert('load data failed')
-        throw e
+        if (!e.__CANCEL__) {
+          this.loading = false
+          this.$alert('load data failed')
+          throw e
+        }
       })
     },
     onSort(e) { sortRows(e, this.rows, this.currentColumns) },
@@ -759,6 +769,7 @@ export default {
   }
   .datatables-actions .md-table-cell-container{
     padding-left: 12px!important;
+    justify-content: flex-start!important;
   }
 }
 </style>
