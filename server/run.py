@@ -80,7 +80,7 @@ class Google_JSON(Resource):
             if "GOOGLE API SUCCESS" in message:
                 # All chunks passed through GOOGLE API and returned successfully
                 insert_into_google_table(conn, results, veh_trip_id)
-                def simplify(item)
+                def simplify(item):
                     return [item['location']['latitude'], item['location']['longitude'], item['originalIndex']]
                 return {'message': message, 'JSON': map(simplify, results)}, 200, default_headers
             else:
