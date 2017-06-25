@@ -41,7 +41,8 @@ export default {
   },
   methods: {
     updateRowVisibility() {
-      this.rows.forEach((row, i) => {
+      this.rows.forEach((row, index) => {
+        const i = index + 1
         row.visible = i >= this.start && i <= this.end
       })
     }
