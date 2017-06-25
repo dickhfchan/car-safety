@@ -239,7 +239,7 @@ const store = new Vuex.Store({
           // convert result point format and store
           if (state.map === 'googleMap') {
             commit('points', data.JSON.map(v => {
-              return { lat: v.location.latitude, lng: v.location.longitude }
+              return { lat: v[0], lng: v[1], originalIndex: v[2] }
             }))
           } else {
             commit('points', data.JSON.map(v => {
