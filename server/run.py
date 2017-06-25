@@ -81,7 +81,7 @@ class Google_JSON(Resource):
                 # All chunks passed through GOOGLE API and returned successfully
                 insert_into_google_table(conn, results, veh_trip_id)
                 def simplify(item):
-                    return [item['location']['latitude'], item['location']['longitude'], item['originalIndex']]
+                    return [item['location']['latitude'], item['location']['longitude'], item.get('originalIndex')]
                 return {'message': message, 'JSON': map(simplify, results)}, 200, default_headers
             else:
                 # Possible errors: Daily limit reached, GOOGLE API did not return anything (faulty gps values)
