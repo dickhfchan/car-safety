@@ -13,7 +13,7 @@ from config import db_name, db_password, db_username, host, port
 from middleware import from_Baidu
 
 # mongo video
-# from pymongo import MongoClient
+from pymongo import MongoClient
 
 
 app = Flask(__name__)
@@ -80,7 +80,9 @@ class Google_JSON(Resource):
             if "GOOGLE API SUCCESS" in message:
                 # All chunks passed through GOOGLE API and returned successfully
                 insert_into_google_table(conn, results, veh_trip_id)
-                return {'message': message, 'JSON': results}, 200, default_headers
+                def simplify(item)
+                    return [item['location']['latitude'], item['location']['longitude'], item['originalIndex']]
+                return {'message': message, 'JSON': map(simplify, results)}, 200, default_headers
             else:
                 # Possible errors: Daily limit reached, GOOGLE API did not return anything (faulty gps values)
                 return {'message': message, 'JSON': []}, 200, default_headers
