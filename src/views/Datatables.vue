@@ -72,10 +72,10 @@
         <md-dialog-content>
           <form novalidate @submit.stop.prevent="saveNew()">
             <md-layout :md-gutter="16">
-              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.visible && field.addAble">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.addVisible">
                 <md-input-container>
                   <label>{{field.text}}</label>
-                  <md-input v-model="newRow[field.name]"></md-input>
+                  <md-input v-model="newRow[field.name]" :disabled="field.addDisabled"></md-input>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -93,10 +93,10 @@
         <md-dialog-content>
           <form novalidate @submit.stop.prevent="saveEditing()">
             <md-layout :md-gutter="16">
-              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.visible">
+              <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.editVisible">
                 <md-input-container>
                   <label>{{field.text}}</label>
-                  <md-input v-model="editingRow[field.name]" :disabled="!field.editAble"></md-input>
+                  <md-input v-model="editingRow[field.name]" :disabled="field.editDisabled"></md-input>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -165,6 +165,8 @@ export default {
             {
               'name': 'create_user',
               visible: false,
+              addVisible: false,
+              editVisible: false,
             },
             {
               'name': 'dob'
@@ -174,8 +176,8 @@ export default {
             },
             {
               'name': 'driver_id',
-              addAble: false,
-              editAble: false,
+              addVisible: false,
+              editDisabled: true,
             },
             {
               'name': 'is_default'
@@ -200,7 +202,8 @@ export default {
               'name': 'version',
               visible: false,
             }
-          ]
+          ],
+          oncreating(newRow) { delete newRow.driver_id },
         },
         'driver_group': {
           'columns': [
@@ -224,7 +227,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             }
           ]
         },
@@ -247,7 +252,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             }
           ]
         },
@@ -350,7 +357,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             }
           ]
         },
@@ -480,7 +489,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             },
             {
               'name': 'vrm_id'
@@ -509,7 +520,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             },
             {
               'name': 'vrm_grp_id'
@@ -526,7 +539,9 @@ export default {
             },
             {
               'name': 'version',
-              'visible': false
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
             },
             {
               'name': 'vrm_grp_dtl_id'
@@ -558,7 +573,8 @@ export default {
     }
   },
   computed: {
-    currentColumns() { return this.datatables[this.current].columns },
+    currentTable() { return this.datatables[this.current] },
+    currentColumns() { return this.currentTable.columns },
     api() { return `dao/${this.current}` },
     companies() { return this.$store.state.companies },
     companyDropDownVisible() { return this.currentColumns.find(v => v.name === 'company_id') },
@@ -580,7 +596,21 @@ export default {
     },
   },
   created() {
-    //
+    // set for datatable with company_id
+    for (const key in this.datatables) {
+      const dt = this.datatables[key]
+      const colCompanyId = dt.columns.find(v => v.name === 'company_id')
+      if (colCompanyId) {
+        colCompanyId.addDisabled = true
+        colCompanyId.editDisabled = true
+        const oldC = dt.oncreating
+        dt.oncreating = (data) => {
+          data.company_id = this.$store.state.user.company_id
+          oldC && oldC(data)
+        }
+      }
+    }
+    // init datatables
     for (const key in this.datatables) {
       const dt = this.datatables[key]
       if (!dt.name) {
@@ -590,11 +620,11 @@ export default {
         this.$set(dt, 'text', titleCase(dt.name))
       }
       dt.columns.forEach(col => {
-        if (!col.hasOwnProperty('addAble')) {
-          this.$set(col, 'addAble', true)
+        if (!col.hasOwnProperty('addVisible')) {
+          this.$set(col, 'addVisible', true)
         }
-        if (!col.hasOwnProperty('editAble')) {
-          this.$set(col, 'editAble', true)
+        if (!col.hasOwnProperty('editVisible')) {
+          this.$set(col, 'editVisible', true)
         }
       })
       initColumns(this, dt.columns)
@@ -664,6 +694,7 @@ export default {
     add() {
       const newRow = {}
       this.currentColumns.forEach(col => { newRow[col.name] = null })
+      this.currentTable.oncreating && this.currentTable.oncreating(newRow)
       if (newRow.hasOwnProperty('version')) {
         newRow.version = 0
       }
@@ -688,7 +719,9 @@ export default {
       this.$refs.dialogAdd.close()
     },
     edit(row) {
-      this.editingRow = getRowData(row)
+      const rowData = getRowData(row)
+      this.currentTable.onediting && this.currentTable.onediting(rowData)
+      this.editingRow = rowData
       this.$refs.dialogEdit.open()
     },
     saveEditing() {
