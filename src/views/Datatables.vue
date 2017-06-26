@@ -75,7 +75,10 @@
               <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.addVisible">
                 <md-input-container>
                   <label>{{field.text}}</label>
-                  <md-input v-model="newRow[field.name]" :disabled="field.addDisabled"></md-input>
+                  <md-input v-if="!field.addType" v-model="newRow[field.name]" :disabled="field.addDisabled" :required="field.required"></md-input>
+                  <md-select v-else-if="field.addType==='select'" v-model="newRow[field.name]" :disabled="field.addDisabled" :required="field.required">
+                    <md-option v-for="option in field.addOptions" :key="option" :value="option[field.addOptionValueKey]">{{option[field.addOptionTextKey]}}</md-option>
+                  </md-select>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -96,7 +99,10 @@
               <md-layout md-flex-xsmall="100" md-flex-medium="50" md-flex-large="33" v-for="field in currentColumns" :key="field.name" v-if="field.editVisible">
                 <md-input-container>
                   <label>{{field.text}}</label>
-                  <md-input v-model="editingRow[field.name]" :disabled="field.editDisabled"></md-input>
+                  <md-input v-if="!field.editType" v-model="editingRow[field.name]" :disabled="field.editDisabled" :required="field.required"></md-input>
+                  <md-select v-else-if="field.editType==='select'" v-model="editingRow[field.name]" :disabled="field.editDisabled" :required="field.required">
+                    <md-option v-for="option in field.editOptions" :key="option" :value="option[field.editOptionValueKey]">{{option[field.editOptionTextKey]}}</md-option>
+                  </md-select>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -125,40 +131,21 @@ export default {
       title: this.$t('settings'),
       company: this.$store.state.user.company_id,
       datatables: {
-        // 'company': {
-        //   'columns': [
-        //     {
-        //       'name': 'company_code'
-        //     },
-        //     {
-        //       'name': 'company_id'
-        //     },
-        //     {
-        //       'name': 'company_key'
-        //     },
-        //     {
-        //       'name': 'company_name'
-        //     },
-        //     {
-        //       'name': 'contact_name'
-        //     },
-        //     {
-        //       'name': 'contact_phone_no'
-        //     },
-        //     {
-        //       'name': 'status'
-        //     },
-        //     {
-        //       'name': 'timezone'
-        //     },
-        //     {
-        //       'name': 'version',
-        //       'visible': false
-        //     }
-        //   ]
-        // },
         'driver': {
           'columns': [
+            {
+              'name': 'group_id',
+              visible: false,
+              required: true,
+              addType: 'select',
+              editType: 'select',
+              addOptions: null,
+              addOptionValueKey: 'drv_grp_id',
+              addOptionTextKey: 'grp_alias',
+              editOptions: null,
+              editOptionValueKey: 'drv_grp_id',
+              editOptionTextKey: 'grp_alias',
+            },
             {
               'name': 'company_id'
             },
@@ -201,9 +188,46 @@ export default {
             {
               'name': 'version',
               visible: false,
+              addVisible: false,
+              editDisabled: false,
             }
           ],
-          oncreating(newRow) { delete newRow.driver_id },
+          getDriverGroup: () => this.$http.get('dao/driver_group').then(({data}) => {
+            return data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
+          }),
+          oncreating: (newRow) => {
+            delete newRow.driver_id
+            const driverTB = this.datatables.driver
+            driverTB.getDriverGroup().then(data => {
+              const col = driverTB.columns.find(c => c.name === 'group_id')
+              col.addOptions = data
+            })
+          },
+          onediting: () => {
+            const driverTB = this.datatables.driver
+            driverTB.getDriverGroup().then(data => {
+              const col = driverTB.columns.find(c => c.name === 'group_id')
+              col.editOptions = data
+            })
+          },
+          ongettingData: () => { this.getDriverGroupDtl = this.$http.get('dao/driver_group_dtl') },
+          afterGetData: (rows) => {
+            this.getDriverGroupDtl.then(({data}) => {
+              const mapping = {}
+              data.JSON.forEach(item => { mapping[item.driver_id] = item.drv_grp_id })
+              rows.forEach(row => { row.group_id = mapping[row.driver_id] })
+            })
+          },
+          beforeSaveNew: (row) => {
+            const groupId = row.group_id
+            delete row.group_id
+            this.$http.post('dao/driver_group_dtl', { drv_grp_id: groupId, driver_id: row.driver_id })
+          },
+          beforeSaveEditing: (row) => {
+            const groupId = row.group_id
+            delete row.group_id
+            this.$http.post('dao/driver_group_dtl', { drv_grp_id: groupId, driver_id: row.driver_id })
+          },
         },
         'driver_group': {
           'columns': [
@@ -675,10 +699,12 @@ export default {
       }
       const CancelToken = Vue.Axios.CancelToken
       this.loading = true
+      this.currentTable.ongettingData && this.currentTable.ongettingData()
       this.$http.get(this.api, {
         cancelToken: new CancelToken((c) => { this.cancelPrevgetDataRequest = c }),
       })
       .then(({data}) => {
+        this.currentTable.afterGetData && this.currentTable.afterGetData(data.JSON)
         this.rows = data.JSON
         initRows(this, this.rows, this.currentColumns)
         this.loading = false
@@ -701,8 +727,18 @@ export default {
       this.newRow = newRow
       this.$refs.dialogAdd.open()
     },
+    validate(data) {
+      const requiredButEmpty = this.currentColumns.find(col => col.required && (data[col.name] == null || data[col.name] === ''))
+      this.$alert(`${requiredButEmpty.text} is required`)
+      return !requiredButEmpty
+    },
     saveNew() {
-      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(this.newRow)).then(({data}) => {
+      if (!this.validate(this.newRow)) {
+        return
+      }
+      beforeSave(this.newRow)
+      this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(this.newRow)
+      axiosAutoProxy(this.$http, this.api, 'post', this.newRow).then(({data}) => {
         if (data === 'error') {
           this.$alert('Save Failed')
         } else if (data.toLowerCase().indexOf('succe') === -1) {
@@ -725,6 +761,10 @@ export default {
       this.$refs.dialogEdit.open()
     },
     saveEditing() {
+      if (!this.validate(this.editingRow)) {
+        return
+      }
+      this.currentTable.beforeSaveEditing && this.currentTable.beforeSaveEditing(this.editingRow)
       axiosAutoProxy(this.$http, this.api, 'post', beforeSave(this.editingRow)).then(({data}) => {
         if (data === 'error') {
           this.$alert('Save Failed')
