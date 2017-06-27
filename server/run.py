@@ -246,10 +246,11 @@ class Tables_JSON(Resource):
             try:
                 pk_value = json[pk_name]
             except KeyError:
-                if pk_name != 'driver_id'
-               	#Close conncetion
-                	print "Close connection"
-                	conn.close()
+                if pk_name != 'driver_id':
+
+                    #Close conncetion
+                    print "Close connection"
+                    conn.close()
 
                     return "Key %s is not in JSON" % pk_name, 200, default_headers
 
@@ -397,4 +398,4 @@ api.add_resource(Google_JSON, '/api/google/<int:veh_trip_id>')
 api.add_resource(Baidu_API, '/api/baidu/<int:veh_trip_id>')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080, debug=True, threaded=True)
+    app.run(host='0.0.0.0',port=8081, debug=True, threaded=True)
