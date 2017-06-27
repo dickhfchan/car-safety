@@ -135,6 +135,7 @@ export default {
           'columns': [
             {
               'name': 'group_id',
+              text: 'Group',
               visible: false,
               required: true,
               addType: 'select',
