@@ -1,23 +1,7 @@
 <template>
   <div class="alert-information">
-    <md-table v-show="rows.length > 0">
-      <md-table-header>
-        <md-table-row>
-          <md-table-head v-for="col in columns" v-if="col.visible" :key="col.name">{{col.text}}</md-table-head>
-        </md-table-row>
-      </md-table-header>
 
-      <md-table-body>
-        <md-table-row v-for="row in filteredRows" :key="row.log_id" :class="{active: row.active}">
-          <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
-            <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
-            <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row.warning_vdo_ready==='Y'" @click.native="playAlertVideo(row)">
-              <md-icon>ondemand_video</md-icon>
-            </md-button>
-          </md-table-cell>
-        </md-table-row>
-      </md-table-body>
-    </md-table>
+    <Alert-Information-Table v-show="rows.length > 0" :columns="columns" :rows="filteredRows"></Alert-Information-Table>
 
     <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
@@ -41,6 +25,7 @@ import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
 import { initColumns, initRows as initRowsOld, generateExcel } from '../utils.js'
 import config from '@/config.js'
+import AlertInformationTable from '../components/AlertInformationTable.vue'
 
 const initRows = (vm, rows, columns) => {
   rows.forEach(row => {
@@ -70,6 +55,7 @@ function keepOneDigital(n) {
 }
 
 export default {
+  components: { AlertInformationTable },
   data() {
     return {
       warningTypes: null,
