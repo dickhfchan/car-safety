@@ -7,6 +7,7 @@
       <Select2 :options="$store.state.report2Drivers" value-key="driver_id" text-key="name" v-model="report2DriverId"></Select2>
       <Date-Range-Picker-In-Top v-model="dateRangeInReport2" class="m-l report2-date-range"></Date-Range-Picker-In-Top>
     </div>
+    <Driver-Vehicle-Profile-Filters v-else-if="$route.name === 'driverVehicleProfile'"></Driver-Vehicle-Profile-Filters>
   </div>
 </template>
 
@@ -14,9 +15,10 @@
 import MapFilters from '@/components/MapFilters.vue'
 import DateRangePickerInTop from '@/components/DateRangePickerInTop.vue'
 import Select2 from '@/components/Select2.vue'
+import DriverVehicleProfileFilters from '@/components/DriverVehicleProfileFilters.vue'
 
 export default {
-  components: { MapFilters, DateRangePickerInTop, Select2 },
+  components: { MapFilters, DateRangePickerInTop, Select2, DriverVehicleProfileFilters },
   // data() {
   //   return {
   //

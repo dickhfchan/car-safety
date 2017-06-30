@@ -184,7 +184,7 @@ export default {
   },
   computed: {
     searchBtnVisible() {
-      return this.window.width < 800 && ['map', 'report2', 'd2'].indexOf(this.$route.name) > -1
+      return this.window.width < 800 && ['map', 'report2', 'd2', 'driverVehicleProfile'].indexOf(this.$route.name) > -1
     }
   },
   methods: {

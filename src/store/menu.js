@@ -66,6 +66,11 @@ export default [
     icon: '',
     routeName: 'fencing'
   },
+  {
+    text: 'driverVehicleProfile',
+    icon: '',
+    routeName: 'driverVehicleProfile'
+  },
   // {
   //   text: 'settings',
   //   icon: 'analysis',

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import config from '../config.js'
 import urls from './modules/urls.js'
+import driverVehicleProfile from './modules/driver-vehicle-profile.js'
 import menu from './menu.js'
 import * as dateFunctions from 'date-functions'
 import { newDate } from '@/utils.js'
@@ -35,7 +36,8 @@ const local = {}
 
 const store = new Vuex.Store({
   modules: {
-    urls
+    urls,
+    driverVehicleProfile,
   },
   state: {
     initialized: false,

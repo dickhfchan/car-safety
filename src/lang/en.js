@@ -93,6 +93,11 @@ export default {
   fencing: 'Fencing',
   // Datatables.vue
   company: 'Company',
+  // driverVehicleProfile.vue
+  driverVehicleProfile: 'Driver/Vehicle Profile',
+  daily: 'Daily',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',

@@ -1,5 +1,6 @@
 import { titleCase, windowLoaded, unset } from 'helper-js'
 import config from '@/config.js'
+import Vue from 'vue'
 
 const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date',
   'create_ts', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts',
@@ -425,4 +426,22 @@ export function googleMapReady() {
     }
     return Promise.resolve({google, map: this.map})
   })
+}
+
+// http
+const storeOfCancelOldRequest = {}
+export function cancelOldRequest(name) {
+  const cancel = storeOfCancelOldRequest[name]
+  if (cancel) {
+    cancel()
+    delete storeOfCancelOldRequest[name]
+  }
+}
+export function namedHttpGet(name, url, options0) {
+  cancelOldRequest(name)
+  const CancelToken = Vue.Axios.CancelToken
+  const http = Vue.http
+  const options = Object.assign({}, options0 || {})
+  options.cancelToken = new CancelToken((c) => { storeOfCancelOldRequest[name] = c })
+  return http.get(url, options)
 }

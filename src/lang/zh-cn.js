@@ -93,6 +93,11 @@ export default {
   fencing: '地理围栏',
   // Datatables.vue
   company: '公司',
+  // driverVehicleProfile.vue
+  driverVehicleProfile: '司机/车辆资料',
+  daily: '日',
+  monthly: '月',
+  yearly: '年',
   // columns
   startDate: '开始日期',
   drvDistance: '公里数',
