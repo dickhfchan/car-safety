@@ -1,8 +1,7 @@
 import Vue from 'vue'
-import { format } from 'date-functions'
 import { namedHttpGet } from '@/utils.js'
 import runtime from '@/runtime.js'
-window.Vue = Vue
+
 export default {
   namespaced: true,
   state: {
@@ -14,7 +13,6 @@ export default {
     vehicleInfos: [],
     vehicle: null,
     dateType: 'daily',
-    date: format(new Date(), 'yyyy-MM-dd'), // day, month, year
   },
   mutations: {
     type(state, v) { state.type = v },
@@ -25,33 +23,10 @@ export default {
     vehicleInfos(state, v) { state.vehicleInfos = v },
     vehicle(state, v) { state.vehicle = v },
     dateType(state, v) { state.dateType = v },
-    date(state, v) { state.date = v },
   },
   getters: {
-    driverObj: state => {
-      const obj0 = state.drivers.find(item => item.driver_id === state.driver)
-      if (obj0) {
-        const obj = Object.assign({}, obj0)
-        obj.travelledDistance = state.driverInfos
-        .filter(v => v.driver_id === obj.driver_id)
-        .reduce((a, b) => a + b.drv_distance, 0) / 1000
-        return obj
-      } else {
-        return {}
-      }
-    },
-    vehicleObj: state => {
-      const obj0 = state.vehicles.find(item => item.vrm_id === state.vehicle)
-      if (obj0) {
-        const obj = Object.assign({}, obj0)
-        obj.travelledDistance = state.vehicleInfos
-        .filter(v => v.vrm_id === obj.vrm_id)
-        .reduce((a, b) => a + b.drv_distance, 0) / 1000
-        return obj
-      } else {
-        return {}
-      }
-    },
+    driverObj: state => state.drivers.find(item => item.driver_id === state.driver),
+    vehicleObj: state => state.vehicles.find(item => item.vrm_id === state.vehicle),
   },
   actions: {
     getDrivers(context) {

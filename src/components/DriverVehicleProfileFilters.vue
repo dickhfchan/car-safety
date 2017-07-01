@@ -6,11 +6,6 @@
     <Select2 v-else-if="state.type=='vehicle'" :options="state.vehicles" value-key="vrm_id" text-key="vrm_mark_code" v-model="vehicle" :search-visible="true"></Select2>
     &nbsp;
     <Select2 :options="dateTypes" value-key="value" text-key="text" v-model="dateType" :search-visible="false"></Select2>
-    &nbsp;
-    <Date-Picker v-if="dateType==='daily'" v-model="date" :language="$store.state.lang == 'en' ? 'en' : 'ch'"></Date-Picker>
-    <Select2 v-else-if="dateType==='weekly'" v-model="date" :options="optionsWeekly" value-key="value" text-key="text" :search-visible="false"></Select2>
-    <Select2 v-else-if="dateType==='monthly'" v-model="date" :options="optionsMonthly" value-key="value" text-key="text" :search-visible="false"></Select2>
-    <Select2 v-else-if="dateType==='yearly'" v-model="date" :options="optionsYearly" value-key="value" text-key="text" :search-visible="false"></Select2>
   </div>
 </template>
 
@@ -56,9 +51,15 @@ export default {
       get() { return this.state.dateType },
       set(value) { this.$store.commit(`${md}/dateType`, value) },
     },
-    date: {
-      get() { return this.state.date },
-      set(value) { this.$store.commit(`${md}/date`, value) },
+    minDateDaily() {
+      if (this.dateType === 'daily') {
+        return format(subDays(new Date(), 13), 'yyyy-MM-dd')
+      }
+    },
+    maxDateDaily() {
+      if (this.dateType === 'daily') {
+        return format(new Date(), 'yyyy-MM-dd')
+      }
     },
     optionsMonthly() {
       const now = new Date()
@@ -100,28 +101,6 @@ export default {
         year--
       }
       return result
-    },
-  },
-  watch: {
-    dateType(value, old) {
-      if (value !== old) {
-        switch (value) {
-          case 'daily':
-            this.date = format(new Date(), 'yyyy-MM-dd')
-            break
-          case 'weekly':
-            const date = new Date()
-            subDays(date, date.getDay()) // this week start
-            this.date = format(date, 'yyyy-MM-dd')
-            break
-          case 'monthly':
-            this.date = format(new Date(), 'yyyy-MM')
-            break
-          case 'yearly':
-            this.date = new Date().getFullYear().toString()
-            break
-        }
-      }
     },
   },
   created() {
