@@ -323,9 +323,12 @@ body, html{
   padding: 10px;
   width: 100%;
   display: block;
-  .map-filters, .d2-date-range, .report2-select-wrapper{
+  > div{
     justify-content: flex-start;
   }
+  // .map-filters, .d2-date-range, .report2-select-wrapper{
+  //   justify-content: flex-start;
+  // }
 }
 //
 .left-side-bar.md-sidenav.md-theme-blue{

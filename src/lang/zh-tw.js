@@ -96,6 +96,7 @@ export default {
   // driverVehicleProfile.vue
   driverVehicleProfile: '司機/車輛資料',
   daily: '日',
+  weekly: '周',
   monthly: '月',
   yearly: '年',
   // columns

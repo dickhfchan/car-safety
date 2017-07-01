@@ -96,6 +96,7 @@ export default {
   // driverVehicleProfile.vue
   driverVehicleProfile: 'Driver/Vehicle Profile',
   daily: 'Daily',
+  weekly: 'Weekly',
   monthly: 'Monthly',
   yearly: 'Yearly',
   // columns
