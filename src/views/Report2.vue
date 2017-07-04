@@ -387,10 +387,10 @@ export default {
     },
     renderChart1() {
       var ctx = document.getElementById(this.chart1ID)
-      if (this.chart1) {
+      try {
         this.chart1.detach()
         ctx.innerHTML = ''
-      }
+      } catch (e) {}
       this.chart1 = new Chartist.Bar(ctx, {
         labels: this.rows1.map(row => row.start_date_formatted.replace(/^\d{4}-/, '')),
         series: [
@@ -399,7 +399,7 @@ export default {
       },
         {
           seriesBarDistance: 10,
-          reverseData: true,
+          reverseData: false,
           horizontalBars: false,
           axisY: {
             offset: 70
@@ -408,10 +408,10 @@ export default {
     },
     renderChart2() {
       var ctx = document.getElementById(this.chart2ID)
-      if (this.chart2) {
+      try {
         this.chart2.detach()
         ctx.innerHTML = ''
-      }
+      } catch (e) {}
       const labelCols = this.countColumns1
       this.chart2 = new Chartist.Line(ctx, {
         labels: this.rows1.map(row => row.start_date_formatted.replace(/^\d{4}-/, '')),
