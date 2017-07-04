@@ -301,7 +301,7 @@ export default {
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading1 = false
-        this.originRows1 = data.JSON
+        this.originRows1 = data.JSON.sort((a, b) => a.start_date - b.start_date)
       }).catch((e) => {
         this.originRows1 = []
         this.loading1 = false
@@ -317,6 +317,7 @@ export default {
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
+      .reverse()
       // foramt count columns
       this.rows1.forEach(row => {
         this.columns1.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
@@ -399,7 +400,7 @@ export default {
       },
         {
           seriesBarDistance: 10,
-          reverseData: false,
+          reverseData: true,
           horizontalBars: false,
           axisY: {
             offset: 70
