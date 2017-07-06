@@ -418,6 +418,7 @@ export default {
         labels: this.rows1.map(row => row.start_date_formatted.replace(/^\d{4}-/, '')),
         series: labelCols.map(col => this.rows1.map(row => row[col.name])),
       }, {
+        reverseData: true,
         fullWidth: true,
         chartPadding: {
           right: 30
