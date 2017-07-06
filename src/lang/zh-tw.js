@@ -99,6 +99,8 @@ export default {
   weekly: '周',
   monthly: '月',
   yearly: '年',
+  driverProfile: '司機資料',
+  vehicleProfile: '車輛資料',
   vehicleScoreAndAlertCountPer100KM: '車輛評分及每百公裏警報次數',
   // columns
   startDate: '開始日期',
