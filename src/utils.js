@@ -361,6 +361,20 @@ export function sortRowsByProp(rows, prop) {
   })
 }
 
+export function exportExcel(rows, columns, title) {
+  const cols = columns
+  const data = rows.map(row => {
+    const r = []
+    cols.forEach(col => {
+      const val = row[col.name]
+      r.push(col.formatter ? col.formatter(val) : val)
+    })
+    return r
+  })
+  const titleLabels = cols.map(col => col.text)
+  generateExcel(data, title, titleLabels)
+}
+
 export function loadBaiduMap(ak) {
   if (window.BMap) {
     return Promise.resolve(window.BMap)

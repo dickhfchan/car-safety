@@ -99,6 +99,7 @@ export default {
   weekly: 'Weekly',
   monthly: 'Monthly',
   yearly: 'Yearly',
+  vehicleScoreAndAlertCountPer100KM: 'Vehicle Score And Alert Count Per 100KM',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',

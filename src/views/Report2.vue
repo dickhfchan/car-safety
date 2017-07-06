@@ -318,7 +318,7 @@ export default {
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
       .reverse()
-      // foramt count columns
+      // format count columns
       this.rows1.forEach(row => {
         this.columns1.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
           row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)

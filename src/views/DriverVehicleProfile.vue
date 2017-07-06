@@ -51,12 +51,82 @@
           </md-card-content>
         </md-card>
       </md-layout>
+      <md-layout md-flex="100" v-if="isSelected">
+        <md-card  class="card-1" v-if="state.type==='driver'">
+          <md-card-content>
+            <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
+
+            <div class="relative overflow-hidden-y">
+              <md-table @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
+               <md-table-header>
+                 <md-table-row>
+                   <md-table-head v-for="col in driverInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                 </md-table-row>
+               </md-table-header>
+
+               <md-table-body>
+                 <md-table-row v-for="row in driverInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                   <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name"
+                   <!-- :style="getColorStyle(rows1, row, col)" -->
+                   >
+                     {{ row[col.name] }}
+                   </md-table-cell>
+                 </md-table-row>
+               </md-table-body>
+             </md-table>
+
+             <Datatable-Footer :rows="driverInfoRows"></Datatable-Footer>
+            </div>
+
+            <div class="card-buttons">
+              <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('driverScoreAndAlertCountPer100KM'))">
+                <md-icon>get_app</md-icon>
+                <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+              </md-button>
+              <fullscreen-button></fullscreen-button>
+            </div>
+          </md-card-content>
+        </md-card>
+        <md-card  class="m-a card-1" v-else-if="state.type=='vehicle'">
+          <md-card-content>
+            <h2 class="md-title">{{$t('vehicleScoreAndAlertCountPer100KM')}}</h2>
+            <div class="relative overflow-hidden-y">
+              <md-table  @select="" @sort="onSort">
+               <md-table-header>
+                 <md-table-row>
+                   <md-table-head v-for="col in vehicleInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                 </md-table-row>
+               </md-table-header>
+
+               <md-table-body>
+                 <md-table-row v-for="row in vehicleInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                   <md-table-cell v-for="col in vehicleInfoColumns" v-if="col.visible" :key="col.name">
+                     {{ row[col.name] }}
+                   </md-table-cell>
+                 </md-table-row>
+               </md-table-body>
+             </md-table>
+
+             <Datatable-Footer :rows="vehicleInfoRows"></Datatable-Footer>
+            </div>
+
+            <div class="card-buttons">
+              <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('vehicleScoreAndAlertCountPer100KM'))">
+                <md-icon>get_app</md-icon>
+                <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+              </md-button>
+              <fullscreen-button></fullscreen-button>
+            </div>
+          </md-card-content>
+        </md-card>
+      </md-layout>
     </md-layout>
   </div>
 </template>
 <script>
+import DatatableFooter from '../components/DatatableFooter.vue'
 import { clone, format, addDay, addDays, subDays, addMonth, subMonths, getMonthStart, addYear, subYears } from 'date-functions'
-import { newDate } from '@/utils.js'
+import { newDate, sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
@@ -136,12 +206,157 @@ function getScores(state) {
 const md = 'driverVehicleProfile' // vuex module name
 
 export default {
-  // components:
+  components: { DatatableFooter },
   data() {
     return {
       safetyScoreHistoryChartID: this._uid + 'safetyScoreHistory',
       // driverInfo: {},
       // vehicleInfo: {},
+      driverInfoRows: [],
+      vehicleInfoRows: [],
+      driverInfoColumns: [
+        {
+          name: 'start_date_formatted',
+          text: this.$t('startDate'),
+          valueProcessor: ({row}) => format(new Date(row.start_date), 'yyyy-MM-dd'),
+        },
+        { name: 'total_score',
+          text: this.$t('totalScore')
+        },
+        { name: 'pcw',
+          text: this.$t('pcw'),
+        },
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
+        },
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
+        },
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
+        },
+        { name: 'fcw',
+          text: this.$t('fcw'),
+        },
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
+        },
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
+        },
+        { name: 'lldw',
+          text: this.$t('lldw'),
+        },
+        { name: 'rldw',
+          text: this.$t('rldw'),
+        },
+        { name: 'spw',
+          text: this.$t('spw'),
+        },
+        { name: 'aaw',
+          text: this.$t('aaw'),
+        },
+        { name: 'abw',
+          text: this.$t('abw'),
+        },
+        { name: 'atw',
+          text: this.$t('atw'),
+        },
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
+        },
+      ],
+      vehicleInfoColumns: [
+        {
+          name: 'start_date_formatted',
+          text: this.$t('startDate'),
+          valueProcessor: ({row}) => format(new Date(row.start_date), 'yyyy-MM-dd'),
+        },
+        { name: 'total_score', text: this.$t('totalScore'),
+
+        },
+        { name: 'pcw_score', text: this.$t('pcwScore'),
+
+        },
+        { name: 'ufcw_score', text: this.$t('ufcwScore'),
+
+        },
+        { name: 'fcw_score', text: this.$t('fcwScore'),
+        },
+        { name: 'hmw_h_score', text: this.$t('hmwHScore'),
+        },
+        { name: 'hmw_m_score', text: this.$t('hmwMScore'),
+        },
+        { name: 'hmw_l_score', text: this.$t('hmwLScore'),
+        },
+        { name: 'lldw_score', text: this.$t('lldwScore'),
+        },
+        { name: 'rldw_score', text: this.$t('rldwScore'),
+        },
+        { name: 'spw_score', text: this.$t('spwScore'),
+
+        },
+        { name: 'vb_score', text: this.$t('vbScore'),
+
+        },
+        { name: 'aaw_score', text: this.$t('aawScore'),
+
+        },
+        { name: 'abw_score', text: this.$t('abwScore'),
+
+        },
+        { name: 'atw_score', text: this.$t('atwScore'),
+
+        },
+        { name: 'drv_duration', text: this.$t('drvDuration'),
+
+        },
+        { name: 'pcw', text: this.$t('pcw'),
+
+        },
+        { name: 'ufcw', text: this.$t('ufcw'),
+
+        },
+        { name: 'fcw', text: this.$t('fcw'),
+
+        },
+        { name: 'hmw_h', text: this.$t('hmwH'),
+
+        },
+        { name: 'hmw_m', text: this.$t('hmwM'),
+
+        },
+        { name: 'hmw_l', text: this.$t('hmwL'),
+
+        },
+        { name: 'lldw', text: this.$t('lldw'),
+
+        },
+        { name: 'rldw', text: this.$t('rldw'),
+
+        },
+        { name: 'spw', text: this.$t('spw'),
+
+        },
+        { name: 'vb', text: this.$t('vb'),
+
+        },
+        { name: 'aaw', text: this.$t('aaw'),
+
+        },
+        { name: 'abw', text: this.$t('abw'),
+
+        },
+        { name: 'atw', text: this.$t('atw'),
+
+        },
+        { name: 'drv_distance', text: this.$t('drvDistance'),
+
+        },
+      ],
     }
   },
   computed: {
@@ -159,12 +374,20 @@ export default {
     },
     'state.driver'() {
       this.renderSafetyScoreHistoryChart()
+      this.getDriverInfoRows()
     },
     'state.vehicle'() {
       this.renderSafetyScoreHistoryChart()
+      this.getVehicleInfoRows()
     },
   },
+  created() {
+    initColumns(this, this.driverInfoColumns)
+    initColumns(this, this.vehicleInfoColumns)
+  },
   methods: {
+    onSort,
+    exportExcel,
     onclickFullscreen(chart) {
       this[chart] && this[chart].update(null)
     },
@@ -192,6 +415,36 @@ export default {
           }
         )
       })
+    },
+    getDriverInfoRows() {
+      const rows = this.state.driverInfos
+      .filter(item => item.driver_id === this.state.driver)
+      .map(row => Object.assign({}, row)) // clone row
+      .reverse()
+      // format count columns
+      rows.forEach(row => {
+        this.driverInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
+          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+        })
+        row.drv_distance = Math.round(row.drv_distance / 100000)
+      })
+      this.driverInfoRows = rows
+      initRows(this, this.driverInfoRows, this.driverInfoColumns)
+    },
+    getVehicleInfoRows() {
+      const rows = this.state.vehicleInfos
+      .filter(item => item.vrm_id === this.state.vehicle)
+      .map(row => Object.assign({}, row)) // clone row
+      .reverse()
+      // format count columns
+      rows.forEach(row => {
+        this.vehicleInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
+          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+        })
+        row.drv_distance = Math.round(row.drv_distance / 100000)
+      })
+      this.vehicleInfoRows = rows
+      initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
     },
   },
 }

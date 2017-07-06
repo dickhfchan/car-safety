@@ -47,7 +47,7 @@ export default {
       namedHttpGet('driverVehicleProfile_avg_warning_drv_name', 'dao/avg_warning_drv_name')
       .then(({data}) => {
             // filter out drv_distance === 0
-        context.commit('driverInfos', data.JSON.filter(item => item.company_id === rootState.user.company_id))
+        context.commit('driverInfos', data.JSON.filter(item => item.company_id === rootState.user.company_id).sort((a, b) => a.start_date - b.start_date))
       }).catch((e) => {
         if (e.toString() !== 'Cancel') {
           Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
@@ -73,7 +73,7 @@ export default {
       namedHttpGet('driverVehicleProfile_avg_warning_vrm_co', 'dao/avg_warning_vrm_co')
       .then(({data}) => {
             // filter out drv_distance === 0
-        context.commit('vehicleInfos', data.JSON.filter(item => item.company_id === rootState.user.company_id))
+        context.commit('vehicleInfos', data.JSON.filter(item => item.company_id === rootState.user.company_id).sort((a, b) => a.start_date - b.start_date))
       }).catch((e) => {
         if (e.toString() !== 'Cancel') {
           Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
