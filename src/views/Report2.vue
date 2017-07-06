@@ -287,7 +287,7 @@ export default {
   },
   methods: {
     getDrivers() {
-      retry(() => this.$http.get('dao/driver'))()
+      retry(() => this.$http.get('dao/driver'), 1)()
       .then(({data}) => {
         const drivers = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
         this.$store.commit('report2Drivers', drivers)
@@ -298,7 +298,7 @@ export default {
     },
     getData1() {
       this.loading1 = true
-      retry(() => this.$http.get('dao/avg_warning_drv_name'))()
+      retry(() => this.$http.get('dao/avg_warning_drv_name'), 1)()
       .then(({data}) => {
         this.loading1 = false
         this.originRows1 = data.JSON.sort((a, b) => a.start_date - b.start_date)
@@ -337,7 +337,7 @@ export default {
     },
     getData2() {
       this.loading2 = true
-      retry(() => this.$http.get('dao/avg_warning_drv_name'))()
+      this.$http.get('dao/avg_warning_drv_name')
       .then(({data}) => {
         this.loading2 = false
         this.originRows2 = data.JSON
