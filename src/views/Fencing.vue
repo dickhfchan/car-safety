@@ -35,6 +35,7 @@
 </template>
 <script>
 import BaiduMapFencing from '../components/BaiduMapFencing.vue'
+import { axiosAutoProxy } from '@/utils.js'
 
 export default {
   components: { BaiduMapFencing },
@@ -68,13 +69,23 @@ export default {
         // polygon
         temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
       }
-      this.$http.post('dao/ui_fence_setup', {
+      axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', {
         company_id: this.$store.state.user.company.company_id,
         created_by: this.$store.state.user.user_id,
         fence_baidu: temp,
         fence: null,
-      }).then(() => {
+      }).then(({data}) => {
         this.changed = false
+        console.log(data)
+        if (data === 'error') {
+          this.$alert('Save Failed')
+        } else if (data.toLowerCase().indexOf('succe') === -1) {
+          this.$alert(data)
+        } else {
+          this.$alert(data)
+          this.getData()
+          this.$refs.dialogAdd.close()
+        }
       })
     }
   }

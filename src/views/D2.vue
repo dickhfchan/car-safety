@@ -156,6 +156,7 @@ export default {
           visible: false,
         },
       ],
+      originRow1: [],
       rows1: [],
       rows1Ranking: [],
       loading: false,
@@ -165,9 +166,10 @@ export default {
     dateRange() { return this.$store.state.dateRangeInD2 }
   },
   watch: {
+    originRow1() { this.resolveData() },
     dateRange: {
       deep: true,
-      handler() { this.getData() }
+      handler() { this.resolveData() }
     }
   },
   created() {
@@ -182,68 +184,73 @@ export default {
   },
   methods: {
     getData() {
-      const dateRange = this.dateRange
-      const start = newDate(`${dateRange[0]} 00:00:00`).getTime()
-      const end = newDate(`${dateRange[1]} 23:59:59`).getTime()
       this.loading = true
       retry(() => this.$http.get('dao/avg_warning_drv_name'))()
       .then(({data}) => {
         this.loading = false
-        const filteredRows = data.JSON
-        .filter(row => start <= row.start_date && row.start_date <= end)
+        const rows = data.JSON
         .filter(row => row.company_id === this.$store.state.user.company_id)
         // compute hmw
-        filteredRows.forEach(row => {
+        rows.forEach(row => {
           row.hmw = row.hmw_h + row.hmw_m + row.hmw_l
         })
-        // group by driver name
-        const groupedRows = []
-        const toAggregrate = this.columns1.filter(col => notScoreCols.indexOf(col.name) === -1).map(col => col.name)
-        filteredRows.forEach(row => {
-          let row0 = groupedRows.find(v => v.name === row.name)
-          if (!row0) {
-            row0 = Object.assign({ _count: 0 }, row)
-            groupedRows.push(row0)
-          } else {
-            toAggregrate.forEach(field => {
-              row0[field] = (row0[field] || 0) + (row[field] || 0)
-            })
-          }
-          row0._count++
-        })
-        // average
-        groupedRows.forEach(row => {
-          toAggregrate.forEach(field => {
-            row[field] = GetRound(row[field] / row._count, 1)
-          })
-        })
-        // foramt count columns
-        groupedRows.forEach(row => {
-          this.columns1.slice(2).filter(col => col.name !== 'drv_distance').forEach(col => {
-            row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
-          })
-          row.drv_distance = Math.round(row.drv_distance / 100000)
-        })
-        this.rows1 = groupedRows
-        // get ranking
-
-        this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
-        initRows(this, this.rows1, this.columns1)
-        initRows(this, this.rows1Ranking, this.columns1)
-        this.columns1.forEach(col => {
-          if (notScoreCols.indexOf(col.name) > -1) {
-            return
-          }
-          const oneCol = this.rows1Ranking.map(row => row[col.name])
-          const ranks = getRanks(oneCol, col.name === 'total_score' ? 'desc' : 'asc')
-          this.rows1Ranking.forEach((row, i) => {
-            row[col.name] = ranks[i]
-          })
-        })
+        this.originRow1 = rows
       }).catch((e) => {
         this.loading = false
         this.$alert('load failed')
         throw e
+      })
+    },
+    resolveData() {
+      const dateRange = this.dateRange
+      const start = newDate(`${dateRange[0]} 00:00:00`).getTime()
+      const end = newDate(`${dateRange[1]} 23:59:59`).getTime()
+
+      const filteredRows = this.originRow1
+        .filter(row => start <= row.start_date && row.start_date <= end)
+        // group by driver name
+      const groupedRows = []
+      const toAggregrate = this.columns1.filter(col => notScoreCols.indexOf(col.name) === -1).map(col => col.name)
+      filteredRows.forEach(row => {
+        let row0 = groupedRows.find(v => v.name === row.name)
+        if (!row0) {
+          row0 = Object.assign({ _count: 0 }, row)
+          groupedRows.push(row0)
+        } else {
+          toAggregrate.forEach(field => {
+            row0[field] = (row0[field] || 0) + (row[field] || 0)
+          })
+        }
+        row0._count++
+      })
+        // average
+      groupedRows.forEach(row => {
+        toAggregrate.forEach(field => {
+          row[field] = GetRound(row[field] / row._count, 1)
+        })
+      })
+        // foramt count columns
+      groupedRows.forEach(row => {
+        this.columns1.slice(2).filter(col => col.name !== 'drv_distance').forEach(col => {
+          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+        })
+        row.drv_distance = Math.round(row.drv_distance / 100000)
+      })
+      this.rows1 = groupedRows
+        // get ranking
+
+      this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
+      initRows(this, this.rows1, this.columns1)
+      initRows(this, this.rows1Ranking, this.columns1)
+      this.columns1.forEach(col => {
+        if (notScoreCols.indexOf(col.name) > -1) {
+          return
+        }
+        const oneCol = this.rows1Ranking.map(row => row[col.name])
+        const ranks = getRanks(oneCol, col.name === 'total_score' ? 'desc' : 'asc')
+        this.rows1Ranking.forEach((row, i) => {
+          row[col.name] = ranks[i]
+        })
       })
     },
     getRankColor,
