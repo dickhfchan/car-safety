@@ -16,7 +16,7 @@ export default [
   { path: '/login/:companyCode', name: 'login', component: (resolve) => require(['../views/Login.vue'], resolve) },
   { path: '/unauthorized', name: 'unauthorized', component: (resolve) => require(['../views/Unauthorized.vue'], resolve) },
   { path: '/fencing', name: 'fencing', component: (resolve) => require(['../views/Fencing.vue'], resolve) },
-  { path: '/driver-vehivle-profile', name: 'driverVehicleProfile', component: (resolve) => require(['../views/DriverVehicleProfile.vue'], resolve) },
+  { path: '/driver-vehicle-profile', name: 'driverVehicleProfile', component: (resolve) => require(['../views/DriverVehicleProfile.vue'], resolve) },
   //
   { path: '*', redirect: { name: 'dashboard' } }
 ]
