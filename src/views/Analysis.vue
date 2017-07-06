@@ -43,7 +43,6 @@
 </template>
 <script>
 import DatatableFooter from '../components/DatatableFooter.vue'
-import { retry } from 'helper-js'
 import { format } from 'date-functions'
 import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
 
@@ -180,7 +179,7 @@ export default {
   methods: {
     getData() {
       this.loading = true
-      retry(() => this.$http.get('dao/avg_warning_vrm_co'))()
+      this.$http.get('dao/avg_warning_vrm_co')
       .then(({data}) => {
         this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
         initRows(this, this.rows, this.columns)
