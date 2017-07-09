@@ -1,6 +1,7 @@
 export default {
   brand: 'Green Safety',
   errorRefreshOrFeedback: '出错, 请刷新或留下反馈',
+  succeeded: '成功',
   // top nav
   nineBoxes: '九宫格',
   profile: '个人资料',
@@ -16,6 +17,11 @@ export default {
   simplifiedChinese: '简体中文',
   traditionalChinese: '繁体中文',
   update: '更新',
+  // change password
+  changePassword: '更改密码',
+  oldPassword: '旧密码',
+  newPassword: '新密码',
+  RepeatNewPassword: '确认新密码',
   // login
   email: '邮箱',
   username: '用户名',

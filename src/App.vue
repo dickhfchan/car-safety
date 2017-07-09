@@ -108,6 +108,7 @@
                 <small>Company: {{$store.state.user.company.company_name}}</small>
               </div>
               <md-button class="md-raised md-warn m-x-0" @click.native="$store.dispatch('logout')">{{$t('logout')}}</md-button>
+              <md-button class="md-raised md-primary m-x-0" @click.native="$refs.rightSidePasswordNav.show()">{{$t('changePassword')}}</md-button>
               <form novalidate @submit.stop.prevent="updateSettings">
                 <md-subheader class="md-inset p-l-0">{{$t('settings')}}</md-subheader>
                 <md-input-container>
@@ -126,6 +127,32 @@
                   </md-select>
                 </md-input-container>
                 <md-button class="md-raised md-primary m-a-0" type="submit">{{$t('update')}}</md-button>
+              </form>
+            </div>
+
+        </md-sidenav>
+
+        <!-- right side change password -->
+        <md-sidenav md-theme="blue" class="md-right sidebar-layer" ref="rightSidePasswordNav" @open="open('RightPassword')" @close="close('RightPassword')">
+            <md-toolbar class="">
+              <div class="md-toolbar-container">
+                <h3 class="md-title">{{$t('changePassword')}}</h3>
+              </div>
+            </md-toolbar>
+            <div class="p-a">
+              <form novalidate @submit.stop.prevent="changePassword.submit" class="change-password">
+                <div v-for="field in changePassword.fields" :key="field.name">
+                  <md-input-container :class="field.getValidationClass()">
+                    <label>{{field.text}}</label>
+                    <md-input type="password" v-model="field.value" :required="field.required"></md-input>
+                  </md-input-container>
+                  <template v-if="field.isValidationErrorsVisible()">
+                    <span class="error-message" v-for="error in field.errors">{{error.message}}</span>
+                  </template>
+                </div>
+
+                <md-button class="md-raised md-primary m-a-0" type="submit">{{$t('update')}}</md-button>
+                <md-button class="md-raised md-warn m-a-0" @click.native="$refs.rightSidePasswordNav.close()">{{$t('cancel')}}</md-button>
               </form>
             </div>
 
@@ -157,6 +184,7 @@
 <script>
 import SearchBox from '@/components/SearchBox.vue'
 import WindowSizeListener from '@/components/WindowSizeListener.vue'
+import { axiosAutoProxy } from '@/utils.js'
 
 export default {
   components: { SearchBox },
@@ -169,6 +197,41 @@ export default {
         map: state.map,
         lang: state.lang,
       },
+      changePassword: {
+        fields: {
+          oldPassword: {
+            text: this.$t('oldPassword'),
+            rules: 'required',
+          },
+          newPassword: {
+            text: this.$t('newPassword'),
+            rules: 'required|lengthBetween:3,16',
+          },
+          RepeatNewPassword: {
+            text: this.$t('RepeatNewPassword'),
+            rules: `required|same:newPassword,${this.$t('newPassword')}`,
+          },
+        },
+        validation: {},
+        submit: () => {
+          this.changePassword.validation.check().then((data) => {
+            axiosAutoProxy(this.$http, 'dao/user_account', 'post', {
+              user_id: this.$store.state.user.user_id,
+              password: data.newPassword,
+            }).then(({data}) => {
+              if (data && data.message === 'Success') {
+                this.$alert(this.$t('succeed'))
+                this.$refs.rightSidePasswordNav.close()
+              } else {
+                this.$alert(data)
+              }
+            }).catch(e => {
+              this.$alert(this.$t('errorRefreshOrFeedback'))
+            })
+          })
+        },
+      },
+      // common
       alert: {
         content: ' '
       },
@@ -179,13 +242,40 @@ export default {
         cancel: this.$t('cancel'),
         resolve: null,
         reject: null,
-      }
+      },
     }
   },
   computed: {
     searchBtnVisible() {
       return this.window.width < 800 && ['map', 'report2', 'd2', 'driverVehicleProfile'].indexOf(this.$route.name) > -1
     }
+  },
+  created() {
+    const Vue = this.$root.constructor
+    // register alert
+    Vue.alert = Vue.prototype.$alert = (content) => {
+      this.alert.content = content
+      this.$refs.alert.open()
+    }
+    // register confirm
+    Vue.confirm = Vue.prototype.$confirm = (content, options) => {
+      this.confirm.content = content
+      if (options) {
+        Object.assign(this.confirm, options)
+      }
+      if (!this.confirm.title) {
+        this.confirm.title = this.$t('confirm')
+      }
+      this.$refs.confirm.open()
+      return new Promise((resolve, reject) => {
+        this.confirm.resolve = resolve
+        this.confirm.reject = reject
+      })
+    }
+    // validate changePassword
+    this.$validate(this.changePassword.validation, this.changePassword.fields)
+    //
+    this.$store.dispatch('init')
   },
   methods: {
     toggleLeftSidenav() {
@@ -214,10 +304,18 @@ export default {
       }
     },
     updateSettings() {
-      this.$store.commit('map', this.settings.map)
-      window.localStorage.setItem('lang_' + this.$store.state.user.company_id, this.settings.lang)
-      this.$store.commit('lang', this.settings.lang)
-      this.closeRightSidenav()
+      axiosAutoProxy(this.$http, 'dao/user_account', 'post', {
+        user_id: this.$store.state.user.user_id,
+        map: this.settings.map,
+        lang: this.settings.lang,
+      }).then(() => {
+        this.$store.commit('map', this.settings.map)
+        window.localStorage.setItem('lang_' + this.$store.state.user.company_id, this.settings.lang)
+        this.$store.commit('lang', this.settings.lang)
+        this.closeRightSidenav()
+      }).catch(() => {
+        this.$alert('errorRefreshOrFeedback')
+      })
     },
     onConfirmClose(type) {
       if (type === 'ok') {
@@ -231,31 +329,6 @@ export default {
       }
     }
   },
-  created() {
-    const Vue = this.$root.constructor
-    // register alert
-    Vue.alert = Vue.prototype.$alert = (content) => {
-      this.alert.content = content
-      this.$refs.alert.open()
-    }
-    // register confirm
-    Vue.confirm = Vue.prototype.$confirm = (content, options) => {
-      this.confirm.content = content
-      if (options) {
-        Object.assign(this.confirm, options)
-      }
-      if (!this.confirm.title) {
-        this.confirm.title = this.$t('confirm')
-      }
-      this.$refs.confirm.open()
-      return new Promise((resolve, reject) => {
-        this.confirm.resolve = resolve
-        this.confirm.reject = reject
-      })
-    }
-    //
-    this.$store.dispatch('init')
-  }
 }
 
 </script>
@@ -351,5 +424,12 @@ body, html{
   }
   // .menu-wrapper{
   // }
+}
+.change-password {
+  .error-message{
+    top: -20px;
+    position: relative;
+    color: #ff5722;
+  }
 }
 </style>
