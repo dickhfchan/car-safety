@@ -20,7 +20,7 @@
           <td class="md-table-cell" v-for="col in columns" v-if="col.visible" :key="col.name" :class="{'md-has-action':col.name==='warning_vdo_id' && row.warning_vdo_ready==='Y'}">
             <div class="md-table-cell-container">
               <span v-if="col.name!=='warning_vdo_id'">{{row[col.name]}}</span>
-              <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row.warning_vdo_ready==='Y'" @click.native="playAlertVideo(row)">
+              <md-button class="md-icon-button" v-if="col.name==='warning_vdo_id' && row.warning_vdo_ready==='Y'" @click.native="parent.playAlertVideo(row)">
                 <md-icon>ondemand_video</md-icon>
               </md-button>
             </div>
@@ -33,7 +33,7 @@
 <script>
 export default {
   // components:
-  props: ['columns', 'rows'],
+  props: ['columns', 'rows', 'parent'],
   data() {
     return {
 

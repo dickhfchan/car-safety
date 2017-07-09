@@ -1,7 +1,7 @@
 <template>
   <div class="alert-information">
 
-    <Alert-Information-Table v-show="rows.length > 0" :columns="columns" :rows="filteredRows"></Alert-Information-Table>
+    <Alert-Information-Table v-show="rows.length > 0" :columns="columns" :rows="filteredRows" :parent="self"></Alert-Information-Table>
 
     <div class="text-center" v-show="rows.length === 0">{{$t('noRecordsFound')}}</div>
 
@@ -58,6 +58,7 @@ export default {
   components: { AlertInformationTable },
   data() {
     return {
+      self: this,
       warningTypes: null,
       warningTypesI18n: null,
       columns: [
