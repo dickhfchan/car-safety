@@ -125,82 +125,30 @@
 </template>
 <script>
 import DatatableFooter from '../components/DatatableFooter.vue'
-import { clone, format, addDay, addDays, subDays, addMonth, subMonths, getMonthStart, addYear, subYears } from 'date-functions'
-import { newDate, sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
+import { format } from 'date-functions'
+import { sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
 
-function getDates(type) {
-  const result = []
-  const today = newDate(format(new Date(), 'yyyy-MM-dd 00:00:00'))
-  let date
-  switch (type) {
+function getDateText(dateType, timestamp) {
+  const date = new Date(timestamp)
+  let text
+  switch (dateType) {
     case 'daily':
-      date = clone(today)
-      for (let i = 14; i > 0; i--) {
-        result.push({
-          text: format(date, 'MM-dd'),
-          start: date.getTime(),
-          end: addDay(date).getTime(),
-        })
-        subDays(date, 2)
-      }
+      text = format(date, 'MM-dd')
       break
     case 'weekly':
-      date = subDays(clone(today), today.getDay())
-      for (let i = 14; i > 0; i--) {
-        const weekend = addDays(clone(date), 7)
-        result.push({
-          text: `${format(date, 'yyyy MM/dd')} - ${format(weekend, 'MM/dd')}`,
-          start: date.getTime(),
-          end: weekend.getTime(),
-        })
-        subDays(date, 7)
-      }
+      text = format(date, 'yyyy-MM-dd')
       break
     case 'monthly':
-      date = getMonthStart(today)
-      for (let i = 12; i > 0; i--) {
-        result.push({
-          text: format(date, 'yyyy-MM'),
-          start: date.getTime(),
-          end: addMonth(date).getTime(),
-        })
-        subMonths(date, 2)
-      }
+      text = format(date, 'yyyy-MM')
       break
     case 'yearly':
-      date = newDate(format(today, 'yyyy-01-01 00:00:00'))
-      for (let i = 7; i > 0; i--) {
-        result.push({
-          text: format(date, 'yyyy'),
-          start: date.getTime(),
-          end: addYear(date).getTime(),
-        })
-        subYears(date, 2)
-      }
+      text = format(date, 'yyyy')
       break
   }
-  result.reverse()
-  return result
-}
-
-function getScores(state) {
-  const { type, dateType } = state
-  let infos
-  if (type === 'driver') {
-    infos = state.driverInfos.filter(item => item.driver_id === state.driver)
-  } else if (type === 'vehicle') {
-    infos = state.vehicleInfos.filter(item => item.vrm_id === state.vehicle)
-  }
-  const result = getDates(dateType)
-  result.forEach(item => {
-    item.score = infos
-    .filter(v => item.start <= v.start_date && v.start_date < item.end)
-    .reduce((a, b) => a + b.total_score, 0)
-  })
-  return result
+  return text
 }
 
 const md = 'driverVehicleProfile' // vuex module name
@@ -367,18 +315,20 @@ export default {
   },
   watch: {
     'state.type'() {
+      this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
     },
     'state.dateType'() {
+      this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
     },
     'state.driver'() {
+      this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
-      this.getDriverInfoRows()
     },
     'state.vehicle'() {
+      this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
-      this.getVehicleInfoRows()
     },
   },
   created() {
@@ -405,13 +355,21 @@ export default {
           ctx.innerHTML = ''
         }
 
-        const scores = getScores(this.state)
-        this.safetyScoreHistoryChart = new Chartist.Bar(ctx, {
-          labels: scores.map(v => v.text),
-          series: scores.map(v => v.score)
+        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+        this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
+          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
+          series: [
+            rows.map(row => row.total_score)
+          ]
         },
           {
-            distributeSeries: true
+            low: 0,
+            showArea: true,
+            fullWidth: true,
+            reverseData: true,
+            chartPadding: {
+              right: 40
+            }
           }
         )
       })
@@ -419,6 +377,7 @@ export default {
     getDriverInfoRows() {
       const rows = this.state.driverInfos
       .filter(item => item.driver_id === this.state.driver)
+      .filter(item => item.type === this.state.dateType.substr(0, 1).toUpperCase())
       .map(row => Object.assign({}, row)) // clone row
       .reverse()
       // format count columns
@@ -434,6 +393,7 @@ export default {
     getVehicleInfoRows() {
       const rows = this.state.vehicleInfos
       .filter(item => item.vrm_id === this.state.vehicle)
+      .filter(item => item.type === this.state.dateType.substr(0, 1).toUpperCase())
       .map(row => Object.assign({}, row)) // clone row
       .reverse()
       // format count columns
@@ -445,6 +405,13 @@ export default {
       })
       this.vehicleInfoRows = rows
       initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
+    },
+    getInfoRowSmartly() {
+      if (this.state.type === 'driver') {
+        this.getDriverInfoRows()
+      } else {
+        this.getVehicleInfoRows()
+      }
     },
   },
 }
