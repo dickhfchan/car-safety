@@ -102,6 +102,7 @@ export default {
   driverProfile: 'Driver Profile',
   vehicleProfile: 'Vehicle profile',
   safetyScoreHistory: 'Safety Score History',
+  warningCountHistoryPer100KM: 'Warning Count History Per 100KM',
   vehicleScoreAndAlertCountPer100KM: 'Vehicle Score And Alert Count Per 100KM',
   // columns
   startDate: 'Start Date',

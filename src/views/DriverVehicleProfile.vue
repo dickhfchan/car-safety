@@ -51,6 +51,26 @@
           </md-card-content>
         </md-card>
       </md-layout>
+      <md-layout md-flex="100">
+        <md-card  class="m-a w-100 card-1">
+          <md-card-content class="flex flex-col">
+            <h2 class="md-title">{{$t('warningCountHistoryPer100KM')}}</h2>
+
+            <div class="relative">
+              <div :id="warningCountHistoryPer100KMChartID" class="w-100 warning-count-history-per-100km-chart"></div>
+              <div class="chart2-blocks">
+                <div class="item" v-for="(col, i) in chart2Columns">
+                  {{col.text}}: <div :class="['color-block', 'ct-color-'+(chart2Columns.length-i)]"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-buttons">
+              <fullscreen-button @click.native="onclickFullscreen('safetyScoreHistoryChart')"></fullscreen-button>
+            </div>
+          </md-card-content>
+        </md-card>
+      </md-layout>
       <md-layout md-flex="100" v-if="isSelected">
         <md-card  class="card-1" v-if="state.type==='driver'">
           <md-card-content>
@@ -158,6 +178,7 @@ export default {
   data() {
     return {
       safetyScoreHistoryChartID: this._uid + 'safetyScoreHistory',
+      warningCountHistoryPer100KMChartID: this._uid + 'warningCountHistoryPer100KM',
       // driverInfo: {},
       // vehicleInfo: {},
       driverInfoRows: [],
@@ -279,23 +300,32 @@ export default {
     isSelected() { return (this.state.type === 'driver' && this.state.driver) || (this.state.type === 'vehicle' && this.state.vehicle) },
     driver() { return this.$store.getters[`${md}/driverObj`] },
     vehicle() { return this.$store.getters[`${md}/vehicleObj`] },
+    chart2Columns() {
+      const include = ['pcw', 'ufcw', 'fcw', 'hmw_h', 'hmw_m', 'hmw_l', 'lldw', 'rldw', 'spw', 'vb', 'aaw', 'abw', 'atw']
+      const columns = this.state.type === 'driver' ? this.driverInfoColumns : this.vehicleInfoColumns
+      return columns.filter(v => include.includes(v.name))
+    },
   },
   watch: {
     'state.type'() {
       this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
+      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.dateType'() {
       this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
+      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.driver'() {
       this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
+      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.vehicle'() {
       this.getInfoRowSmartly()
       this.renderSafetyScoreHistoryChart()
+      this.renderWarningCountHistoryPer100KMChart()
     },
   },
   created() {
@@ -307,39 +337,6 @@ export default {
     exportExcel,
     onclickFullscreen(chart) {
       this[chart] && this[chart].update(null)
-    },
-    renderSafetyScoreHistoryChart() {
-      if (!this.isSelected) {
-        return
-      }
-      this.$nextTick(() => {
-        const ctx = document.getElementById(this.safetyScoreHistoryChartID)
-        if (!ctx) {
-          return
-        }
-        if (this.safetyScoreHistoryChart) {
-          this.safetyScoreHistoryChart.detach()
-          ctx.innerHTML = ''
-        }
-
-        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
-        this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
-          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
-          series: [
-            rows.map(row => row.total_score)
-          ]
-        },
-          {
-            low: 0,
-            showArea: true,
-            fullWidth: true,
-            reverseData: true,
-            chartPadding: {
-              right: 40
-            }
-          }
-        )
-      })
     },
     getDriverInfoRows() {
       const rows = this.state.driverInfos
@@ -380,6 +377,69 @@ export default {
         this.getVehicleInfoRows()
       }
     },
+    renderSafetyScoreHistoryChart() {
+      if (!this.isSelected) {
+        return
+      }
+      this.$nextTick(() => {
+        const ctx = document.getElementById(this.safetyScoreHistoryChartID)
+        if (!ctx) {
+          return
+        }
+        if (this.safetyScoreHistoryChart) {
+          this.safetyScoreHistoryChart.detach()
+          ctx.innerHTML = ''
+        }
+
+        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+        this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
+          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
+          series: [
+            rows.map(row => row.total_score)
+          ]
+        },
+          {
+            low: 0,
+            showArea: true,
+            fullWidth: true,
+            reverseData: true,
+            chartPadding: {
+              right: 40
+            }
+          }
+        )
+      })
+    },
+    renderWarningCountHistoryPer100KMChart() {
+      if (!this.isSelected) {
+        return
+      }
+      this.$nextTick(() => {
+        const ctx = document.getElementById(this.warningCountHistoryPer100KMChartID)
+        if (!ctx) {
+          return
+        }
+        if (this.warningCountHistoryPer100KMChart) {
+          this.warningCountHistoryPer100KMChart.detach()
+          ctx.innerHTML = ''
+        }
+
+        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+        const labelCols = this.chart2Columns
+        this.warningCountHistoryPer100KMChart = new Chartist.Line(ctx, {
+          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
+          series: labelCols.map(col => rows.map(row => row[col.name])),
+        },
+          {
+            reverseData: true,
+            fullWidth: true,
+            chartPadding: {
+              right: 30
+            }
+          }
+        )
+      })
+    },
   },
 }
 </script>
@@ -393,6 +453,19 @@ export default {
     }
     > .information{
 
+    }
+  }
+  .chart2-blocks{
+    padding: 0 5px;
+    .item{
+      display: inline-block;
+      margin-right: .5em;
+      .color-block{
+        display: inline-block;
+        width: 30px;
+        height: 10px;
+        vertical-align: middle;
+      }
     }
   }
 }

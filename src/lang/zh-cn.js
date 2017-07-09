@@ -102,6 +102,7 @@ export default {
   driverProfile: '司机资料',
   vehicleProfile: '车辆资料',
   safetyScoreHistory: '历史安全评分',
+  warningCountHistoryPer100KM: '每百公里警报次数',
   vehicleScoreAndAlertCountPer100KM: '车辆评分及每百公里警报次数',
   // columns
   startDate: '开始日期',
