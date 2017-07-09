@@ -226,39 +226,6 @@ export default {
         { name: 'total_score', text: this.$t('totalScore'),
 
         },
-        { name: 'pcw_score', text: this.$t('pcwScore'),
-
-        },
-        { name: 'ufcw_score', text: this.$t('ufcwScore'),
-
-        },
-        { name: 'fcw_score', text: this.$t('fcwScore'),
-        },
-        { name: 'hmw_h_score', text: this.$t('hmwHScore'),
-        },
-        { name: 'hmw_m_score', text: this.$t('hmwMScore'),
-        },
-        { name: 'hmw_l_score', text: this.$t('hmwLScore'),
-        },
-        { name: 'lldw_score', text: this.$t('lldwScore'),
-        },
-        { name: 'rldw_score', text: this.$t('rldwScore'),
-        },
-        { name: 'spw_score', text: this.$t('spwScore'),
-
-        },
-        { name: 'vb_score', text: this.$t('vbScore'),
-
-        },
-        { name: 'aaw_score', text: this.$t('aawScore'),
-
-        },
-        { name: 'abw_score', text: this.$t('abwScore'),
-
-        },
-        { name: 'atw_score', text: this.$t('atwScore'),
-
-        },
         { name: 'drv_duration', text: this.$t('drvDuration'),
 
         },
