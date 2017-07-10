@@ -247,7 +247,7 @@ class Tables_JSON(Resource):
             try:
                 pk_value = json[pk_name]
             except KeyError:
-                if pk_name != 'driver_id':
+                if pk_name != 'driver_id' or pk_name != 'geofence_id':
 
                     #Close conncetion
                     print "Close connection"
