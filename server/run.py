@@ -50,7 +50,8 @@ primary_keys = {
     'veh_reg_mark_group' : 'vrm_grp_id',
     'veh_reg_mark_group_dtl' : 'vrm_grp_dtl_id',
     'warning_type' : 'warn_type_id',
-    'authentication' : 'username'
+    'authentication' : 'username',
+    'ui_geofence_setup' : 'geofence_id'
 }
 
 #Create datatime columns
