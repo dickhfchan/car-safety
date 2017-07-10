@@ -2,6 +2,7 @@ export default {
   brand: 'Green Safety',
   errorRefreshOrFeedback: '出錯, 請刷新或留下反饋',
   succeeded: '成功',
+  failed: '失敗',
   // top nav
   nineBoxes: '九宮格',
   profile: '個人資料',
