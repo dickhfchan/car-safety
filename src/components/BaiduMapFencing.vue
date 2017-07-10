@@ -123,12 +123,14 @@ export default {
         const { BMap } = window
         const { map } = this
         let points
-        if (fence.type === 'circle') {
+        if (fence.xa) {
+          // circle
           const center = new BMap.Point(fence.point.lng, fence.point.lat)
           this.fence = new BMap.Circle(center, fence.xa, this.styleOptions)
           const xa2 = fence.xa / 100000
           points = [new BMap.Point(center.lng - xa2, center.lat - xa2), new BMap.Point(center.lng + xa2, center.lat + xa2)]
         } else {
+          // polygon
           points = fence.points.map(p => new BMap.Point(p.lng, p.lat))
           this.fence = new BMap.Polygon(points, this.styleOptions)
         }

@@ -81,20 +81,23 @@ export default {
         // polygon
         temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
       }
-      const query = {
+      axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', {
+        geofence_id: (this.fenceData && this.fenceData.geofence_id) || null,
         company_id: this.$store.state.user.company.company_id,
         create_user: this.$store.state.user.user_id.toString(),
         geofence: JSON.stringify(temp),
         geofence_baidu: JSON.stringify(temp),
         remark: '',
-      }
-      if (this.fenceData) {
-        query.geofence_id = this.fenceData.geofence_id
-      }
-      axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', query).then(({data}) => {
+      }).then(({data}) => {
         this.changed = false
-        this.$alert(data)
-        console.log(data)
+        if (data.toLowerCase().indexOf('success') > -1) {
+          this.$alert(this.$t('succeeded'))
+        } else {
+          this.$alert(this.$t('failed'))
+        }
+      }).catch(e => {
+        this.$alert(this.$t('errorRefreshOrFeedback'))
+        throw e
       })
     }
   }

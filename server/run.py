@@ -247,13 +247,11 @@ class Tables_JSON(Resource):
             try:
                 pk_value = json[pk_name]
             except KeyError:
-                if pk_name != 'driver_id' or pk_name != 'geofence_id':
+                #Close conncetion
+                print "Close connection"
+                conn.close()
 
-                    #Close conncetion
-                    print "Close connection"
-                    conn.close()
-
-                    return "Key %s is not in JSON" % pk_name, 200, default_headers
+                return "Key %s is not in JSON" % pk_name, 200, default_headers
 
             #Datetime clean up:
             #Convert unix time to UTC time for safe insertion into database
