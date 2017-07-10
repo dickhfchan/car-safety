@@ -11,11 +11,16 @@ module.exports = function (app) {
 
   app.post('/proxy', function(req, res) {
     const data = req.body
+    console.log(`api proxyies: ${data.method} ${data.url}`)
     http[data.method](data.url, data.data).then(({data}) => {
+      console.log('request successfully')
+      console.log(data)
       res.setHeader('Content-Type', 'application/json')
       res.send(JSON.stringify(data))
     }).catch(e => {
-      res.send('error')
+      console.log('request failed')
+      console.log(e)
+      res.send(`error: ${e.toString()}`)
     })
   })
 }
