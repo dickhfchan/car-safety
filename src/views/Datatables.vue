@@ -197,7 +197,7 @@ export default {
             return data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
           }),
           oncreating: (newRow) => {
-            delete newRow.driver_id
+            // delete newRow.driver_id // nonecessary
             const driverTB = this.datatables.driver
             driverTB.getDriverGroup().then(data => {
               const col = driverTB.columns.find(c => c.name === 'group_id')
