@@ -52,11 +52,23 @@ export default {
   mounted() {
     this.$nextTick(() => {
       document.title = this.title
+      this.getAndRenderFence()
     })
   },
   methods: {
     checkFence() {
       this.$refs.bmf.isInFence(this.checkPoints.lng, this.checkPoints.lat)
+    },
+    getAndRenderFence() {
+      this.$http.get('dao/ui_geofence_setup').then(({data}) => {
+        const user = this.$store.state.user
+        const fenceData = data.JSON.find(item => item.company_id === user.company.company_id && parseInt(item.create_user) === user.user_id)
+        if (fenceData) {
+          this.fenceData = fenceData
+          this.fence = JSON.parse(fenceData.geofence)
+          this.$refs.bmf.render(this.fence)
+        }
+      })
     },
     save() {
       const { fence } = this.$refs.bmf
@@ -69,23 +81,20 @@ export default {
         // polygon
         temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
       }
-      axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', {
+      const query = {
         company_id: this.$store.state.user.company.company_id,
-        created_by: this.$store.state.user.user_id,
-        fence_baidu: temp,
-        fence: null,
-      }).then(({data}) => {
+        create_user: this.$store.state.user.user_id.toString(),
+        geofence: JSON.stringify(temp),
+        geofence_baidu: JSON.stringify(temp),
+        remark: '',
+      }
+      if (this.fenceData) {
+        query.geofence_id = this.fenceData.geofence_id
+      }
+      axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', query).then(({data}) => {
         this.changed = false
+        this.$alert(data)
         console.log(data)
-        if (data === 'error') {
-          this.$alert('Save Failed')
-        } else if (data.toLowerCase().indexOf('succe') === -1) {
-          this.$alert(data)
-        } else {
-          this.$alert(data)
-          this.getData()
-          this.$refs.dialogAdd.close()
-        }
       })
     }
   }

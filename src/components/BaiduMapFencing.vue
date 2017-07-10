@@ -37,6 +37,9 @@ export default {
   created() {
     // // don't observe
     // this.convertedPoints = {}
+    this.ready = new Promise((resolve, reject) => {
+      this._readyResolve = resolve
+    })
     this.styleOptions = {
       strokeColor: 'blue',    // 边线颜色。
       fillColor: 'blue',      // 填充颜色。当参数为空时，圆形将没有填充效果。
@@ -57,11 +60,11 @@ export default {
         const DrawingManager = window.BMapLib.DrawingManager
         this.BMap = BMap
         this.BMapApiLoading = false
+        this._readyResolve()
           //
         map.clearOverlays()
         map.centerAndZoom(new BMap.Point(116.404, 39.915), 15)
         map.enableScrollWheelZoom()
-        this.renderSaved()
         map.addControl(new BMap.CityListControl({
           anchor: window.BMAP_ANCHOR_TOP_LEFT,
           offset: new BMap.Size(10, 20),
@@ -109,10 +112,13 @@ export default {
     autoCenterAndZoom(...args) { BaiduMapTrackRender.methods.autoCenterAndZoom.apply(this, args) },
     mapReady,
     checkSize() { BaiduMapTrackRender.methods.checkSize.apply(this) },
-    removeFence() { this.map.removeOverlay(this.fence) },
-    renderSaved() {
-      const temp = window.localStorage.getItem('fence')
-      const fence = temp && JSON.parse(temp)
+    removeFence() {
+      try {
+        this.map.removeOverlay(this.fence)
+      } catch (e) {}
+    },
+    async render(fence) {
+      await this.ready
       if (fence) {
         const { BMap } = window
         const { map } = this
