@@ -6,12 +6,17 @@
 
         <div class="relative flex-1 overflow-hidden-y">
           <div class="map-wrapper">
-            <Baidu-Map-Fencing ref="bmf" :ak="$store.state.baiduMapAK" @changed="changed=true" class="w-100 h-100"></Baidu-Map-Fencing>
+            <Baidu-Map-Fencing ref="bmf" :ak="$store.state.baiduMapAK" @changed="onChanged" class="w-100 h-100"></Baidu-Map-Fencing>
           </div>
           <!-- <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
           </div> -->
+          {{fence}}
           <form novalidate @submit.prevent="checkFence" class="check">
+            <md-input-container>
+              <label>{{$t('remark')}}</label>
+              <md-input type="text" v-model="remark" @input="changed=true"></md-input>
+            </md-input-container>
             <md-button class="md-raised md-primary" :disabled="!changed" @click.native="save">Save</md-button>
 
             <md-input-container>
@@ -46,8 +51,12 @@ export default {
       checkPoints: {
         lng: 116.404,
         lat: 39.915,
-      }
+      },
+      fence: {},
+      remark: '',
     }
+  },
+  computed: {
   },
   mounted() {
     this.$nextTick(() => {
@@ -56,6 +65,10 @@ export default {
     })
   },
   methods: {
+    onChanged() {
+      this.changed = true
+      this.getFence()
+    },
     checkFence() {
       this.$refs.bmf.isInFence(this.checkPoints.lng, this.checkPoints.lat)
     },
@@ -67,27 +80,18 @@ export default {
           this.fenceData = fenceData
           this.fence = JSON.parse(fenceData.geofence)
           this.$refs.bmf.render(this.fence)
+          this.remark = fenceData.remark
         }
       })
     },
     save() {
-      const { fence } = this.$refs.bmf
-      const temp = {}
-      if (fence.hasOwnProperty('xa')) {
-        // circle
-        temp.xa = fence.xa
-        temp.point = { lat: fence.point.lat, lng: fence.point.lng }
-      } else {
-        // polygon
-        temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
-      }
       axiosAutoProxy(this.$http, 'dao/ui_geofence_setup', 'post', {
         geofence_id: (this.fenceData && this.fenceData.geofence_id) || null,
         company_id: this.$store.state.user.company.company_id,
         create_user: this.$store.state.user.user_id.toString(),
-        geofence: JSON.stringify(temp),
-        geofence_baidu: JSON.stringify(temp),
-        remark: '',
+        geofence: JSON.stringify(this.fence),
+        geofence_baidu: JSON.stringify(this.fence),
+        remark: this.remark,
       }).then(({data}) => {
         this.changed = false
         if (data.toLowerCase().indexOf('success') > -1) {
@@ -99,7 +103,20 @@ export default {
         this.$alert(this.$t('errorRefreshOrFeedback'))
         throw e
       })
-    }
+    },
+    getFence() {
+      const temp = {}
+      const { fence } = this.$refs.bmf
+      if (fence.hasOwnProperty('xa')) {
+        // circle
+        temp.xa = fence.xa
+        temp.point = { lat: fence.point.lat, lng: fence.point.lng }
+      } else {
+        // polygon
+        temp.points = fence.po.map(p => { return { lat: p.lat, lng: p.lng } })
+      }
+      this.fence = temp
+    },
   }
 }
 </script>

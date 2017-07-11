@@ -98,6 +98,7 @@ export default {
   realTime: '实时',
   // Fencing.vue
   fencing: '地理围栏',
+  remark: '备注',
   // Datatables.vue
   company: '公司',
   // driverVehicleProfile.vue

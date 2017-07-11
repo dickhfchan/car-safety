@@ -98,6 +98,7 @@ export default {
   realTime: 'Real Time',
   // Fencing.vue
   fencing: 'Fencing',
+  remark: 'Remark',
   // Datatables.vue
   company: 'Company',
   // driverVehicleProfile.vue
