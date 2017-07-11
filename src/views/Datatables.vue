@@ -781,7 +781,7 @@ export default {
       axiosAutoProxy(this.$http, this.api, 'post', newRow).then(({data}) => {
         if (data.indexOf('error') === 0) {
           this.$alert(this.$t('failed'))
-        } else if (data.toLowerCase().indexOf('succe') > 0) {
+        } else if (data.toLowerCase().indexOf('succe') > -1) {
           this.$alert(this.$t('succeeded'))
           this.$refs.dialogAdd.close()
           this.getData()
@@ -809,7 +809,7 @@ export default {
       axiosAutoProxy(this.$http, this.api, 'post', beforeSave(editingRow, this.currentColumns)).then(({data}) => {
         if (data.indexOf('error') === 0) {
           this.$alert(this.$t('failed'))
-        } else if (data.toLowerCase().indexOf('succe') > 0) {
+        } else if (data.toLowerCase().indexOf('succe') > -1) {
           this.$alert(this.$t('succeeded'))
           this.$refs.dialogEdit.close()
           this.getData()

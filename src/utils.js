@@ -192,7 +192,7 @@ export function beforeSave(row, cols) {
     }
   })
   cols.forEach(col => {
-    if (!col.primaryKey && row[col.name] == null) {
+    if (row.hasOwnProperty(col.name) && !col.primaryKey && row[col.name] == null) {
       row[col.name] = ''
     }
   })

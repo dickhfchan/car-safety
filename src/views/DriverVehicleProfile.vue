@@ -375,47 +375,50 @@ export default {
         { name: 'total_score',
           text: this.$t('totalScore')
         },
-        { name: 'pcw', text: this.$t('pcw'),
-
+        { name: 'pcw',
+          text: this.$t('pcw'),
         },
-        { name: 'ufcw', text: this.$t('ufcw'),
-
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
         },
-        { name: 'fcw', text: this.$t('fcw'),
-
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
         },
-        { name: 'hmw_h', text: this.$t('hmwH'),
-
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
         },
-        { name: 'hmw_m', text: this.$t('hmwM'),
-
+        { name: 'fcw',
+          text: this.$t('fcw'),
         },
-        { name: 'hmw_l', text: this.$t('hmwL'),
-
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
         },
-        { name: 'lldw', text: this.$t('lldw'),
-
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
-        { name: 'rldw', text: this.$t('rldw'),
-
+        { name: 'lldw',
+          text: this.$t('lldw'),
         },
-        { name: 'spw', text: this.$t('spw'),
-
+        { name: 'rldw',
+          text: this.$t('rldw'),
         },
-        { name: 'vb', text: this.$t('vb'),
-
+        { name: 'spw',
+          text: this.$t('spw'),
         },
-        { name: 'aaw', text: this.$t('aaw'),
-
+        { name: 'aaw',
+          text: this.$t('aaw'),
         },
-        { name: 'abw', text: this.$t('abw'),
-
+        { name: 'abw',
+          text: this.$t('abw'),
         },
-        { name: 'atw', text: this.$t('atw'),
-
+        { name: 'atw',
+          text: this.$t('atw'),
         },
-        { name: 'drv_distance', text: this.$t('drvDistance'),
-
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
         },
       ],
       vehicleRankColumns: [
@@ -427,47 +430,50 @@ export default {
         { name: 'total_score',
           text: this.$t('totalScore')
         },
-        { name: 'pcw', text: this.$t('pcw'),
-
+        { name: 'pcw',
+          text: this.$t('pcw'),
         },
-        { name: 'ufcw', text: this.$t('ufcw'),
-
+        { name: 'hmw_h',
+          text: this.$t('hmwH'),
         },
-        { name: 'fcw', text: this.$t('fcw'),
-
+        { name: 'hmw_m',
+          text: this.$t('hmwM'),
         },
-        { name: 'hmw_h', text: this.$t('hmwH'),
-
+        { name: 'hmw_l',
+          text: this.$t('hmwL'),
         },
-        { name: 'hmw_m', text: this.$t('hmwM'),
-
+        { name: 'fcw',
+          text: this.$t('fcw'),
         },
-        { name: 'hmw_l', text: this.$t('hmwL'),
-
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
         },
-        { name: 'lldw', text: this.$t('lldw'),
-
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
-        { name: 'rldw', text: this.$t('rldw'),
-
+        { name: 'lldw',
+          text: this.$t('lldw'),
         },
-        { name: 'spw', text: this.$t('spw'),
-
+        { name: 'rldw',
+          text: this.$t('rldw'),
         },
-        { name: 'vb', text: this.$t('vb'),
-
+        { name: 'spw',
+          text: this.$t('spw'),
         },
-        { name: 'aaw', text: this.$t('aaw'),
-
+        { name: 'aaw',
+          text: this.$t('aaw'),
         },
-        { name: 'abw', text: this.$t('abw'),
-
+        { name: 'abw',
+          text: this.$t('abw'),
         },
-        { name: 'atw', text: this.$t('atw'),
-
+        { name: 'atw',
+          text: this.$t('atw'),
         },
-        { name: 'drv_distance', text: this.$t('drvDistance'),
-
+        { name: 'vb',
+          text: this.$t('vb')
+        },
+        { name: 'drv_distance',
+          text: this.$t('drvDistance'),
         },
       ],
       driverRanks: [],
