@@ -79,6 +79,10 @@
                   <md-select v-else-if="field.addType==='select'" v-model="newRow[field.name]" :disabled="field.addDisabled" :required="field.required">
                     <md-option v-for="option in field.addOptions" :key="option" :value="option[field.addOptionValueKey]">{{option[field.addOptionTextKey]}}</md-option>
                   </md-select>
+                  <template v-else-if="field.addType==='datetime'">
+                    <md-input v-model="newRow[field.name]" :required="field.required"></md-input>
+                    <date-picker v-model="newRow[field.name]" :language="$store.state.lang == 'en' ? 'en' : 'ch'" :range="false"></date-picker>
+                  </template>
                 </md-input-container>
               </md-layout>
             </md-layout>
@@ -121,11 +125,13 @@
 <script>
 import Vue from 'vue'
 import DatatableFooter from '../components/DatatableFooter.vue'
+import DatePicker from '../components/DatePicker.vue'
 import { titleCase } from 'helper-js'
-import { initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
+import { format } from 'date-functions'
+import { dateTimeFields, initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
 
 export default {
-  components: { DatatableFooter },
+  components: { DatatableFooter, DatePicker },
   data() {
     return {
       title: this.$t('settings'),
@@ -133,6 +139,12 @@ export default {
       datatables: {
         'driver': {
           'columns': [
+            {
+              'name': 'driver_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
             {
               'name': 'group_id',
               text: 'Group',
@@ -161,11 +173,6 @@ export default {
             },
             {
               'name': 'driver_code'
-            },
-            {
-              'name': 'driver_id',
-              addVisible: false,
-              editDisabled: true,
             },
             {
               'name': 'is_default'
@@ -233,13 +240,16 @@ export default {
         'driver_group': {
           'columns': [
             {
+              'name': 'drv_grp_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
+            {
               'name': 'company_id'
             },
             {
               'name': 'create_user'
-            },
-            {
-              'name': 'drv_grp_id'
             },
             {
               'name': 'grp_alias'
@@ -261,13 +271,16 @@ export default {
         'driver_group_dtl': {
           'columns': [
             {
+              'name': 'drv_grp_dtl_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
+            {
               'name': 'create_user'
             },
             {
               'name': 'driver_id'
-            },
-            {
-              'name': 'drv_grp_dtl_id'
             },
             {
               'name': 'drv_grp_id'
@@ -345,7 +358,10 @@ export default {
         'user_account': {
           'columns': [
             {
-              'name': 'company'
+              'name': 'user_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
             },
             {
               'name': 'company_id'
@@ -375,9 +391,6 @@ export default {
               'name': 'status'
             },
             {
-              'name': 'user_id'
-            },
-            {
               'name': 'username'
             },
             {
@@ -391,10 +404,13 @@ export default {
         'user_group': {
           'columns': [
             {
-              'name': 'company_id'
+              'name': 'group_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
             },
             {
-              'name': 'group_id'
+              'name': 'company_id'
             },
             {
               'name': 'group_name'
@@ -404,10 +420,13 @@ export default {
         'user_group_func': {
           'columns': [
             {
-              'name': 'func_code'
+              'name': 'group_func_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
             },
             {
-              'name': 'group_func_id'
+              'name': 'func_code'
             },
             {
               'name': 'group_id'
@@ -495,6 +514,12 @@ export default {
         'veh_reg_mark': {
           'columns': [
             {
+              'name': 'vrm_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
+            {
               'name': 'company_id'
             },
             {
@@ -519,15 +544,18 @@ export default {
               editVisible: false,
             },
             {
-              'name': 'vrm_id'
-            },
-            {
               'name': 'vrm_mark_code'
             }
           ]
         },
         'veh_reg_mark_group': {
           'columns': [
+            {
+              'name': 'vrm_grp_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
             {
               'name': 'company_id'
             },
@@ -549,13 +577,16 @@ export default {
               addVisible: false,
               editVisible: false,
             },
-            {
-              'name': 'vrm_grp_id'
-            }
           ]
         },
         'veh_reg_mark_group_dtl': {
           'columns': [
+            {
+              'name': 'vrm_grp_dtl_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
             {
               'name': 'create_user'
             },
@@ -567,9 +598,6 @@ export default {
               'visible': false,
               addVisible: false,
               editVisible: false,
-            },
-            {
-              'name': 'vrm_grp_dtl_id'
             },
             {
               'name': 'vrm_grp_id'
@@ -624,10 +652,16 @@ export default {
     // set for datatable with company_id
     for (const key in this.datatables) {
       const dt = this.datatables[key]
+      dt.columns.forEach(col => {
+        if (dateTimeFields.includes(col.name)) {
+          this.$set(col, 'valueProcessor', ({value}) => format(new Date(value), 'yyyy-MM-dd HH:mm:ss'))
+        }
+      })
+      // set company_id
       const colCompanyId = dt.columns.find(v => v.name === 'company_id')
       if (colCompanyId) {
-        colCompanyId.addDisabled = true
-        colCompanyId.editDisabled = true
+        this.$set(colCompanyId, 'addDisabled', true)
+        this.$set(colCompanyId, 'editDisabled', true)
         const oldC = dt.oncreating
         dt.oncreating = (data) => {
           data.company_id = this.$store.state.user.company_id
@@ -730,24 +764,29 @@ export default {
     },
     validate(data) {
       const requiredButEmpty = this.currentColumns.find(col => col.required && (data[col.name] == null || data[col.name] === ''))
-      this.$alert(`${requiredButEmpty.text} is required`)
-      return !requiredButEmpty
+      if (requiredButEmpty) {
+        this.$alert(`${requiredButEmpty.text} is required`)
+        return false
+      } else {
+        return true
+      }
     },
     saveNew() {
-      if (!this.validate(this.newRow)) {
+      const newRow = Object.assign({}, this.newRow)
+      if (!this.validate(newRow)) {
         return
       }
-      beforeSave(this.newRow)
-      this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(this.newRow)
-      axiosAutoProxy(this.$http, this.api, 'post', this.newRow).then(({data}) => {
-        if (data === 'error') {
-          this.$alert('Save Failed')
-        } else if (data.toLowerCase().indexOf('succe') === -1) {
-          this.$alert(data)
+      beforeSave(newRow, this.currentColumns)
+      this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(newRow)
+      axiosAutoProxy(this.$http, this.api, 'post', newRow).then(({data}) => {
+        if (data.indexOf('error') === 0) {
+          this.$alert(this.$t('failed'))
+        } else if (data.toLowerCase().indexOf('succe') > 0) {
+          this.$alert(this.$t('succeeded'))
+          this.$refs.dialogAdd.close()
+          this.getData()
         } else {
           this.$alert(data)
-          this.getData()
-          this.$refs.dialogAdd.close()
         }
       })
     },
@@ -756,25 +795,26 @@ export default {
       this.$refs.dialogAdd.close()
     },
     edit(row) {
-      const rowData = getRowData(row)
+      const rowData = getRowData(row, this.currentColumns)
       this.currentTable.onediting && this.currentTable.onediting(rowData)
       this.editingRow = rowData
       this.$refs.dialogEdit.open()
     },
     saveEditing() {
-      if (!this.validate(this.editingRow)) {
+      const editingRow = Object.assign({}, this.editingRow)
+      if (!this.validate(editingRow)) {
         return
       }
-      this.currentTable.beforeSaveEditing && this.currentTable.beforeSaveEditing(this.editingRow)
-      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(this.editingRow)).then(({data}) => {
-        if (data === 'error') {
-          this.$alert('Save Failed')
-        } else if (data.toLowerCase().indexOf('succe') === -1) {
-          this.$alert(data)
+      this.currentTable.beforeSaveEditing && this.currentTable.beforeSaveEditing(editingRow)
+      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(editingRow, this.currentColumns)).then(({data}) => {
+        if (data.indexOf('error') === 0) {
+          this.$alert(this.$t('failed'))
+        } else if (data.toLowerCase().indexOf('succe') > 0) {
+          this.$alert(this.$t('succeeded'))
+          this.$refs.dialogEdit.close()
+          this.getData()
         } else {
           this.$alert(data)
-          this.getData()
-          this.$refs.dialogEdit.close()
         }
       })
     },
@@ -785,17 +825,17 @@ export default {
     remove(row) {
       this.$confirm('Are you sure to remove specified item?').then(() => {
         axiosAutoProxy(this.$http, this.api, 'delete', row).then(({data}) => {
-          if (data === 'error') {
-            this.$alert('Remove Failed')
-          } else if (data.toLowerCase().indexOf('succe') === -1) {
-            this.$alert(data)
+          if (data.indexOf('error') === 0) {
+            this.$alert(this.$t('failed'))
+          } else if (data.toLowerCase().indexOf('succe') > 0) {
+            this.$alert(this.$t('succeeded'))
+            this.getData()
           } else {
             this.$alert(data)
-            this.getData()
           }
         })
       }).catch(e => {
-        if (e.message !== 'cancel') {
+        if (e.message.toLowerCase() !== 'cancel') {
           throw e
         }
       })

@@ -63,6 +63,7 @@
 </template>
 <script>
 import DatePicker from 'vue-date'
+
 export default {
   extends: DatePicker
 }
@@ -88,6 +89,19 @@ export default {
   }
   ul.weeks li{
     margin-top: 0;
+  }
+}
+.md-input-container {
+  .date-picker.date-picker-custom{
+    position: absolute;
+    width: 100%;
+    .input-wrapper{
+      padding: 0;
+    }
+    input{
+      padding: 0;
+      color: transparent;
+    }
   }
 }
 </style>

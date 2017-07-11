@@ -55,7 +55,7 @@ primary_keys = {
 }
 
 #Create datatime columns
-dt_columns = ['create_ts','start_date', 'end_date', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts']
+dt_columns = ['create_ts','start_date', 'end_date', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts', 'last_login_ts']
 
 
 class Google_JSON(Resource):

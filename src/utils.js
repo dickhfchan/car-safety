@@ -2,9 +2,9 @@ import { titleCase, windowLoaded, unset } from 'helper-js'
 import config from '@/config.js'
 import Vue from 'vue'
 
-const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date',
+export const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date',
   'create_ts', 'update_ts', 'last_loc_update_ts', 'apps_ts', 'last_access_ts',
-  'active_end_date', 'active_start_date', 'last_access_ts', 'last_loc_update_ts']
+  'active_end_date', 'active_start_date', 'last_access_ts', 'last_loc_update_ts', 'last_login_ts']
 
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
@@ -178,27 +178,24 @@ export function initRows(vm, rows, columns) {
   }
 }
 
-export function getRowData(row) {
+export function getRowData(row, cols) {
   const item = {}
-  Object.keys(row).filter(key => key !== 'visible').forEach(key => {
-    item[key] = row[key]
-    if (dateTimeFields.indexOf(key) > -1 && (item[key] + '').length === 13) {
-      item[key] = Math.round(item[key] / 1000)
-    }
+  cols.forEach(col => {
+    item[col.name] = row[col.name]
   })
   return item
 }
-export function beforeSave(row) {
+export function beforeSave(row, cols) {
   dateTimeFields.forEach(fld => {
     if (row[fld]) {
-      row[fld] = parseInt(row[fld])
+      row[fld] = newDate(row[fld]).getTime() / 1000
     }
   })
-  for (var key in row) {
-    if (row[key] == null) {
-      row[key] = ''
+  cols.forEach(col => {
+    if (!col.primaryKey && row[col.name] == null) {
+      row[col.name] = ''
     }
-  }
+  })
   return row
 }
 
