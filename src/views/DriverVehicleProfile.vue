@@ -16,6 +16,8 @@
                 Phone home: {{driver.phone_home}}
                 <br />
                 Phone mobile: {{driver.phone_mobile}}
+                <br />
+                Dob: {{driver.dob}}
                 <!-- <br />
                 Travelled distance: {{driver.travelledDistance}} KM -->
               </div>
@@ -26,6 +28,7 @@
               </div>
               <div class="information">
                 <h3 >{{vehicle.vrm_mark_code}}</h3>
+                Dob: {{vehicle.dob}}
                 <!-- Travelled distance: {{vehicle.travelledDistance}} KM -->
               </div>
             </div>
@@ -364,6 +367,14 @@ export default {
         },
       ],
       driverRankColumns: [
+        {
+          name: 'start_date_formatted',
+          text: this.$t('startDate'),
+          valueProcessor: ({row}) => format(new Date(row.start_date), 'yyyy-MM-dd'),
+        },
+        { name: 'total_score',
+          text: this.$t('totalScore')
+        },
         { name: 'pcw', text: this.$t('pcw'),
 
         },
@@ -401,10 +412,21 @@ export default {
 
         },
         { name: 'atw', text: this.$t('atw'),
+
+        },
+        { name: 'drv_distance', text: this.$t('drvDistance'),
 
         },
       ],
       vehicleRankColumns: [
+        {
+          name: 'start_date_formatted',
+          text: this.$t('startDate'),
+          valueProcessor: ({row}) => format(new Date(row.start_date), 'yyyy-MM-dd'),
+        },
+        { name: 'total_score',
+          text: this.$t('totalScore')
+        },
         { name: 'pcw', text: this.$t('pcw'),
 
         },
@@ -442,6 +464,9 @@ export default {
 
         },
         { name: 'atw', text: this.$t('atw'),
+
+        },
+        { name: 'drv_distance', text: this.$t('drvDistance'),
 
         },
       ],
@@ -553,6 +578,9 @@ export default {
         this.vehicleRanks = rows
         cols = this.vehicleRankColumns
       }
+      rows.forEach(row => {
+        row.drv_distance = Math.round(row.drv_distance / 100000)
+      })
       initRows(this, rows, cols)
     },
     renderSafetyScoreHistoryChart() {
