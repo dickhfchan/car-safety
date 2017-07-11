@@ -8,9 +8,11 @@ export default {
     type: 'driver', // driver / vehicle
     drivers: [],
     driverInfos: [],
+    allDriverRanks: [],
     driver: null,
     vehicles: [],
     vehicleInfos: [],
+    allVehicleRanks: [],
     vehicle: null,
     dateType: 'daily',
   },
@@ -18,9 +20,11 @@ export default {
     type(state, v) { state.type = v },
     drivers(state, v) { state.drivers = v },
     driverInfos(state, v) { state.driverInfos = v },
+    allDriverRanks(state, v) { state.allDriverRanks = v },
     driver(state, v) { state.driver = v },
     vehicles(state, v) { state.vehicles = v },
     vehicleInfos(state, v) { state.vehicleInfos = v },
+    allVehicleRanks(state, v) { state.allVehicleRanks = v },
     vehicle(state, v) { state.vehicle = v },
     dateType(state, v) { state.dateType = v },
   },
@@ -55,6 +59,18 @@ export default {
         }
       })
     },
+    getAllDriverRanks(context) {
+      namedHttpGet('driverVehicleProfile_warning_rank_drv', 'dao/warning_rank_drv')
+      .then(({data}) => {
+            // filter out drv_distance === 0
+        context.commit('allDriverRanks', data.JSON.sort((a, b) => a.start_date - b.start_date))
+      }).catch((e) => {
+        if (e.toString() !== 'Cancel') {
+          Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
+          throw e
+        }
+      })
+    },
     getVehicles(context) {
       const {rootState} = context
       namedHttpGet('driverVehicleProfile_veh_reg_mark', 'dao/veh_reg_mark')
@@ -74,6 +90,18 @@ export default {
       .then(({data}) => {
             // filter out drv_distance === 0
         context.commit('vehicleInfos', data.JSON.filter(item => item.company_id === rootState.user.company_id).sort((a, b) => a.start_date - b.start_date))
+      }).catch((e) => {
+        if (e.toString() !== 'Cancel') {
+          Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
+          throw e
+        }
+      })
+    },
+    getAllVehicleRanks(context) {
+      namedHttpGet('driverVehicleProfile_warning_rank_vrm', 'dao/warning_rank_vrm')
+      .then(({data}) => {
+            // filter out drv_distance === 0
+        context.commit('allVehicleRanks', data.JSON.sort((a, b) => a.start_date - b.start_date))
       }).catch((e) => {
         if (e.toString() !== 'Cancel') {
           Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))

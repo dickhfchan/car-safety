@@ -112,6 +112,7 @@ export default {
   safetyScoreHistory: '歷史安全評分',
   warningCountHistoryPer100KM: '每百公裏警報次數',
   vehicleScoreAndAlertCountPer100KM: '車輛評分及每百公裏警報次數',
+  safetyScoreRanking: '安全評分排名',
   // columns
   startDate: '開始日期',
   drvDistance: '公裏數',

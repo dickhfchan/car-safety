@@ -71,74 +71,144 @@
           </md-card-content>
         </md-card>
       </md-layout>
+
       <md-layout md-flex="100" v-if="isSelected">
-        <md-card  class="card-1" v-if="state.type==='driver'">
-          <md-card-content>
-            <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
+        <template v-if="state.type==='driver'">
+          <md-card class="card-1 m-a">
+            <md-card-content>
+              <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
-            <div class="relative overflow-hidden-y">
-              <md-table @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
-               <md-table-header>
-                 <md-table-row>
-                   <md-table-head v-for="col in driverInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                 </md-table-row>
-               </md-table-header>
+              <div class="relative overflow-hidden-y">
+                <md-table @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
+                 <md-table-header>
+                   <md-table-row>
+                     <md-table-head v-for="col in driverInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                   </md-table-row>
+                 </md-table-header>
 
-               <md-table-body>
-                 <md-table-row v-for="row in driverInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                   <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name"
-                   <!-- :style="getColorStyle(rows1, row, col)" -->
-                   >
-                     {{ row[col.name] }}
-                   </md-table-cell>
-                 </md-table-row>
-               </md-table-body>
-             </md-table>
+                 <md-table-body>
+                   <md-table-row v-for="row in driverInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                     <md-table-cell v-for="(col, index) in driverInfoColumns" v-if="col.visible" :key="col.name">
+                       {{ row[col.name] }}
+                     </md-table-cell>
+                   </md-table-row>
+                 </md-table-body>
+               </md-table>
 
-             <Datatable-Footer :rows="driverInfoRows"></Datatable-Footer>
-            </div>
+               <Datatable-Footer :rows="driverInfoRows"></Datatable-Footer>
+              </div>
 
-            <div class="card-buttons">
-              <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('driverScoreAndAlertCountPer100KM'))">
-                <md-icon>get_app</md-icon>
-                <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
-              </md-button>
-              <fullscreen-button></fullscreen-button>
-            </div>
-          </md-card-content>
-        </md-card>
-        <md-card  class="m-a card-1" v-else-if="state.type=='vehicle'">
-          <md-card-content>
-            <h2 class="md-title">{{$t('vehicleScoreAndAlertCountPer100KM')}}</h2>
-            <div class="relative overflow-hidden-y">
-              <md-table  @select="" @sort="onSort">
-               <md-table-header>
-                 <md-table-row>
-                   <md-table-head v-for="col in vehicleInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                 </md-table-row>
-               </md-table-header>
+              <div class="card-buttons">
+                <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('driverScoreAndAlertCountPer100KM'))">
+                  <md-icon>get_app</md-icon>
+                  <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+                </md-button>
+                <fullscreen-button></fullscreen-button>
+              </div>
+            </md-card-content>
+          </md-card>
+          <md-card class="card-1 m-a">
+            <md-card-content>
+              <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
 
-               <md-table-body>
-                 <md-table-row v-for="row in vehicleInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                   <md-table-cell v-for="col in vehicleInfoColumns" v-if="col.visible" :key="col.name">
-                     {{ row[col.name] }}
-                   </md-table-cell>
-                 </md-table-row>
-               </md-table-body>
-             </md-table>
+              <div class="relative overflow-hidden-y">
+                <md-table @select="" @sort="onSort($event, driverRanks, driverRankColumns)">
+                 <md-table-header>
+                   <md-table-row>
+                     <md-table-head v-for="col in driverRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                   </md-table-row>
+                 </md-table-header>
 
-             <Datatable-Footer :rows="vehicleInfoRows"></Datatable-Footer>
-            </div>
+                 <md-table-body>
+                   <md-table-row v-for="row in driverRanks" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                     <md-table-cell v-for="(col, index) in driverRankColumns" v-if="col.visible" :key="col.name">
+                       {{ row[col.name] }}
+                     </md-table-cell>
+                   </md-table-row>
+                 </md-table-body>
+               </md-table>
 
-            <div class="card-buttons">
-              <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('vehicleScoreAndAlertCountPer100KM'))">
-                <md-icon>get_app</md-icon>
-                <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
-              </md-button>
-              <fullscreen-button></fullscreen-button>
-            </div>
-          </md-card-content>
-        </md-card>
+               <Datatable-Footer :rows="driverRanks"></Datatable-Footer>
+              </div>
+
+              <div class="card-buttons">
+                <md-button class="md-icon-button" @click.native="exportExcel(driverRanks, driverRankColumns, $t('safetyScoreRanking'))">
+                  <md-icon>get_app</md-icon>
+                  <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+                </md-button>
+                <fullscreen-button></fullscreen-button>
+              </div>
+            </md-card-content>
+          </md-card>
+        </template>
+
+        <template v-else-if="state.type=='vehicle'">
+          <md-card  class="m-a card-1">
+            <md-card-content>
+              <h2 class="md-title">{{$t('vehicleScoreAndAlertCountPer100KM')}}</h2>
+              <div class="relative overflow-hidden-y">
+                <md-table  @select="" @sort="onSort">
+                 <md-table-header>
+                   <md-table-row>
+                     <md-table-head v-for="col in vehicleInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                   </md-table-row>
+                 </md-table-header>
+
+                 <md-table-body>
+                   <md-table-row v-for="row in vehicleInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                     <md-table-cell v-for="col in vehicleInfoColumns" v-if="col.visible" :key="col.name">
+                       {{ row[col.name] }}
+                     </md-table-cell>
+                   </md-table-row>
+                 </md-table-body>
+               </md-table>
+
+               <Datatable-Footer :rows="vehicleInfoRows"></Datatable-Footer>
+              </div>
+
+              <div class="card-buttons">
+                <md-button class="md-icon-button" @click.native="exportExcel(driverInfoRows, driverInfoColumns, $t('vehicleScoreAndAlertCountPer100KM'))">
+                  <md-icon>get_app</md-icon>
+                  <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+                </md-button>
+                <fullscreen-button></fullscreen-button>
+              </div>
+            </md-card-content>
+          </md-card>
+          <md-card class="card-1 m-a">
+            <md-card-content>
+              <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
+
+              <div class="relative overflow-hidden-y">
+                <md-table @select="" @sort="onSort($event, vehicleRanks, vehicleRankColumns)">
+                 <md-table-header>
+                   <md-table-row>
+                     <md-table-head v-for="col in vehicleRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
+                   </md-table-row>
+                 </md-table-header>
+
+                 <md-table-body>
+                   <md-table-row v-for="row in vehicleRanks" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
+                     <md-table-cell v-for="(col, index) in vehicleRankColumns" v-if="col.visible" :key="col.name">
+                       {{ row[col.name] }}
+                     </md-table-cell>
+                   </md-table-row>
+                 </md-table-body>
+               </md-table>
+
+               <Datatable-Footer :rows="driverRanks"></Datatable-Footer>
+              </div>
+
+              <div class="card-buttons">
+                <md-button class="md-icon-button" @click.native="exportExcel(vehicleRanks, vehicleRankColumns, $t('safetyScoreRanking'))">
+                  <md-icon>get_app</md-icon>
+                  <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
+                </md-button>
+                <fullscreen-button></fullscreen-button>
+              </div>
+            </md-card-content>
+          </md-card>
+        </template>
       </md-layout>
     </md-layout>
   </div>
@@ -293,10 +363,95 @@ export default {
 
         },
       ],
+      driverRankColumns: [
+        { name: 'pcw', text: this.$t('pcw'),
+
+        },
+        { name: 'ufcw', text: this.$t('ufcw'),
+
+        },
+        { name: 'fcw', text: this.$t('fcw'),
+
+        },
+        { name: 'hmw_h', text: this.$t('hmwH'),
+
+        },
+        { name: 'hmw_m', text: this.$t('hmwM'),
+
+        },
+        { name: 'hmw_l', text: this.$t('hmwL'),
+
+        },
+        { name: 'lldw', text: this.$t('lldw'),
+
+        },
+        { name: 'rldw', text: this.$t('rldw'),
+
+        },
+        { name: 'spw', text: this.$t('spw'),
+
+        },
+        { name: 'vb', text: this.$t('vb'),
+
+        },
+        { name: 'aaw', text: this.$t('aaw'),
+
+        },
+        { name: 'abw', text: this.$t('abw'),
+
+        },
+        { name: 'atw', text: this.$t('atw'),
+
+        },
+      ],
+      vehicleRankColumns: [
+        { name: 'pcw', text: this.$t('pcw'),
+
+        },
+        { name: 'ufcw', text: this.$t('ufcw'),
+
+        },
+        { name: 'fcw', text: this.$t('fcw'),
+
+        },
+        { name: 'hmw_h', text: this.$t('hmwH'),
+
+        },
+        { name: 'hmw_m', text: this.$t('hmwM'),
+
+        },
+        { name: 'hmw_l', text: this.$t('hmwL'),
+
+        },
+        { name: 'lldw', text: this.$t('lldw'),
+
+        },
+        { name: 'rldw', text: this.$t('rldw'),
+
+        },
+        { name: 'spw', text: this.$t('spw'),
+
+        },
+        { name: 'vb', text: this.$t('vb'),
+
+        },
+        { name: 'aaw', text: this.$t('aaw'),
+
+        },
+        { name: 'abw', text: this.$t('abw'),
+
+        },
+        { name: 'atw', text: this.$t('atw'),
+
+        },
+      ],
+      driverRanks: [],
+      vehicleRanks: [],
     }
   },
   computed: {
     state() { return this.$store.state.driverVehicleProfile },
+    dateTypeHead() { return this.state.dateType.substr(0, 1).toUpperCase() },
     isSelected() { return (this.state.type === 'driver' && this.state.driver) || (this.state.type === 'vehicle' && this.state.vehicle) },
     driver() { return this.$store.getters[`${md}/driverObj`] },
     vehicle() { return this.$store.getters[`${md}/vehicleObj`] },
@@ -309,28 +464,34 @@ export default {
   watch: {
     'state.type'() {
       this.getInfoRowSmartly()
+      this.getRanksSmartly()
       this.renderSafetyScoreHistoryChart()
       this.renderWarningCountHistoryPer100KMChart()
     },
     'state.dateType'() {
       this.getInfoRowSmartly()
+      this.getRanksSmartly()
       this.renderSafetyScoreHistoryChart()
       this.renderWarningCountHistoryPer100KMChart()
     },
     'state.driver'() {
       this.getInfoRowSmartly()
+      this.getRanksSmartly()
       this.renderSafetyScoreHistoryChart()
       this.renderWarningCountHistoryPer100KMChart()
     },
     'state.vehicle'() {
       this.getInfoRowSmartly()
+      this.getRanksSmartly()
       this.renderSafetyScoreHistoryChart()
       this.renderWarningCountHistoryPer100KMChart()
     },
   },
   created() {
     initColumns(this, this.driverInfoColumns)
+    initColumns(this, this.driverRankColumns)
     initColumns(this, this.vehicleInfoColumns)
+    initColumns(this, this.vehicleRankColumns)
   },
   methods: {
     onSort,
@@ -341,7 +502,7 @@ export default {
     getDriverInfoRows() {
       const rows = this.state.driverInfos
       .filter(item => item.driver_id === this.state.driver)
-      .filter(item => item.type === this.state.dateType.substr(0, 1).toUpperCase())
+      .filter(item => item.type === this.dateTypeHead)
       .map(row => Object.assign({}, row)) // clone row
       .reverse()
       // format count columns
@@ -357,7 +518,7 @@ export default {
     getVehicleInfoRows() {
       const rows = this.state.vehicleInfos
       .filter(item => item.vrm_id === this.state.vehicle)
-      .filter(item => item.type === this.state.dateType.substr(0, 1).toUpperCase())
+      .filter(item => item.type === this.dateTypeHead)
       .map(row => Object.assign({}, row)) // clone row
       .reverse()
       // format count columns
@@ -376,6 +537,23 @@ export default {
       } else {
         this.getVehicleInfoRows()
       }
+    },
+    getRanksSmartly() {
+      let rows, cols
+      if (this.state.type === 'driver') {
+        rows = this.state.allDriverRanks
+        .filter(row => row.driver_id === this.state.driver && row.type === this.dateTypeHead)
+        .map(row => Object.assign({}, row))
+        this.driverRanks = rows
+        cols = this.driverRankColumns
+      } else {
+        rows = this.state.allVehicleRanks
+        .filter(row => row.vrm_id === this.state.vehicle && row.type === this.dateTypeHead)
+        .map(row => Object.assign({}, row))
+        this.vehicleRanks = rows
+        cols = this.vehicleRankColumns
+      }
+      initRows(this, rows, cols)
     },
     renderSafetyScoreHistoryChart() {
       if (!this.isSelected) {

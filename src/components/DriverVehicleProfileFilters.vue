@@ -106,8 +106,10 @@ export default {
   created() {
     this.$store.dispatch(`driverVehicleProfile/getDrivers`)
     this.$store.dispatch(`driverVehicleProfile/getDriverInfos`)
+    this.$store.dispatch(`driverVehicleProfile/getAllDriverRanks`)
     this.$store.dispatch(`driverVehicleProfile/getVehicles`)
     this.$store.dispatch(`driverVehicleProfile/getVehicleInfos`)
+    this.$store.dispatch(`driverVehicleProfile/getAllVehicleRanks`)
   },
   // methods:
 }
