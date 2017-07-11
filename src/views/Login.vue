@@ -77,9 +77,14 @@
    },
    methods: {
      submit() {
-       this.validation.check().then((data) => {
-         this.$http.get(`/dao/authentication/${data.name}?password=${data.password}&company_code=${this.$route.params.companyCode}`).then(({data}) => {
+       this.validation.check().then((authInfo) => {
+         this.$http.get(`/dao/authentication/${authInfo.name}?password=${authInfo.password}&company_code=${this.$route.params.companyCode}`).then(({data}) => {
            if (data && data.message === 'Success') {
+             window.localStorage.setItem('authInfo', JSON.stringify({
+               name: authInfo.name,
+               password: authInfo.password,
+               companyCode: this.$route.params.companyCode,
+             }))
              this.$store.commit('authenticated', true)
              const user = data.JSON[0]
              this.$store.commit('user', user)

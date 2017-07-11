@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { waitFor } from 'helper-js'
 import config from '../config.js'
 import urls from './modules/urls.js'
 import driverVehicleProfile from './modules/driver-vehicle-profile.js'
@@ -21,15 +22,8 @@ const tenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 10)
 const fourteenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date(), 14), dateFormat)
 // const storagedVehicleVrmId = toInt(window.localStorage.getItem('vehicle_vrm_id'))
 const storagedMap = window.localStorage.getItem('map')
-let storagedUser = window.localStorage.getItem('user')
-if (storagedUser) {
-  storagedUser = JSON.parse(storagedUser)
-  if (new Date().getTime() - (storagedUser.lastTime || 0) > 3600000) {
-    storagedUser = null
-  }
-}
 
-const lang = (storagedUser && (window.localStorage.getItem('lang_' + storagedUser.company_id) || storagedUser.lang)) || window.localStorage.getItem('lang') || 'en'
+const lang = window.localStorage.getItem('lang') || 'en'
 
 // store local data
 const local = {}
@@ -46,8 +40,8 @@ const store = new Vuex.Store({
     baiduMapAK: '0WbyzDGMdtHjqr2rW4EZ1HGrKb2vdbpG',
     baiduMapServiceId: 139574,
     googleMapAK: 'AIzaSyCRJiQRpULDNnsylPwEgDu8XhgLN6kmu8I',
-    authenticated: storagedUser != null,
-    user: storagedUser || {},
+    authenticated: false,
+    user: null,
     companyCode: window.localStorage.getItem('companyCode'),
     menu,
     companies: [],
@@ -145,13 +139,37 @@ const store = new Vuex.Store({
         commit('userGroupFuncs', data.JSON)
       })
     },
-    init({dispatch, commit, state}) {
+    async init({dispatch, commit, state}, vm) {
+      await waitFor('routeReady', () => vm.$route.name != null && vm.$route.path !== '/')
+      let auth
+      if (vm.$route.name !== 'unauthorized' && vm.$route.name !== 'login') {
+        const t = window.localStorage.getItem('authInfo')
+        const authInfo = t && JSON.parse(t)
+        if (authInfo) {
+          auth = vm.$http.get(`/dao/authentication/${authInfo.name}?password=${authInfo.password}&company_code=${authInfo.companyCode}`).then(({data}) => {
+            if (data && data.message === 'Success') {
+              const user = data.JSON[0]
+              return user
+            }
+          })
+        }
+        if (!auth) {
+          auth = Promise.resolve(null)
+        }
+      }
       return Promise.all([
+        auth,
         dispatch('getCompanies'),
         dispatch('getUserGroup'),
         dispatch('getUserGroupFunc'),
-      ]).then(() => {
-        commit('user', state.user)
+      ]).then((datas) => {
+        const user = datas[0]
+        const authenticated = Boolean(user)
+        if (!authenticated && vm.$route.name !== 'unauthorized' && vm.$route.name !== 'login') {
+          vm.$router.push({name: 'unauthorized'})
+        }
+        commit('user', user)
+        commit('authenticated', authenticated)
         commit('initialized', true)
       }).catch(e => {
         Vue.alert(runtime.app.$t('errorRefreshOrFeedback'))
@@ -161,7 +179,7 @@ const store = new Vuex.Store({
     logout({commit, state}) {
       commit('authenticated', false)
       commit('user', {})
-      window.localStorage.removeItem('user')
+      window.localStorage.removeItem('authInfo')
       runtime.app.$router.push({name: 'login', params: {companyCode: state.companyCode}})
     },
     getTrips (context) {

@@ -164,20 +164,20 @@
           </keep-alive>
         </div>
       </template>
-
-      <!-- global alert -->
-      <md-dialog-alert :md-content="alert.content" :md-ok-text="$t('ok')" ref="alert"></md-dialog-alert>
-
-      <!-- global confirm -->
-      <md-dialog-confirm
-        :md-title="confirm.title"
-        :md-content-html="confirm.content"
-        :md-ok-text="confirm.ok"
-        :md-cancel-text="confirm.cancel"
-        @close="onConfirmClose"
-        ref="confirm">
-      </md-dialog-confirm>
     </template>
+
+    <!-- global alert -->
+    <md-dialog-alert :md-content="alert.content" :md-ok-text="$t('ok')" ref="alert"></md-dialog-alert>
+
+    <!-- global confirm -->
+    <md-dialog-confirm
+      :md-title="confirm.title"
+      :md-content-html="confirm.content"
+      :md-ok-text="confirm.ok"
+      :md-cancel-text="confirm.cancel"
+      @close="onConfirmClose"
+      ref="confirm">
+    </md-dialog-confirm>
   </div>
 </template>
 
@@ -275,7 +275,7 @@ export default {
     // validate changePassword
     this.$validate(this.changePassword.validation, this.changePassword.fields)
     //
-    this.$store.dispatch('init')
+    this.$store.dispatch('init', this)
   },
   methods: {
     toggleLeftSidenav() {
