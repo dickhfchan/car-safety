@@ -61,7 +61,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       document.title = this.title
-      this.getAndRenderFence()
+      // this.getAndRenderFence()
     })
   },
   methods: {
@@ -72,6 +72,7 @@ export default {
     checkFence() {
       this.$refs.bmf.isInFence(this.checkPoints.lng, this.checkPoints.lat)
     },
+    // get the first matched fence to display
     getAndRenderFence() {
       this.$http.get('dao/ui_geofence_setup').then(({data}) => {
         const user = this.$store.state.user
@@ -97,7 +98,7 @@ export default {
         if (data.toLowerCase().indexOf('success') > -1) {
           this.$alert(this.$t('succeeded'))
         } else {
-          this.$alert(this.$t('failed'))
+          this.$alert(data)
         }
       }).catch(e => {
         this.$alert(this.$t('errorRefreshOrFeedback'))
