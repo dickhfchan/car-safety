@@ -73,11 +73,15 @@ export default {
     vehicleOrDriver: {
       immediate: true,
       handler(val, oldVal) {
+        const store = this.$store
+        store.commit('trips', [])
         if (val !== oldVal) {
           if (val === 'vehicle') {
+            store.commit('vehicle', null)
             this.getVehicles()
             this.getVehicleGroups()
           } else if (val === 'driver') {
+            store.commit('driver', null)
             this.getDrivers()
             this.getDriverGroups()
           }
