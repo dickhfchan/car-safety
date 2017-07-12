@@ -25,7 +25,9 @@ conn = connect_to_database(db_username, db_password, db_name, host, port)
 
 default_headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS'}
+    'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Cookie'
+    }
 
 table_routes = [
     '/api/dao/<string:table_name>',
@@ -387,7 +389,9 @@ class Tables_JSON(Resource):
         else:
             return "DELETE request denied for this table %s" % table_name, 200, default_headers
 
-
+    def options(self, table_name, key=None):
+        print default_headers
+        return '', 200, default_headers
 @app.route('/')
 def index():
     return "Hello_World"

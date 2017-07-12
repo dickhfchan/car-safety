@@ -1,5 +1,4 @@
 import { titleCase, windowLoaded, unset } from 'helper-js'
-import config from '@/config.js'
 import Vue from 'vue'
 
 export const dateTimeFields = ['start_time', 'end_time', 'time', 'start_date', 'end_date', 'date',
@@ -138,15 +137,16 @@ export function axiosAutoProxy(http, url, method, data) {
   if (method === 'delete') {
     data = { data: data }
   }
-  if (config.isDevelopment) {
-    return http.post('http://' + window.location.host + '/proxy', {
-      url,
-      method,
-      data
-    })
-  } else {
-    return http[method](url, data)
-  }
+  return http[method](url, data)
+  // if (config.isDevelopment) {
+  //   return http.post('http://' + window.location.host + '/proxy', {
+  //     url,
+  //     method,
+  //     data
+  //   })
+  // } else {
+  //   return http[method](url, data)
+  // }
 }
 
 export function initColumns(vm, columns) {
