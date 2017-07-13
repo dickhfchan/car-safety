@@ -218,8 +218,8 @@
 </template>
 <script>
 import DatatableFooter from '../components/DatatableFooter.vue'
-import { format } from 'date-functions'
-import { sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
+import { format, addDays, subDays, getMonthStart, addMonths, subMonths, subYears } from 'date-functions'
+import { newDate, sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
@@ -417,9 +417,6 @@ export default {
         { name: 'vb',
           text: this.$t('vb')
         },
-        { name: 'drv_distance',
-          text: this.$t('drvDistance'),
-        },
       ],
       vehicleRankColumns: [
         {
@@ -472,17 +469,17 @@ export default {
         { name: 'vb',
           text: this.$t('vb')
         },
-        { name: 'drv_distance',
-          text: this.$t('drvDistance'),
-        },
       ],
       driverRanks: [],
       vehicleRanks: [],
+      startDate: null,
+      endDate: null,
     }
   },
   computed: {
     state() { return this.$store.state.driverVehicleProfile },
     dateTypeHead() { return this.state.dateType.substr(0, 1).toUpperCase() },
+    dateTypeHeadLowerCase() { return this.dateTypeHead.toLowerCase() },
     isSelected() { return (this.state.type === 'driver' && this.state.driver) || (this.state.type === 'vehicle' && this.state.vehicle) },
     driver() { return this.$store.getters[`${md}/driverObj`] },
     vehicle() { return this.$store.getters[`${md}/vehicleObj`] },
@@ -500,6 +497,7 @@ export default {
       this.renderWarningCountHistoryPer100KMChart()
     },
     'state.dateType'() {
+      this.getStartDateAndEndDate()
       this.getInfoRowSmartly()
       this.getRanksSmartly()
       this.renderSafetyScoreHistoryChart()
@@ -523,6 +521,7 @@ export default {
     initColumns(this, this.driverRankColumns)
     initColumns(this, this.vehicleInfoColumns)
     initColumns(this, this.vehicleRankColumns)
+    this.getStartDateAndEndDate()
   },
   methods: {
     onSort,
@@ -530,37 +529,63 @@ export default {
     onclickFullscreen(chart) {
       this[chart] && this[chart].update(null)
     },
+    getStartDateAndEndDate() {
+      let d = addDays(new Date(), 1) // Tomorrow
+      const f = 'yyyy-MM-dd'
+      switch (this.state.dateType) {
+        case 'daily':
+          this.endDate = format(d, f)
+          this.startDate = format(subDays(d, 14), f)
+          break
+        case 'weekly':
+          this.endDate = format(addDays(d, 7 - d.getDay()), f)
+          this.startDate = format(subDays(d, 14 * 7), f)
+          break
+        case 'monthly':
+          d = addMonths(getMonthStart(d), 1)
+          this.endDate = format(d, f)
+          this.startDate = format(subMonths(d, 12), f)
+          break
+        case 'yearly':
+          d = newDate(d.getFullYear() + '-12-31 23:59:59')
+          this.endDate = format(d, f)
+          this.startDate = format(subYears(d, 7), f)
+          break
+      }
+    },
     getDriverInfoRows() {
-      const rows = this.state.driverInfos
-      .filter(item => item.driver_id === this.state.driver)
-      .filter(item => item.type === this.dateTypeHead)
-      .map(row => Object.assign({}, row)) // clone row
-      .reverse()
-      // format count columns
-      rows.forEach(row => {
-        this.driverInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
-          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+      this.$http.get(`api/dao/avg_warning_drv_by_co_type_date/${this.state.driver}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
+      .then(({data}) => {
+        const rows = data.JSON
+        .sort((a, b) => a.start_date - b.start_date)
+        .reverse()
+        // format count columns
+        rows.forEach(row => {
+          this.driverInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
+            row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+          })
+          row.drv_distance = Math.round(row.drv_distance / 100000)
         })
-        row.drv_distance = Math.round(row.drv_distance / 100000)
+        this.driverInfoRows = rows
+        initRows(this, this.driverInfoRows, this.driverInfoColumns)
       })
-      this.driverInfoRows = rows
-      initRows(this, this.driverInfoRows, this.driverInfoColumns)
     },
     getVehicleInfoRows() {
-      const rows = this.state.vehicleInfos
-      .filter(item => item.vrm_id === this.state.vehicle)
-      .filter(item => item.type === this.dateTypeHead)
-      .map(row => Object.assign({}, row)) // clone row
-      .reverse()
-      // format count columns
-      rows.forEach(row => {
-        this.vehicleInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
-          row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+      this.$http.get(`api/dao/avg_warning_vrm_by_co_type_date/${this.state.vehicle}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
+      .then(({data}) => {
+        const rows = data.JSON
+        .sort((a, b) => a.start_date - b.start_date)
+        .reverse()
+        // format count columns
+        rows.forEach(row => {
+          this.vehicleInfoColumns.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
+            row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
+          })
+          row.drv_distance = Math.round(row.drv_distance / 100000)
         })
-        row.drv_distance = Math.round(row.drv_distance / 100000)
+        this.vehicleInfoRows = rows
+        initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
       })
-      this.vehicleInfoRows = rows
-      initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
     },
     getInfoRowSmartly() {
       if (this.state.type === 'driver') {
@@ -575,12 +600,14 @@ export default {
         rows = this.state.allDriverRanks
         .filter(row => row.driver_id === this.state.driver && row.type === this.dateTypeHead)
         .map(row => Object.assign({}, row))
+        .reverse()
         this.driverRanks = rows
         cols = this.driverRankColumns
       } else {
         rows = this.state.allVehicleRanks
         .filter(row => row.vrm_id === this.state.vehicle && row.type === this.dateTypeHead)
         .map(row => Object.assign({}, row))
+        .reverse()
         this.vehicleRanks = rows
         cols = this.vehicleRankColumns
       }
