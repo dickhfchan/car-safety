@@ -80,6 +80,7 @@ const store = new Vuex.Store({
     },
     lang(state, val) {
       if (state.lang !== val) {
+        window.localStorage.setItem('lang', val)
         state.lang = val
         window.location.reload()
       }
@@ -91,6 +92,7 @@ const store = new Vuex.Store({
       state.user = data
       const {user, companies, userGroupFuncs} = state
       if (user) {
+        store.commit('lang', user.lang)
         Vue.set(user, 'company', companies.find(v => v.company_id === user.company_id))
         Vue.set(user, 'actions', userGroupFuncs.filter(v => v.group_id === user.group_id).map(v => v.func_code))
       }

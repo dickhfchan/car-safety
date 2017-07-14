@@ -70,7 +70,6 @@
      lang: {
        get() { return this.$store.state.lang },
        set(val) { setTimeout(() => {
-         window.localStorage.setItem('lang', val)
          this.$store.commit('lang', val)
        }, 200) },
      }
