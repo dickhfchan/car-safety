@@ -19,7 +19,7 @@
                 <br />
                 Dob: {{driver.dob}}
                 <br />
-                Grade: {{grade}}
+                Grade: {{grade}}({{gradeFigure}})
                 <!-- <br />
                 <!-- <br />
                 Travelled distance: {{driver.travelledDistance}} KM -->
@@ -349,11 +349,13 @@ export default {
         { name: 'pcw', text: this.$t('pcw'),
 
         },
-        { name: 'ufcw', text: this.$t('ufcw'),
-
-        },
         { name: 'fcw', text: this.$t('fcw'),
-
+        },
+        { name: 'ufcw_h',
+          text: this.$t('ufcwH'),
+        },
+        { name: 'ufcw_l',
+          text: this.$t('ufcwL'),
         },
         { name: 'hmw_h', text: this.$t('hmwH'),
 
@@ -498,6 +500,7 @@ export default {
       startDate: null,
       endDate: null,
       grade: null,
+      gradeFigure: null,
     }
   },
   computed: {
@@ -630,6 +633,7 @@ export default {
       } else if (avg >= 0) {
         grade = 'E'
       }
+      this.gradeFigure = avg
       this.grade = grade
     },
     getInfoRowSmartly() {
