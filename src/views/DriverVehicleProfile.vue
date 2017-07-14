@@ -48,7 +48,7 @@
         <md-card  class="m-a w-100 card-1">
           <md-card-content class="flex flex-col">
             <h2 class="md-title">{{$t('warningCountSum')}}</h2>
-            <div class="relative">
+            <div class="relative m-a">
               <canvas :id="warningCountSumChartID" class="w-100 warning-count-sum-chart"></canvas>
             </div>
 

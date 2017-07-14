@@ -84,13 +84,13 @@ export default {
         {
           'name': 'startTimeDisplay',
           text: this.$t('startTime'),
-          valueProcessor: ({row}) => format(new Date(row.start_time), 'HH:mm')
+          valueProcessor: ({row}) => format(new Date(row.start_time), 'HH:mm:ss')
         },
         {
           'name': 'endTimeDisplay',
           text: this.$t('endTime'),
           visible: false,
-          valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm'),
+          valueProcessor: ({row}) => format(new Date(row.end_time), 'HH:mm:ss'),
         },
         {
           'name': 'durationDisplay',
