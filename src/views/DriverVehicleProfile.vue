@@ -18,6 +18,9 @@
                 Phone mobile: {{driver.phone_mobile}}
                 <br />
                 Dob: {{driver.dob}}
+                <br />
+                Grade: {{grade}}
+                <!-- <br />
                 <!-- <br />
                 Travelled distance: {{driver.travelledDistance}} KM -->
               </div>
@@ -29,8 +32,24 @@
               <div class="information">
                 <h3 >{{vehicle.vrm_mark_code}}</h3>
                 Dob: {{vehicle.dob}}
+                <br />
+                Grade: {{grade}}
                 <!-- Travelled distance: {{vehicle.travelledDistance}} KM -->
               </div>
+            </div>
+
+            <div class="card-buttons">
+              <fullscreen-button></fullscreen-button>
+            </div>
+          </md-card-content>
+        </md-card>
+      </md-layout>
+      <md-layout md-flex="50" md-flex-xsmall="100">
+        <md-card  class="m-a w-100 card-1">
+          <md-card-content class="flex flex-col">
+            <h2 class="md-title">{{$t('warningCountSum')}}</h2>
+            <div class="relative">
+              <canvas :id="warningCountSumChartID" class="w-100 warning-count-sum-chart"></canvas>
             </div>
 
             <div class="card-buttons">
@@ -221,6 +240,7 @@ import DatatableFooter from '../components/DatatableFooter.vue'
 import { format, addDays, subDays, getMonthStart, addMonths, subMonths, subYears } from 'date-functions'
 import { newDate, sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
 import Chartist from 'chartist'
+import Chart from 'chart.js'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
 
@@ -246,12 +266,15 @@ function getDateText(dateType, timestamp) {
 
 const md = 'driverVehicleProfile' // vuex module name
 
+const warningCountColumns = ['pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw_h', 'ufcw_l', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
+
 export default {
   components: { DatatableFooter },
   data() {
     return {
-      safetyScoreHistoryChartID: this._uid + 'safetyScoreHistory',
-      warningCountHistoryPer100KMChartID: this._uid + 'warningCountHistoryPer100KM',
+      safetyScoreHistoryChartID: 'safetyScoreHistory' + this._uid,
+      warningCountHistoryPer100KMChartID: 'warningCountHistoryPer100KM' + this._uid,
+      warningCountSumChartID: 'warningCountSum' + this._uid,
       // driverInfo: {},
       // vehicleInfo: {},
       driverInfoRows: [],
@@ -474,6 +497,7 @@ export default {
       vehicleRanks: [],
       startDate: null,
       endDate: null,
+      grade: null,
     }
   },
   computed: {
@@ -493,25 +517,29 @@ export default {
     'state.type'() {
       this.getInfoRowSmartly()
       this.getRanksSmartly()
-      this.renderSafetyScoreHistoryChart()
-      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.dateType'() {
       this.getStartDateAndEndDate()
       this.getInfoRowSmartly()
       this.getRanksSmartly()
-      this.renderSafetyScoreHistoryChart()
-      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.driver'() {
       this.getInfoRowSmartly()
       this.getRanksSmartly()
-      this.renderSafetyScoreHistoryChart()
-      this.renderWarningCountHistoryPer100KMChart()
     },
     'state.vehicle'() {
       this.getInfoRowSmartly()
       this.getRanksSmartly()
+    },
+    driverInfoRows() {
+      this.getGrade()
+      this.renderWaringCountSumChart()
+      this.renderSafetyScoreHistoryChart()
+      this.renderWarningCountHistoryPer100KMChart()
+    },
+    vehicleInfoRows() {
+      this.getGrade()
+      this.renderWaringCountSumChart()
       this.renderSafetyScoreHistoryChart()
       this.renderWarningCountHistoryPer100KMChart()
     },
@@ -554,7 +582,7 @@ export default {
       }
     },
     getDriverInfoRows() {
-      this.$http.get(`api/dao/avg_warning_drv_by_co_type_date/${this.state.driver}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
+      this.$http.get(`dao/avg_warning_drv_by_co_type_date/${this.state.driver}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
       .then(({data}) => {
         const rows = data.JSON
         .sort((a, b) => a.start_date - b.start_date)
@@ -571,7 +599,7 @@ export default {
       })
     },
     getVehicleInfoRows() {
-      this.$http.get(`api/dao/avg_warning_vrm_by_co_type_date/${this.state.vehicle}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
+      this.$http.get(`dao/avg_warning_vrm_by_co_type_date/${this.state.vehicle}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
       .then(({data}) => {
         const rows = data.JSON
         .sort((a, b) => a.start_date - b.start_date)
@@ -586,6 +614,23 @@ export default {
         this.vehicleInfoRows = rows
         initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
       })
+    },
+    getGrade() {
+      const rows = this.state.type === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      const avg = rows.reduce((a, b) => a + b.total_score, 0) / rows.length
+      let grade
+      if (avg >= 80) {
+        grade = 'A'
+      } else if (avg >= 60) {
+        grade = 'B'
+      } else if (avg >= 40) {
+        grade = 'C'
+      } else if (avg >= 20) {
+        grade = 'D'
+      } else if (avg >= 0) {
+        grade = 'E'
+      }
+      this.grade = grade
     },
     getInfoRowSmartly() {
       if (this.state.type === 'driver') {
@@ -616,68 +661,94 @@ export default {
       })
       initRows(this, rows, cols)
     },
+    renderWaringCountSumChart() {
+      if (!this.isSelected) {
+        return
+      }
+      const ctx = document.getElementById(this.warningCountSumChartID)
+      if (!ctx) {
+        return
+      }
+      if (this.warningCountSumChart) {
+        this.warningCountSumChart.destroy()
+      }
+      const rows = this.state.type === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      const cols = this.state.type === 'driver' ? this.driverInfoColumns : this.vehicleInfoColumns
+      const labels = warningCountColumns.map(colName => cols.find(col => col.name === colName).text)
+      const data = warningCountColumns.map(colName => rows.reduce((a, b) => a + b[colName], 0))
+      this.warningCountSumChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels,
+          datasets: [{
+            label: '',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgb(255, 99, 132)',
+            data,
+          }]
+        },
+        options: {
+        }
+      })
+    },
     renderSafetyScoreHistoryChart() {
       if (!this.isSelected) {
         return
       }
-      this.$nextTick(() => {
-        const ctx = document.getElementById(this.safetyScoreHistoryChartID)
-        if (!ctx) {
-          return
-        }
-        if (this.safetyScoreHistoryChart) {
-          this.safetyScoreHistoryChart.detach()
-          ctx.innerHTML = ''
-        }
+      const ctx = document.getElementById(this.safetyScoreHistoryChartID)
+      if (!ctx) {
+        return
+      }
+      if (this.safetyScoreHistoryChart) {
+        this.safetyScoreHistoryChart.detach()
+        ctx.innerHTML = ''
+      }
 
-        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
-        this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
-          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
-          series: [
-            rows.map(row => row.total_score)
-          ]
-        },
-          {
-            low: 0,
-            showArea: true,
-            fullWidth: true,
-            reverseData: true,
-            chartPadding: {
-              right: 40
-            }
+      const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
+        labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
+        series: [
+          rows.map(row => row.total_score)
+        ]
+      },
+        {
+          low: 0,
+          showArea: true,
+          fullWidth: true,
+          reverseData: true,
+          chartPadding: {
+            right: 40
           }
+        }
         )
-      })
     },
     renderWarningCountHistoryPer100KMChart() {
       if (!this.isSelected) {
         return
       }
-      this.$nextTick(() => {
-        const ctx = document.getElementById(this.warningCountHistoryPer100KMChartID)
-        if (!ctx) {
-          return
-        }
-        if (this.warningCountHistoryPer100KMChart) {
-          this.warningCountHistoryPer100KMChart.detach()
-          ctx.innerHTML = ''
-        }
+      const ctx = document.getElementById(this.warningCountHistoryPer100KMChartID)
+      if (!ctx) {
+        return
+      }
+      if (this.warningCountHistoryPer100KMChart) {
+        this.warningCountHistoryPer100KMChart.detach()
+        ctx.innerHTML = ''
+      }
 
-        const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
-        const labelCols = this.chart2Columns
-        this.warningCountHistoryPer100KMChart = new Chartist.Line(ctx, {
-          labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
-          series: labelCols.map(col => rows.map(row => row[col.name])),
-        },
-          {
-            reverseData: true,
-            fullWidth: true,
-            chartPadding: {
-              right: 30
-            }
+      const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      const labelCols = this.chart2Columns
+      this.warningCountHistoryPer100KMChart = new Chartist.Line(ctx, {
+        labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
+        series: labelCols.map(col => rows.map(row => row[col.name])),
+      },
+        {
+          reverseData: true,
+          fullWidth: true,
+          chartPadding: {
+            right: 30
           }
+        }
         )
-      })
     },
   },
 }

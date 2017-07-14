@@ -113,6 +113,7 @@ export default {
   warningCountHistoryPer100KM: '每百公里警报次数',
   vehicleScoreAndAlertCountPer100KM: '车辆评分及每百公里警报次数',
   safetyScoreRanking: '安全评分排名',
+  warningCountSum: '安全警告次数总计',
   // columns
   startDate: '开始日期',
   drvDistance: '公里数',

@@ -113,6 +113,7 @@ export default {
   warningCountHistoryPer100KM: 'Warning Count History Per 100KM',
   vehicleScoreAndAlertCountPer100KM: 'Vehicle Score And Alert Count Per 100KM',
   safetyScoreRanking: 'Safety Score Ranking',
+  warningCountSum: 'Warning Count Sum',
   // columns
   startDate: 'Start Date',
   drvDistance: 'Distance',
