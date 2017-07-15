@@ -126,7 +126,7 @@
 import Vue from 'vue'
 import DatatableFooter from '../components/DatatableFooter.vue'
 import DatePicker from '../components/DatePicker.vue'
-import { titleCase } from 'helper-js'
+import { titleCase, isPromise } from 'helper-js'
 import { format } from 'date-functions'
 import { dateTimeFields, initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
 
@@ -230,26 +230,25 @@ export default {
             this.getDriverGroupDtl.then(({data}) => {
               const mapping = {}
               data.JSON.forEach(item => { mapping[item.driver_id] = item.drv_grp_id })
+              console.log(mapping)
               rows.forEach(row => { row.group_id = mapping[row.driver_id] })
             })
           },
           beforeSaveNew: (row) => {
             const groupId = row.group_id
             delete row.group_id
-            this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 })
+            return this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 })
           },
           beforeSaveEditing: (row) => {
             const groupId = row.group_id
             delete row.group_id
             // mapping
-            this.getDriverGroupDtl.then(({data}) => {
+            return this.getDriverGroupDtl.then(({data}) => {
               const mapping = data.JSON.find(v => v.driver_id === row.driver_id)
-              if (mapping) {
-                if (mapping.drv_grp_id !== groupId) {
-                  // groupId changed
-                  axiosAutoProxy(this.$http, 'dao/driver_group_dtl', 'delete', { drv_grp_dtl_id: mapping.drv_grp_dtl_id }) // delete old mapping
-                  this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 }) // add new mapping
-                }
+              const oldGroupId = mapping && mapping.drv_grp_id
+              const oldMappingId = mapping && mapping.drv_grp_dtl_id
+              if (oldGroupId !== groupId) {
+                return this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: oldMappingId || null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 }) // insert or update mapping
               }
             })
           },
@@ -792,13 +791,18 @@ export default {
         return true
       }
     },
-    saveNew() {
+    async saveNew() {
       const newRow = Object.assign({}, this.newRow)
       if (!this.validate(newRow)) {
         return
       }
       beforeSave(newRow, this.currentColumns)
-      this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(newRow)
+      const t = this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(newRow)
+      if (t) {
+        if (isPromise(t)) {
+          await t
+        }
+      }
       axiosAutoProxy(this.$http, this.api, 'post', newRow).then(({data}) => {
         if (data.indexOf('error') === 0) {
           this.$alert(this.$t('failed'))
@@ -821,12 +825,17 @@ export default {
       this.editingRow = rowData
       this.$refs.dialogEdit.open()
     },
-    saveEditing() {
+    async saveEditing() {
       const editingRow = Object.assign({}, this.editingRow)
       if (!this.validate(editingRow)) {
         return
       }
-      this.currentTable.beforeSaveEditing && this.currentTable.beforeSaveEditing(editingRow)
+      const t = this.currentTable.beforeSaveEditing && this.currentTable.beforeSaveEditing(editingRow)
+      if (t) {
+        if (isPromise(t)) {
+          await t
+        }
+      }
       axiosAutoProxy(this.$http, this.api, 'post', beforeSave(editingRow, this.currentColumns)).then(({data}) => {
         if (data.indexOf('error') === 0) {
           this.$alert(this.$t('failed'))
@@ -844,8 +853,13 @@ export default {
       this.$refs.dialogEdit.close()
     },
     remove(row) {
-      this.$confirm('Are you sure to remove specified item?').then(() => {
-        this.currentTable.beforeDelete && this.currentTable.beforeDelete(row)
+      this.$confirm('Are you sure to remove specified item?').then(async () => {
+        const t = this.currentTable.beforeDelete && this.currentTable.beforeDelete(row)
+        if (t) {
+          if (isPromise(t)) {
+            await t
+          }
+        }
         axiosAutoProxy(this.$http, this.api, 'delete', row).then(({data}) => {
           if (data.indexOf('error') === 0) {
             this.$alert(this.$t('failed'))
