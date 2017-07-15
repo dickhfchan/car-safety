@@ -166,7 +166,7 @@ export default {
     }
   },
   computed: {
-    api() { return this.groupBy === 'vrm_grp_id' ? 'dao/v_avg_warning_vrm_grp_co' : 'dao/avg_warning_vrm_co' },
+    api() { return this.groupBy === 'vrm_grp_id' ? 'dao/avg_warning_vrm_grp_co' : 'dao/avg_warning_vrm_co' },
   },
   created() {
     //
