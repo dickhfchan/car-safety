@@ -200,9 +200,16 @@ export default {
               editDisabled: false,
             }
           ],
-          getDriverGroup: () => this.$http.get('dao/driver_group').then(({data}) => {
-            return data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
-          }),
+          getDriverGroup: () => {
+            if (!this._driverGroupForDriver) {
+              return this.$http.get('dao/driver_group').then(({data}) => {
+                this._driverGroupForDriver = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
+                return this._driverGroupForDriver
+              })
+            } else {
+              return Promise.resolve(this._driverGroupForDriver)
+            }
+          },
           oncreating: (newRow) => {
             // delete newRow.driver_id // nonecessary
             const driverTB = this.datatables.driver
@@ -211,7 +218,7 @@ export default {
               col.addOptions = data
             })
           },
-          onediting: () => {
+          onediting: (rowData) => {
             const driverTB = this.datatables.driver
             driverTB.getDriverGroup().then(data => {
               const col = driverTB.columns.find(c => c.name === 'group_id')
@@ -229,12 +236,22 @@ export default {
           beforeSaveNew: (row) => {
             const groupId = row.group_id
             delete row.group_id
-            this.$http.post('dao/driver_group_dtl', { drv_grp_id: groupId, driver_id: row.driver_id })
+            this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 })
           },
           beforeSaveEditing: (row) => {
             const groupId = row.group_id
             delete row.group_id
-            this.$http.post('dao/driver_group_dtl', { drv_grp_id: groupId, driver_id: row.driver_id })
+            // mapping
+            this.getDriverGroupDtl.then(({data}) => {
+              const mapping = data.JSON.find(v => v.driver_id === row.driver_id)
+              if (mapping) {
+                if (mapping.drv_grp_id !== groupId) {
+                  // groupId changed
+                  axiosAutoProxy(this.$http, 'dao/driver_group_dtl', 'delete', { drv_grp_dtl_id: mapping.drv_grp_dtl_id }) // delete old mapping
+                  this.$http.post('dao/driver_group_dtl', { drv_grp_dtl_id: null, drv_grp_id: groupId, driver_id: row.driver_id, version: 0 }) // add new mapping
+                }
+              }
+            })
           },
         },
         'driver_group': {
@@ -266,7 +283,11 @@ export default {
               addVisible: false,
               editVisible: false,
             }
-          ]
+          ],
+          // reset _driverGroupForDriver
+          beforeSaveNew: () => { this._driverGroupForDriver = null },
+          beforeSaveEditing: () => { this._driverGroupForDriver = null },
+          beforeDelete: () => { this._driverGroupForDriver = null },
         },
         'driver_group_dtl': {
           'columns': [
@@ -824,12 +845,14 @@ export default {
     },
     remove(row) {
       this.$confirm('Are you sure to remove specified item?').then(() => {
+        this.currentTable.beforeDelete && this.currentTable.beforeDelete(row)
         axiosAutoProxy(this.$http, this.api, 'delete', row).then(({data}) => {
           if (data.indexOf('error') === 0) {
             this.$alert(this.$t('failed'))
           } else if (data.toLowerCase().indexOf('succe') > 0) {
             this.$alert(this.$t('succeeded'))
             this.getData()
+            this.currentTable.afterDelete && this.currentTable.afterDelete()
           } else {
             this.$alert(data)
           }

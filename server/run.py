@@ -43,7 +43,7 @@ primary_keys = {
     'company' : 'company_id',
     'driver' : 'driver_id',
     'driver_group' : 'drv_grp_id',
-    'driver_group_dtl' : 'drv_group_dtl_id',
+    'driver_group_dtl' : 'drv_grp_dtl_id',
     'mob_device' : 'md_id',
     'user_account' : 'user_id',
     'user_group' : 'group_id',
