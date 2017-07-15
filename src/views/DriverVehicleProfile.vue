@@ -31,9 +31,7 @@
               </div>
               <div class="information">
                 <h3 >{{vehicle.vrm_mark_code}}</h3>
-                Dob: {{vehicle.dob}}
-                <br />
-                Grade: {{grade}}
+                Grade: {{grade}}({{gradeFigure}})
                 <!-- Travelled distance: {{vehicle.travelledDistance}} KM -->
               </div>
             </div>
@@ -82,7 +80,7 @@
               <div :id="warningCountHistoryPer100KMChartID" class="w-100 warning-count-history-per-100km-chart"></div>
               <div class="chart2-blocks">
                 <div class="item" v-for="(col, i) in chart2Columns">
-                  {{col.text}}: <div :class="['color-block', 'ct-color-'+(chart2Columns.length-i)]"></div>
+                  {{col.text}}: <div :class="['color-block', 'ct-color-'+(i + 1)]"></div>
                 </div>
               </div>
             </div>
@@ -739,14 +737,13 @@ export default {
         ctx.innerHTML = ''
       }
 
-      const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      const rows = (this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows).slice(0).reverse()
       const labelCols = this.chart2Columns
       this.warningCountHistoryPer100KMChart = new Chartist.Line(ctx, {
         labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
         series: labelCols.map(col => rows.map(row => row[col.name])),
       },
         {
-          reverseData: true,
           fullWidth: true,
           chartPadding: {
             right: 30
