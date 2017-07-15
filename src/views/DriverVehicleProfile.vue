@@ -2,7 +2,7 @@
   <div class="driver-vehicle-profile">
     <p class="md-title m-a" style="text-align:center;" v-show="!isSelected">No driver or vehicle selected</p>
     <md-layout md-gutter v-if="isSelected">
-      <md-layout md-flex="50" md-flex-xsmall="100">
+      <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50" md-flex-large="30">
         <md-card  class="m-a w-100 card-1">
           <md-card-content class="flex flex-col">
             <h2 class="md-title">{{$t(`${state.type === 'driver' ? 'driver' : 'vehicle'}Profile`)}}</h2>
@@ -42,7 +42,7 @@
           </md-card-content>
         </md-card>
       </md-layout>
-      <md-layout md-flex="50" md-flex-xsmall="100">
+      <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50" md-flex-large="30">
         <md-card  class="m-a w-100 card-1">
           <md-card-content class="flex flex-col">
             <h2 class="md-title">{{$t('warningCountSum')}}</h2>
@@ -583,9 +583,13 @@ export default {
       }
     },
     getDriverInfoRows() {
+      if (!this.state.driver) {
+        return
+      }
       this.$http.get(`dao/avg_warning_drv_by_co_type_date/${this.state.driver}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
       .then(({data}) => {
         const rows = data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
         .sort((a, b) => a.start_date - b.start_date)
         .reverse()
         // format count columns
@@ -600,9 +604,13 @@ export default {
       })
     },
     getVehicleInfoRows() {
+      if (!this.state.vehicle) {
+        return
+      }
       this.$http.get(`dao/avg_warning_vrm_by_co_type_date/${this.state.vehicle}?type=${this.dateTypeHeadLowerCase}&start_date=${this.startDate}&end_date=${this.endDate}`)
       .then(({data}) => {
         const rows = data.JSON
+        .filter(row => row.company_id === this.$store.state.user.company_id)
         .sort((a, b) => a.start_date - b.start_date)
         .reverse()
         // format count columns
@@ -706,7 +714,7 @@ export default {
         ctx.innerHTML = ''
       }
 
-      const rows = this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
+      const rows = this.state.type === 'driver' ? this.driverInfoRows : this.vehicleInfoRows
       this.safetyScoreHistoryChart = new Chartist.Line(ctx, {
         labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
         series: [
@@ -737,7 +745,7 @@ export default {
         ctx.innerHTML = ''
       }
 
-      const rows = (this.state.dateType === 'driver' ? this.driverInfoRows : this.vehicleInfoRows).slice(0).reverse()
+      const rows = (this.state.type === 'driver' ? this.driverInfoRows : this.vehicleInfoRows).slice(0).reverse()
       const labelCols = this.chart2Columns
       this.warningCountHistoryPer100KMChart = new Chartist.Line(ctx, {
         labels: rows.map(row => getDateText(this.state.dateType, row.start_date)),
