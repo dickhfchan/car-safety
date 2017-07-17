@@ -200,7 +200,7 @@ export default {
               editDisabled: false,
             }
           ],
-          getDriverGroup: () => {
+          getGroup: () => {
             if (!this._driverGroupForDriver) {
               return this.$http.get('dao/driver_group').then(({data}) => {
                 this._driverGroupForDriver = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
@@ -212,22 +212,22 @@ export default {
           },
           oncreating: (newRow) => {
             // delete newRow.driver_id // nonecessary
-            const driverTB = this.datatables.driver
-            driverTB.getDriverGroup().then(data => {
-              const col = driverTB.columns.find(c => c.name === 'group_id')
+            const dt = this.datatables.driver
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
               col.addOptions = data
             })
           },
           onediting: (rowData) => {
-            const driverTB = this.datatables.driver
-            driverTB.getDriverGroup().then(data => {
-              const col = driverTB.columns.find(c => c.name === 'group_id')
+            const dt = this.datatables.driver
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
               col.editOptions = data
             })
           },
-          ongettingData: () => { this.getDriverGroupDtl = this.$http.get('dao/driver_group_dtl') },
+          ongettingData: () => { this.getGroupDtl = this.$http.get('dao/driver_group_dtl') },
           afterGetData: (rows) => {
-            this.getDriverGroupDtl.then(({data}) => {
+            this.getGroupDtl.then(({data}) => {
               const mapping = {}
               data.JSON.forEach(item => { mapping[item.driver_id] = item.drv_grp_id })
               console.log(mapping)
@@ -243,7 +243,7 @@ export default {
             const groupId = row.group_id
             delete row.group_id
             // mapping
-            return this.getDriverGroupDtl.then(({data}) => {
+            return this.getGroupDtl.then(({data}) => {
               const mapping = data.JSON.find(v => v.driver_id === row.driver_id)
               const oldGroupId = mapping && mapping.drv_grp_id
               const oldMappingId = mapping && mapping.drv_grp_dtl_id
@@ -540,6 +540,20 @@ export default {
               primaryKey: true,
             },
             {
+              'name': 'group_id',
+              text: 'Group',
+              visible: false,
+              required: true,
+              addType: 'select',
+              editType: 'select',
+              addOptions: null,
+              addOptionValueKey: 'vrm_grp_id',
+              addOptionTextKey: 'grp_alias',
+              editOptions: null,
+              editOptionValueKey: 'vrm_grp_id',
+              editOptionTextKey: 'grp_alias',
+            },
+            {
               'name': 'company_id'
             },
             {
@@ -566,7 +580,59 @@ export default {
             {
               'name': 'vrm_mark_code'
             }
-          ]
+          ],
+          getGroup: () => {
+            if (!this._vehiclerGroupForVehicle) {
+              return this.$http.get('dao/veh_reg_mark_group').then(({data}) => {
+                this._vehiclerGroupForVehicle = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
+                return this._vehiclerGroupForVehicle
+              })
+            } else {
+              return Promise.resolve(this._vehiclerGroupForVehicle)
+            }
+          },
+          oncreating: (newRow) => {
+            // delete newRow.vrm_id // nonecessary
+            const dt = this.datatables.veh_reg_mark
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
+              col.addOptions = data
+            })
+          },
+          onediting: (rowData) => {
+            const dt = this.datatables.veh_reg_mark
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
+              col.editOptions = data
+            })
+          },
+          ongettingData: () => { this.getGroupDtl = this.$http.get('dao/veh_reg_mark_group_dtl') },
+          afterGetData: (rows) => {
+            this.getGroupDtl.then(({data}) => {
+              const mapping = {}
+              data.JSON.forEach(item => { mapping[item.vrm_id] = item.vrm_grp_id })
+              console.log(mapping)
+              rows.forEach(row => { row.group_id = mapping[row.vrm_id] })
+            })
+          },
+          beforeSaveNew: (row) => {
+            const groupId = row.group_id
+            delete row.group_id
+            return this.$http.post('dao/veh_reg_mark_group_dtl', { vrm_grp_dtl_id: null, vrm_grp_id: groupId, vrm_id: row.vrm_id, version: 0 })
+          },
+          beforeSaveEditing: (row) => {
+            const groupId = row.group_id
+            delete row.group_id
+            // mapping
+            return this.getGroupDtl.then(({data}) => {
+              const mapping = data.JSON.find(v => v.vrm_id === row.vrm_id)
+              const oldGroupId = mapping && mapping.vrm_grp_id
+              const oldMappingId = mapping && mapping.vrm_grp_dtl_id
+              if (oldGroupId !== groupId) {
+                return this.$http.post('dao/veh_reg_mark_group_dtl', { vrm_grp_dtl_id: oldMappingId || null, vrm_grp_id: groupId, vrm_id: row.vrm_id, version: 0 }) // insert or update mapping
+              }
+            })
+          },
         },
         'veh_reg_mark_group': {
           'columns': [
@@ -597,7 +663,11 @@ export default {
               addVisible: false,
               editVisible: false,
             },
-          ]
+          ],
+          // reset _driverGroupForDriver
+          beforeSaveNew: () => { this._vehiclerGroupForVehicle = null },
+          beforeSaveEditing: () => { this._vehiclerGroupForVehicle = null },
+          beforeDelete: () => { this._vehiclerGroupForVehicle = null },
         },
         'veh_reg_mark_group_dtl': {
           'columns': [
@@ -688,6 +758,14 @@ export default {
           oldC && oldC(data)
         }
       }
+      // invisible create user, update user
+      dt.columns.forEach(col => {
+        if (col.name === 'create_user' || col.name === 'update_user') {
+          this.$set(col, 'visible', false)
+          this.$set(col, 'addVisible', false)
+          this.$set(col, 'editVisible', false)
+        }
+      })
     }
     // init datatables
     for (const key in this.datatables) {
