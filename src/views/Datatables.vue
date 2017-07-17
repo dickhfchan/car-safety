@@ -707,6 +707,40 @@ export default {
         //     }
         //   ],
         // }
+        ui_geofence_setup: {
+          columns: [
+            {
+              'name': 'geofence_id',
+              addVisible: false,
+              editDisabled: true,
+              primaryKey: true,
+            },
+            {
+              'name': 'company_id'
+            },
+            {
+              'name': 'create_user'
+            },
+            {
+              'name': 'geofence'
+            },
+            {
+              'name': 'geofence_baidu'
+            },
+            {
+              'name': 'remark'
+            },
+            {
+              'name': 'update_user'
+            },
+            {
+              'name': 'version',
+              'visible': false,
+              addVisible: false,
+              editVisible: false,
+            },
+          ]
+        }
       },
       rows: [],
       current: 'driver',
