@@ -295,7 +295,14 @@ export default {
     },
     canAccessMenuItem(item) {
       const pms = item.permission
-      return !pms || (typeof pms === 'function' ? pms(this.$store.state.user) : this.$store.state.user.actions.includes(pms))
+      if (!pms) {
+        return true
+      } else if (typeof pms === 'function') {
+        return pms(this.$store.state.user)
+      } else {
+        const arr = Array.isArray(pms) ? pms : [pms]
+        return arr.find(item => this.$store.state.user.actions.includes(item))
+      }
     },
     onMenuItemClik(item) {
       if (item.routeName) {
