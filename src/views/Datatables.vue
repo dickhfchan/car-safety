@@ -387,10 +387,28 @@ export default {
               'name': 'company_id'
             },
             {
-              'name': 'fullname'
+              'name': 'group_id',
+              text: 'Group',
+              visible: false,
+              required: true,
+              addType: 'select',
+              editType: 'select',
+              addOptions: null,
+              addOptionValueKey: 'group_id',
+              addOptionTextKey: 'group_name',
+              editOptions: null,
+              editOptionValueKey: 'group_id',
+              editOptionTextKey: 'group_name',
             },
             {
-              'name': 'group_id'
+              name: 'groupDisplayInTable',
+              text: 'Group',
+              addVisible: false,
+              editVisible: false,
+              notInDatabase: true,
+            },
+            {
+              'name': 'fullname'
             },
             {
               'name': 'lang'
@@ -419,7 +437,42 @@ export default {
               addVisible: false,
               editVisible: false,
             }
-          ]
+          ],
+          getGroup: () => {
+            if (!this._userGroupForUser) {
+              return this.$http.get('dao/user_group').then(({data}) => {
+                this._userGroupForUser = data.JSON.filter(item => item.company_id === this.$store.state.user.company_id)
+                return this._userGroupForUser
+              })
+            } else {
+              return Promise.resolve(this._userGroupForUser)
+            }
+          },
+          oncreating: (newRow) => {
+            const dt = this.datatables.user_account
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
+              col.addOptions = data
+            })
+          },
+          onediting: (rowData) => {
+            const dt = this.datatables.user_account
+            dt.getGroup().then(data => {
+              const col = dt.columns.find(c => c.name === 'group_id')
+              col.editOptions = data
+            })
+          },
+          ongettingData: () => { this.datatables.user_account.getGroup() },
+          afterGetData: (rows) => {
+            const dt = this.datatables.user_account
+            dt.getGroup().then(groups => {
+              const mapping = {}
+              groups.forEach(grp => { mapping[grp.group_id] = grp.group_name })
+              rows.forEach(row => {
+                this.$set(row, 'groupDisplayInTable', mapping[row.group_id])
+              })
+            })
+          },
         },
         'user_group': {
           'columns': [
@@ -435,7 +488,11 @@ export default {
             {
               'name': 'group_name'
             }
-          ]
+          ],
+          // reset _userGroupForUser
+          beforeSaveNew: () => { this._userGroupForUser = null },
+          beforeSaveEditing: () => { this._userGroupForUser = null },
+          beforeDelete: () => { this._userGroupForUser = null },
         },
         'user_group_func': {
           'columns': [
@@ -858,7 +915,7 @@ export default {
     })
   },
   methods: {
-    getData(table) {
+    async getData(table) {
       // cancel prev request
       if (this.cancelPrevgetDataRequest) {
         this.cancelPrevgetDataRequest()
@@ -866,12 +923,18 @@ export default {
       }
       const CancelToken = Vue.Axios.CancelToken
       this.loading = true
-      this.currentTable.ongettingData && this.currentTable.ongettingData()
+      const t = this.currentTable.ongettingData && this.currentTable.ongettingData()
+      if (isPromise(t)) {
+        await t
+      }
       this.$http.get(this.api, {
         cancelToken: new CancelToken((c) => { this.cancelPrevgetDataRequest = c }),
       })
-      .then(({data}) => {
-        this.currentTable.afterGetData && this.currentTable.afterGetData(data.JSON)
+      .then(async ({data}) => {
+        const t = this.currentTable.afterGetData && this.currentTable.afterGetData(data.JSON)
+        if (isPromise(t)) {
+          await t
+        }
         this.rows = data.JSON
         initRows(this, this.rows, this.currentColumns)
         this.loading = false

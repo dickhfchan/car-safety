@@ -192,7 +192,9 @@ export function beforeSave(row, cols) {
     }
   })
   cols.forEach(col => {
-    if (row.hasOwnProperty(col.name) && !col.primaryKey && row[col.name] == null) {
+    if (col.notInDatabase) {
+      delete row[col.name]
+    } else if (row.hasOwnProperty(col.name) && !col.primaryKey && row[col.name] == null) {
       row[col.name] = ''
     }
   })
