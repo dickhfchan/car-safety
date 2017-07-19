@@ -234,7 +234,7 @@ export default {
       switch (this.dateRange) {
         case 1:
           dateType = 'D'
-          this.dateRangeText = format(now, 'yyyy-MM-dd')
+          this.dateRangeText = format(subDays(now, 1), 'yyyy-MM-dd')
           break
         case 2:
           dateType = 'W'
