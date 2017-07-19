@@ -90,8 +90,8 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { format, subDays, subMonth, getMonthStart, getMonthEnd } from 'date-functions'
-import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
+import { format, subDays, subMonth, getMonthStart } from 'date-functions'
+import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
 import Chartist from 'chartist'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
@@ -228,39 +228,25 @@ export default {
     },
     resolveRows() {
       // filter by time
-      const getNow = () => new Date()
-      let start = null
-      let end = null
+      const now = new Date()
+      let startDate = null
+      let dateType = null
       switch (this.dateRange) {
         case 1:
-          start = subDays(getNow(), 1)
-          end = subDays(getNow(), 1)
-          this.dateRangeText = format(start, 'yyyy-MM-dd')
+          dateType = 'D'
+          this.dateRangeText = format(now, 'yyyy-MM-dd')
           break
         case 2:
-          const t1 = getNow()
-          const t2 = getNow()
-          start = subDays(t1, t1.getDay() - 1 + 7)
-          end = subDays(t2, t2.getDay())
-          this.dateRangeText = `${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')}`
+          dateType = 'W'
+          this.dateRangeText = format(subDays(now, now.getDay() - 1 + 7), 'yyyy-MM-dd')
           break
         case 3:
-          start = getMonthStart(subMonth(getNow()))
-          end = getMonthEnd(subMonth(getNow()))
-          this.dateRangeText = `${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')}`
+          dateType = 'M'
+          this.dateRangeText = format(getMonthStart(subMonth(now)), 'yyyy-MM-dd')
           break
       }
-      start.setHours(0)
-      start.setMinutes(0)
-      start.setSeconds(0)
-      start.setMilliseconds(0)
-      end.setHours(23)
-      end.setMinutes(59)
-      end.setSeconds(59)
-      end.setMilliseconds(999)
-      start = start.getTime()
-      end = end.getTime()
-      const filteredRows = this.originRows.filter(row => row.start_date >= start && row.start_date <= end)
+      startDate = newDate(`${this.dateRangeText} 00:00:00`).getTime()
+      const filteredRows = this.originRows.filter(row => row.type === dateType && row.start_date === startDate)
       // aggregrate by vrm_grp_id
       const groupedRows = []
       const toAggregrate = ['total_score', 'drv_distance', 'pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'ucfw_h', 'ucfw_l', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
