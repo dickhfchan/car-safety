@@ -5,7 +5,7 @@
         <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table @select="" @sort="onSort($event, rows1, columns1)">
+          <md-table ref="tb1" @select="" md-sort="start_date_formatted" md-sort-type="desc" @sort="onSort($event, rows1, columns1)">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns1" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -85,7 +85,7 @@
         <h2 class="md-title">{{$t('driverScoreAndAlertCount')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table @select="" @sort="onSort($event, rows2, columns2)">
+          <md-table ref="tb2" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, rows2, columns2)">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns2" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -144,6 +144,7 @@ export default {
           name: 'start_date_formatted',
           text: this.$t('startDate'),
           valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
+          sortBy: 'start_date',
         },
         { name: 'total_score',
           text: this.$t('totalScore')
@@ -205,6 +206,7 @@ export default {
           name: 'start_date_formatted',
           text: this.$t('startDate'),
           valueProcessor: ({row}) => format(new Date(row.start_date), dateFormat),
+          sortBy: 'start_date',
         },
         { name: 'total_score',
           text: this.$t('totalScore')
@@ -317,10 +319,10 @@ export default {
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
-      .reverse()
+      sortRows({name: this.$refs.tb1.sortBy, type: this.$refs.tb1.sortType}, this.rows1, this.columns1)
       // format count columns
       this.rows1.forEach(row => {
-        this.columns1.slice(1).filter(col => col.name !== 'drv_distance').forEach(col => {
+        this.columns1.slice(2).filter(col => col.name !== 'drv_distance').forEach(col => {
           row[col.name] = Math.round(((row[col.name] || 0) / (row.drv_distance / 100)) * 100000)
         })
         row.drv_distance = Math.round(row.drv_distance / 100000)
@@ -356,6 +358,7 @@ export default {
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
+      sortRows({name: this.$refs.tb2.sortBy, type: this.$refs.tb2.sortType}, this.rows2, this.columns2)
       this.rows2.forEach(row => {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })

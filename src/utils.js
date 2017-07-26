@@ -202,7 +202,9 @@ export function beforeSave(row, cols) {
 }
 
 export function sortRows(event, rows, columns) {
-  const sorted = rows.sort((a, b) => a[event.name] - b[event.name])
+  const col = columns.find(col => col.name === event.name)
+  const sortBy = col.sortBy || event.name
+  const sorted = rows.sort((a, b) => a[sortBy] - b[sortBy])
   if (event.type === 'desc') {
     sorted.reverse()
   }
