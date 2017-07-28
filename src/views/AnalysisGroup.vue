@@ -4,7 +4,7 @@
       <h2 class="md-title">{{$t('analysisGroup')}}</h2>
 
       <div class="relative overflow-hidden-y">
-        <md-table :md-sort="'vrm_id'" md-sort-type="asc" @select="" @sort="onSort">
+        <md-table ref="tb" md-sort="vrm_grp_id" md-sort-type="asc" @select="" @sort="onSort">
          <md-table-header>
            <md-table-row>
              <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -181,7 +181,7 @@ export default {
       retry(() => this.$http.get('dao/v_avg_warning_vrm_grp_co'))()
       .then(({data}) => {
         this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
-        initRows(this, this.rows, this.columns)
+        initRows(this, this.rows, this.columns, this.$refs.tb)
         this.loading = false
       }).catch((e) => {
         this.loading = false

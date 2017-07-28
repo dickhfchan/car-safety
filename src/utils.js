@@ -165,7 +165,12 @@ export function initColumns(vm, columns) {
   }
 }
 
-export function initRows(vm, rows, columns) {
+export function initRows(vm, rows, columns, table) {
+  if (table) {
+    if (table.sortBy) {
+      sortRows({name: table.sortBy, type: table.sortType}, rows, columns)
+    }
+  }
   for (const row of rows) {
     if (row.visible == null) {
       vm.$set(row, 'visible', true)
@@ -204,7 +209,17 @@ export function beforeSave(row, cols) {
 export function sortRows(event, rows, columns) {
   const col = columns.find(col => col.name === event.name)
   const sortBy = col.sortBy || event.name
-  const sorted = rows.sort((a, b) => a[sortBy] - b[sortBy])
+  const sorted = rows.sort((a, b) => {
+    const aa = a[sortBy]
+    const bb = b[sortBy]
+    if (aa < bb) {
+      return -1
+    } else if (aa === bb) {
+      return 0
+    } else {
+      return 1
+    }
+  })
   if (event.type === 'desc') {
     sorted.reverse()
   }

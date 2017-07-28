@@ -99,7 +99,7 @@
               <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
+                <md-table ref="tbDriverInfo" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
                  <md-table-header>
                    <md-table-row>
                      <md-table-head v-for="col in driverInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -132,7 +132,7 @@
               <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table @select="" @sort="onSort($event, driverRanks, driverRankColumns)">
+                <md-table ref="tbDriverRank" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, driverRanks, driverRankColumns)">
                  <md-table-header>
                    <md-table-row>
                      <md-table-head v-for="col in driverRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -167,7 +167,7 @@
             <md-card-content>
               <h2 class="md-title">{{$t('vehicleScoreAndAlertCountPer100KM')}}</h2>
               <div class="relative overflow-hidden-y">
-                <md-table  @select="" @sort="onSort">
+                <md-table  ref="tbVehicleInfo" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort">
                  <md-table-header>
                    <md-table-row>
                      <md-table-head v-for="col in vehicleInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -200,7 +200,7 @@
               <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table @select="" @sort="onSort($event, vehicleRanks, vehicleRankColumns)">
+                <md-table ref="tbVehicleRank" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, vehicleRanks, vehicleRankColumns)">
                  <md-table-header>
                    <md-table-row>
                      <md-table-head v-for="col in vehicleRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -600,7 +600,7 @@ export default {
           row.drv_distance = Math.round(row.drv_distance / 100000)
         })
         this.driverInfoRows = rows
-        initRows(this, this.driverInfoRows, this.driverInfoColumns)
+        initRows(this, this.driverInfoRows, this.driverInfoColumns, this.$refs.tbDriverInfo)
       })
     },
     getVehicleInfoRows() {
@@ -621,7 +621,7 @@ export default {
           row.drv_distance = Math.round(row.drv_distance / 100000)
         })
         this.vehicleInfoRows = rows
-        initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns)
+        initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns, this.$refs.tbVehicleInfo)
       })
     },
     getGrade() {
@@ -669,7 +669,7 @@ export default {
       rows.forEach(row => {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
-      initRows(this, rows, cols)
+      initRows(this, rows, cols, this.state.type === 'driver' ? this.$refs.tbDriverRank : this.$refs.tbVehicleRank)
     },
     renderWaringCountSumChart() {
       if (!this.isSelected) {

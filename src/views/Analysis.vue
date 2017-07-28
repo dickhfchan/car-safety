@@ -3,7 +3,7 @@
     <md-card-content>
       <h2 class="md-title">{{$t('analysis')}}</h2>
       <div class="relative overflow-hidden-y">
-        <md-table :md-sort="'vrm_id'" md-sort-type="asc" @select="" @sort="onSort">
+        <md-table ref="tb" md-sort="vrm_id" md-sort-type="asc" @select="" @sort="onSort">
          <md-table-header>
            <md-table-row>
              <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -135,9 +135,9 @@ export default {
 
         },
         {
-          name: 'start_date',
+          name: 'start_date_formatted',
           text: this.$t('startDate'),
-          valueProcessor: ({value}) => format(new Date(value), 'MM-dd HH:mm')
+          valueProcessor: ({row}) => format(new Date(row.start_date), 'MM-dd HH:mm')
         },
         { name: 'end_date',
           text: this.$t('endDate'),
@@ -182,7 +182,7 @@ export default {
       this.$http.get('dao/avg_warning_vrm_co')
       .then(({data}) => {
         this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
-        initRows(this, this.rows, this.columns)
+        initRows(this, this.rows, this.columns, this.$refs.tb)
         this.loading = false
       }).catch((e) => {
         this.loading = false

@@ -20,7 +20,7 @@
 
       <div class="relative overflow-hidden-y">
 
-        <md-table @select="" @sort="onSort">
+        <md-table ref="tb" @select="" @sort="onSort">
          <md-table-header>
            <md-table-row>
              <md-table-head>Actions</md-table-head>
@@ -809,6 +809,7 @@ export default {
   computed: {
     currentTable() { return this.datatables[this.current] },
     currentColumns() { return this.currentTable.columns },
+    currentPrimaryKeyColumn() { return this.currentColumns.find(col => col.primaryKey) },
     api() { return `dao/${this.current}` },
     companies() { return this.$store.state.companies },
     companyDropDownVisible() { return this.currentColumns.find(v => v.name === 'company_id') },

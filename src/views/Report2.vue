@@ -319,7 +319,6 @@ export default {
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
-      sortRows({name: this.$refs.tb1.sortBy, type: this.$refs.tb1.sortType}, this.rows1, this.columns1)
       // format count columns
       this.rows1.forEach(row => {
         this.columns1.slice(2).filter(col => col.name !== 'drv_distance').forEach(col => {
@@ -327,7 +326,7 @@ export default {
         })
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
-      initRows(this, this.rows1, this.columns1)
+      initRows(this, this.rows1, this.columns1, this.$refs.tb1)
       // set scoreRank column
       const oneCol = this.rows1.map(row => row['total_score'])
       const ranks = getRanks(oneCol, 'desc')
@@ -358,11 +357,10 @@ export default {
       .filter(row => start <= row.start_date && row.start_date <= end) // filter by date
       .filter(row => row.company_id === this.$store.state.user.company_id && row.driver_id === this.$store.state.report2DriverId)
       .map(row => Object.assign({}, row)) // clone row
-      sortRows({name: this.$refs.tb2.sortBy, type: this.$refs.tb2.sortType}, this.rows2, this.columns2)
       this.rows2.forEach(row => {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
-      initRows(this, this.rows2, this.columns2)
+      initRows(this, this.rows2, this.columns2, this.$refs.tb2)
       windowLoaded().then(() => this.renderChart2())
     },
     onSort(e, rows, columns) {

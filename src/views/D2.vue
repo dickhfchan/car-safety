@@ -5,7 +5,7 @@
         <h2 class="md-title">{{$t('totalScoreAndAlertCountPer100KM')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table @select="" @sort="onSort($event, rows1, columns1)">
+          <md-table ref="tb1" md-sort="name" md-sort-type="asc" @select="" @sort="onSort($event, rows1, columns1)">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns1" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -45,7 +45,7 @@
         <h2 class="md-title">{{$t('ranking')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table @select="" @sort="onSort($event, rows1Ranking, columns1)">
+          <md-table ref="tb2" md-sort="name" md-sort-type="asc" @select="" @sort="onSort($event, rows1Ranking, columns1)">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns1" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -240,8 +240,8 @@ export default {
         // get ranking
 
       this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
-      initRows(this, this.rows1, this.columns1)
-      initRows(this, this.rows1Ranking, this.columns1)
+      initRows(this, this.rows1, this.columns1, this.$refs.tb1)
+      initRows(this, this.rows1Ranking, this.columns1, this.$refs.tb2)
       this.columns1.forEach(col => {
         if (notScoreCols.indexOf(col.name) > -1) {
           return

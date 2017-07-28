@@ -8,7 +8,7 @@
 
         <div class="relative overflow-hidden-y">
 
-          <md-table @select="" @sort="onSort">
+          <md-table ref="tb" md-sort="vrm_grp_id" md-sort-type="asc" @select="" @sort="onSort">
            <md-table-header>
              <md-table-row>
                <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
@@ -269,7 +269,7 @@ export default {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
       this.rows = groupedRows
-      initRows(this, this.rows, this.columns)
+      initRows(this, this.rows, this.columns, this.$refs.tb)
     },
     exportExcel() {
       const cols = this.columns
