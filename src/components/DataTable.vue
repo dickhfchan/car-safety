@@ -29,9 +29,10 @@
               <div class="md-table-cell-container" v-if="col.type==='default'">
                 {{row[col.name]}}
               </div>
-              <component v-else :is="col.cellComponent || (col.type + '-Cell')" :row="row" :col="col" :store="store"
-                :class="col.cellClass" :style="col.cellStyle" v-bind="col.cellAttrs"
-                @click.native="$emit('clickCell', {value: row[col.name], row, col, store})"></component>
+              <component v-else class="md-table-cell-container"
+               :is="col.cellComponent || (col.type + '-Cell')" :row="row" :col="col" :store="store"
+               :class="col.cellClass" :style="col.cellStyle" v-bind="col.cellAttrs"
+                ></component>
             </td>
           </tr>
         </tbody>

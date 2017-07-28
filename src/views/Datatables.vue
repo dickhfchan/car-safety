@@ -22,7 +22,7 @@
         <Data-Table :rows="filteredRows" :columns="currentColumns"
         :sortBy="currentPrimaryKeyColumn.name" :sortType="dtSortType"
         :pagination="true"
-        @edit="edit" @remove="remove"
+        @edit="edit($event)" @remove="remove"
         ></Data-Table>
 
         <div class="absolute-backdrop center-wrapper" v-show="loading">
@@ -794,6 +794,7 @@ export default {
         name: 'actions',
         type: 'actions',
         sortAble: false,
+        cellClass: 'datatables-actions',
       })
       dt.columns.forEach(col => {
         if (dateTimeFields.includes(col.name)) {
@@ -1082,8 +1083,9 @@ export default {
       color: grey;
     }
   }
-  .datatables-actions .md-table-cell-container{
-    padding-left: 12px!important;
+  .datatables-actions.md-table-cell-container{
+    padding-left: 0px!important;
+    padding-right: 0px!important;
     justify-content: flex-start!important;
   }
 }
