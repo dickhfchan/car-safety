@@ -99,23 +99,7 @@
               <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table ref="tbDriverInfo" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, driverInfoRows, driverInfoColumns)">
-                 <md-table-header>
-                   <md-table-row>
-                     <md-table-head v-for="col in driverInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                   </md-table-row>
-                 </md-table-header>
-
-                 <md-table-body>
-                   <md-table-row v-for="row in driverInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                     <md-table-cell v-for="(col, index) in driverInfoColumns" v-if="col.visible" :key="col.name">
-                       {{ row[col.name] }}
-                     </md-table-cell>
-                   </md-table-row>
-                 </md-table-body>
-               </md-table>
-
-               <Datatable-Footer :rows="driverInfoRows"></Datatable-Footer>
+                <Data-Table :rows="driverInfoRows" :columns="driverInfoColumns" sortBy="start_date_formatted" sortType="desc" :pagination="true"></Data-Table>
               </div>
 
               <div class="card-buttons">
@@ -132,23 +116,7 @@
               <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table ref="tbDriverRank" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, driverRanks, driverRankColumns)">
-                 <md-table-header>
-                   <md-table-row>
-                     <md-table-head v-for="col in driverRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                   </md-table-row>
-                 </md-table-header>
-
-                 <md-table-body>
-                   <md-table-row v-for="row in driverRanks" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                     <md-table-cell v-for="(col, index) in driverRankColumns" v-if="col.visible" :key="col.name">
-                       {{ row[col.name] }}
-                     </md-table-cell>
-                   </md-table-row>
-                 </md-table-body>
-               </md-table>
-
-               <Datatable-Footer :rows="driverRanks"></Datatable-Footer>
+                <Data-Table :rows="driverRanks" :columns="driverRankColumns" sortBy="start_date_formatted" sortType="desc" :pagination="true"></Data-Table>
               </div>
 
               <div class="card-buttons">
@@ -167,23 +135,7 @@
             <md-card-content>
               <h2 class="md-title">{{$t('vehicleScoreAndAlertCountPer100KM')}}</h2>
               <div class="relative overflow-hidden-y">
-                <md-table  ref="tbVehicleInfo" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort">
-                 <md-table-header>
-                   <md-table-row>
-                     <md-table-head v-for="col in vehicleInfoColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                   </md-table-row>
-                 </md-table-header>
-
-                 <md-table-body>
-                   <md-table-row v-for="row in vehicleInfoRows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                     <md-table-cell v-for="col in vehicleInfoColumns" v-if="col.visible" :key="col.name">
-                       {{ row[col.name] }}
-                     </md-table-cell>
-                   </md-table-row>
-                 </md-table-body>
-               </md-table>
-
-               <Datatable-Footer :rows="vehicleInfoRows"></Datatable-Footer>
+                <Data-Table :rows="vehicleInfoRows" :columns="vehicleInfoColumns" sortBy="start_date_formatted" sortType="desc" :pagination="true"></Data-Table>
               </div>
 
               <div class="card-buttons">
@@ -200,23 +152,7 @@
               <h2 class="md-title">{{$t('safetyScoreRanking')}}</h2>
 
               <div class="relative overflow-hidden-y">
-                <md-table ref="tbVehicleRank" md-sort="start_date_formatted" md-sort-type="desc" @select="" @sort="onSort($event, vehicleRanks, vehicleRankColumns)">
-                 <md-table-header>
-                   <md-table-row>
-                     <md-table-head v-for="col in vehicleRankColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-                   </md-table-row>
-                 </md-table-header>
-
-                 <md-table-body>
-                   <md-table-row v-for="row in vehicleRanks" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-                     <md-table-cell v-for="(col, index) in vehicleRankColumns" v-if="col.visible" :key="col.name">
-                       {{ row[col.name] }}
-                     </md-table-cell>
-                   </md-table-row>
-                 </md-table-body>
-               </md-table>
-
-               <Datatable-Footer :rows="driverRanks"></Datatable-Footer>
+                <Data-Table :rows="vehicleRanks" :columns="vehicleRankColumns" sortBy="start_date_formatted" sortType="desc" :pagination="true"></Data-Table>
               </div>
 
               <div class="card-buttons">
@@ -234,9 +170,9 @@
   </div>
 </template>
 <script>
-import DatatableFooter from '../components/DatatableFooter.vue'
+import DataTable from '../components/DataTable.vue'
 import { format, addDays, subDays, getMonthStart, addMonths, subMonths, subYears } from 'date-functions'
-import { newDate, sortRows as onSort, exportExcel, initColumns, initRows } from '@/utils.js'
+import { newDate, exportExcel } from '@/utils.js'
 import Chartist from 'chartist'
 import Chart from 'chart.js'
 import '@/assets/css/_chartist-settings.scss'
@@ -267,7 +203,7 @@ const md = 'driverVehicleProfile' // vuex module name
 const warningCountColumns = ['pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw_h', 'ufcw_l', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
 
 export default {
-  components: { DatatableFooter },
+  components: { DataTable },
   data() {
     return {
       safetyScoreHistoryChartID: 'safetyScoreHistory' + this._uid,
@@ -546,14 +482,9 @@ export default {
     },
   },
   created() {
-    initColumns(this, this.driverInfoColumns)
-    initColumns(this, this.driverRankColumns)
-    initColumns(this, this.vehicleInfoColumns)
-    initColumns(this, this.vehicleRankColumns)
     this.getStartDateAndEndDate()
   },
   methods: {
-    onSort,
     exportExcel,
     onclickFullscreen(chart) {
       this[chart] && this[chart].update(null)
@@ -600,7 +531,6 @@ export default {
           row.drv_distance = Math.round(row.drv_distance / 100000)
         })
         this.driverInfoRows = rows
-        initRows(this, this.driverInfoRows, this.driverInfoColumns, this.$refs.tbDriverInfo)
       })
     },
     getVehicleInfoRows() {
@@ -621,7 +551,6 @@ export default {
           row.drv_distance = Math.round(row.drv_distance / 100000)
         })
         this.vehicleInfoRows = rows
-        initRows(this, this.vehicleInfoRows, this.vehicleInfoColumns, this.$refs.tbVehicleInfo)
       })
     },
     getGrade() {
@@ -650,26 +579,23 @@ export default {
       }
     },
     getRanksSmartly() {
-      let rows, cols
+      let rows
       if (this.state.type === 'driver') {
         rows = this.state.allDriverRanks
         .filter(row => row.driver_id === this.state.driver && row.type === this.dateTypeHead)
         .map(row => Object.assign({}, row))
         .reverse()
         this.driverRanks = rows
-        cols = this.driverRankColumns
       } else {
         rows = this.state.allVehicleRanks
         .filter(row => row.vrm_id === this.state.vehicle && row.type === this.dateTypeHead)
         .map(row => Object.assign({}, row))
         .reverse()
         this.vehicleRanks = rows
-        cols = this.vehicleRankColumns
       }
       rows.forEach(row => {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
-      initRows(this, rows, cols, this.state.type === 'driver' ? this.$refs.tbDriverRank : this.$refs.tbVehicleRank)
     },
     renderWaringCountSumChart() {
       if (!this.isSelected) {

@@ -5,21 +5,7 @@
         <h2 class="md-title">{{$t('totalScoreAndAlertCountPer100KM')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table ref="tb1" md-sort="name" md-sort-type="asc" @select="" @sort="onSort($event, rows1, columns1)">
-           <md-table-header>
-             <md-table-row>
-               <md-table-head v-for="col in columns1" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-             </md-table-row>
-           </md-table-header>
-
-           <md-table-body>
-             <md-table-row v-for="row in rows1" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="col in columns1" v-if="col.visible" :key="col.name">
-                 {{ row[col.name] }}
-               </md-table-cell>
-             </md-table-row>
-           </md-table-body>
-         </md-table>
+          <Data-Table :rows="rows1" :columns="columns1" sortBy="name" sortType="asc"></Data-Table>
 
           <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
@@ -45,22 +31,7 @@
         <h2 class="md-title">{{$t('ranking')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <md-table ref="tb2" md-sort="name" md-sort-type="asc" @select="" @sort="onSort($event, rows1Ranking, columns1)">
-           <md-table-header>
-             <md-table-row>
-               <md-table-head v-for="col in columns1" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-             </md-table-row>
-           </md-table-header>
-
-           <md-table-body>
-             <md-table-row v-for="row in rows1Ranking" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="(col, index) in columns1" v-if="col.visible" :key="col.name"
-                :style="getColorStyle(rows1Ranking, row, col)">
-                 {{ row[col.name] }}
-               </md-table-cell>
-             </md-table-row>
-           </md-table-body>
-         </md-table>
+          <Data-Table :rows="rows1Ranking" :columns="columns1" sortBy="name" sortType="asc"></Data-Table>
 
           <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
@@ -84,7 +55,8 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { initColumns, initRows, sortRows, generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
+import { generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
+import DataTable from '../components/DataTable.vue'
 
 function GetRound(num, len) {
   return Math.round(num * Math.pow(10, len)) / Math.pow(10, len)
@@ -93,7 +65,7 @@ function GetRound(num, len) {
 const notScoreCols = ['name', '車牌']
 
 export default {
-  components: {},
+  components: { DataTable },
   data() {
     return {
       title: this.$t('totalScoreAndAlert'),
@@ -101,6 +73,7 @@ export default {
         {
           'name': 'name',
           text: this.$t('driverName'),
+          locale: true,
         },
         {
           'name': '車牌',
@@ -174,7 +147,6 @@ export default {
   },
   created() {
     //
-    initColumns(this, this.columns1)
     this.getData()
   },
   mounted() {
@@ -240,8 +212,6 @@ export default {
         // get ranking
 
       this.rows1Ranking = this.rows1.map(row => Object.assign({}, row)) // clone
-      initRows(this, this.rows1, this.columns1, this.$refs.tb1)
-      initRows(this, this.rows1Ranking, this.columns1, this.$refs.tb2)
       this.columns1.forEach(col => {
         if (notScoreCols.indexOf(col.name) > -1) {
           return
@@ -260,9 +230,6 @@ export default {
         const color = this.getRankColor(row[col.name], max, order)
         return { backgroundColor: color }
       }
-    },
-    onSort(e, rows, columns) {
-      sortRows(e, rows, columns)
     },
     exportExcel(rows, columns, title) {
       const cols = columns

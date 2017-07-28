@@ -8,21 +8,7 @@
 
         <div class="relative overflow-hidden-y">
 
-          <md-table ref="tb" md-sort="vrm_grp_id" md-sort-type="asc" @select="" @sort="onSort">
-           <md-table-header>
-             <md-table-row>
-               <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-             </md-table-row>
-           </md-table-header>
-
-           <md-table-body>
-             <md-table-row v-for="row in rows" v-if="row.visible" :key="row.vrm_grp_id" :md-item="row">
-               <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
-                 {{ row[col.name] }}
-               </md-table-cell>
-             </md-table-row>
-           </md-table-body>
-         </md-table>
+          <Data-Table :rows="rows" :columns="columns" sortBy="vrm_grp_id" sortType="desc"></Data-Table>
 
           <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
@@ -91,14 +77,16 @@
 <script>
 import { retry } from 'helper-js'
 import { format, subDays, subMonth, getMonthStart } from 'date-functions'
-import { initColumns, initRows, sortRows, generateExcel, newDate } from '../utils.js'
+import { generateExcel, newDate } from '../utils.js'
 import Chartist from 'chartist'
+import DataTable from '../components/DataTable.vue'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
 
 const chart2Fields = ['pcw', 'hmw_h', 'hmw_m', 'hmw_l', 'fcw', 'ufcw', 'lldw', 'rldw', 'spw', 'aaw', 'abw', 'atw', 'vb']
 
 export default {
+  components: { DataTable },
   data() {
     return {
       title: this.$t('analysis'),
@@ -169,8 +157,6 @@ export default {
     api() { return this.groupBy === 'vrm_grp_id' ? 'dao/avg_warning_vrm_grp_co' : 'dao/v_avg_warning_vrm_co' },
   },
   created() {
-    //
-    initColumns(this, this.columns)
     this.getData()
   },
   mounted() {
@@ -223,9 +209,6 @@ export default {
         throw e
       })
     },
-    onSort(e) {
-      sortRows(e, this.rows, this.columns)
-    },
     resolveRows() {
       // filter by time
       const now = new Date()
@@ -269,7 +252,6 @@ export default {
         row.drv_distance = Math.round(row.drv_distance / 100000)
       })
       this.rows = groupedRows
-      initRows(this, this.rows, this.columns, this.$refs.tb)
     },
     exportExcel() {
       const cols = this.columns

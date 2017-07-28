@@ -23,7 +23,8 @@ const fourteenDaysBefore = dateFunctions.format(dateFunctions.subDays(new Date()
 // const storagedVehicleVrmId = toInt(window.localStorage.getItem('vehicle_vrm_id'))
 const storagedMap = window.localStorage.getItem('map')
 
-const lang = window.localStorage.getItem('lang') || 'en'
+const storagedLang = window.localStorage.getItem('lang')
+const lang = (storagedLang === 'undefined' || !storagedLang) ? 'en' : storagedLang
 
 // store local data
 const local = {}

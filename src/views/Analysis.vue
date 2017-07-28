@@ -3,23 +3,7 @@
     <md-card-content>
       <h2 class="md-title">{{$t('analysis')}}</h2>
       <div class="relative overflow-hidden-y">
-        <md-table ref="tb" md-sort="vrm_id" md-sort-type="asc" @select="" @sort="onSort">
-         <md-table-header>
-           <md-table-row>
-             <md-table-head v-for="col in columns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-           </md-table-row>
-         </md-table-header>
-
-         <md-table-body>
-           <md-table-row v-for="row in rows" v-if="row.visible" :key="row.avg_warn_id" :md-item="row">
-             <md-table-cell v-for="col in columns" v-if="col.visible" :key="col.name">
-               {{ row[col.name] }}
-             </md-table-cell>
-           </md-table-row>
-         </md-table-body>
-       </md-table>
-
-       <Datatable-Footer :rows="rows"></Datatable-Footer>
+        <Data-Table :rows="rows" :columns="columns" sortBy="vrm_id" sortType="asc" :pagination="true"></Data-Table>
 
         <div class="absolute-backdrop center-wrapper" v-show="loading">
           <md-spinner md-indeterminate></md-spinner>
@@ -42,12 +26,12 @@
   </md-card>
 </template>
 <script>
-import DatatableFooter from '../components/DatatableFooter.vue'
+import DataTable from '../components/DataTable.vue'
 import { format } from 'date-functions'
-import { initColumns, initRows, sortRows, generateExcel } from '../utils.js'
+import { generateExcel } from '../utils.js'
 
 export default {
-  components: { DatatableFooter },
+  components: { DataTable },
   data() {
     return {
       title: this.$t('dataListByVehicle'),
@@ -168,7 +152,6 @@ export default {
   },
   created() {
     //
-    initColumns(this, this.columns)
     this.getData()
   },
   mounted() {
@@ -182,7 +165,6 @@ export default {
       this.$http.get('dao/avg_warning_vrm_co')
       .then(({data}) => {
         this.rows = data.JSON.filter(row => row.company_id === this.$store.state.user.company_id)
-        initRows(this, this.rows, this.columns, this.$refs.tb)
         this.loading = false
       }).catch((e) => {
         this.loading = false
@@ -190,7 +172,6 @@ export default {
         throw e
       })
     },
-    onSort(e) { sortRows(e, this.rows, this.columns) },
     exportExcel() {
       const cols = this.columns
       const data = this.rows.map(row => {

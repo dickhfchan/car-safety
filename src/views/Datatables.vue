@@ -19,36 +19,11 @@
       </div>
 
       <div class="relative overflow-hidden-y">
-
-        <md-table ref="tb" @select="" @sort="onSort">
-         <md-table-header>
-           <md-table-row>
-             <md-table-head>Actions</md-table-head>
-             <md-table-head v-for="col in currentColumns" v-if="col.visible" :md-sort-by="col.name" :key="col.name">{{col.text}}</md-table-head>
-           </md-table-row>
-         </md-table-header>
-
-         <md-table-body>
-           <md-table-row v-for="row in filteredRows" v-show="row.visible" :key="row.avg_warn_id" :md-item="row">
-             <md-table-cell class="datatables-actions">
-               <md-button class="md-icon-button md-primary md-dense" @click.native="edit(row)">
-                 <md-icon>edit</md-icon>
-                 <md-tooltip md-direction="bottom">Edit</md-tooltip>
-               </md-button>
-               <md-button class="md-icon-button md-accent md-dense" @click.native="remove(row)">
-                 <md-icon>remove_circle</md-icon>
-                 <md-tooltip md-direction="bottom">Remove</md-tooltip>
-               </md-button>
-             </md-table-cell>
-             <md-table-cell v-for="col in currentColumns" v-if="col.visible" :key="col.name">
-               {{row[col.name]}}
-             </md-table-cell>
-           </md-table-row>
-         </md-table-body>
-       </md-table>
-
-       <Datatable-Footer :rows="filteredRows"></Datatable-Footer>
-
+        <Data-Table :rows="filteredRows" :columns="currentColumns"
+        :sortBy="currentPrimaryKeyColumn.name" :sortType="dtSortType"
+        :pagination="true"
+        @edit="edit" @remove="remove"
+        ></Data-Table>
 
         <div class="absolute-backdrop center-wrapper" v-show="loading">
           <md-spinner md-indeterminate></md-spinner>
@@ -124,18 +99,25 @@
 </template>
 <script>
 import Vue from 'vue'
-import DatatableFooter from '../components/DatatableFooter.vue'
+import DataTable0 from '../components/DataTable.vue'
+import ActionsCell from '../components/DatatablesActionsCell.vue'
 import DatePicker from '../components/DatePicker.vue'
 import { titleCase, isPromise } from 'helper-js'
 import { format } from 'date-functions'
-import { dateTimeFields, initColumns, initRows, getRowData, sortRows, axiosAutoProxy, beforeSave } from '../utils.js'
+import { dateTimeFields, getRowData, axiosAutoProxy, beforeSave } from '../utils.js'
+
+const DataTable = {
+  extends: DataTable0,
+  components: { ActionsCell },
+}
 
 export default {
-  components: { DatatableFooter, DatePicker },
+  components: { DatePicker, DataTable },
   data() {
-    return {
+    const data = {
       title: this.$t('settings'),
       company: this.$store.state.user.company_id,
+      dtSortType: 'desc',
       datatables: {
         'driver': {
           'columns': [
@@ -805,6 +787,60 @@ export default {
       newRow: {},
       editingRow: {},
     }
+    // add actions col, set for datatable with company_id
+    for (const key in data.datatables) {
+      const dt = data.datatables[key]
+      dt.columns.splice(0, 0, {
+        name: 'actions',
+        type: 'actions',
+        sortAble: false,
+      })
+      dt.columns.forEach(col => {
+        if (dateTimeFields.includes(col.name)) {
+          col.valueProcessor = ({value}) => format(new Date(value), 'yyyy-MM-dd HH:mm:ss')
+        }
+      })
+      // set company_id
+      const colCompanyId = dt.columns.find(v => v.name === 'company_id')
+      if (colCompanyId) {
+        colCompanyId.addDisabled = true
+        colCompanyId.editDisabled = true
+        const oldC = dt.oncreating
+        dt.oncreating = (data) => {
+          data.company_id = this.$store.state.user.company_id
+          oldC && oldC(data)
+        }
+      }
+      // invisible create user, update user
+      dt.columns.forEach(col => {
+        if (col.name === 'create_user' || col.name === 'update_user') {
+          Object.assign(col, {
+            visible: false,
+            addVisible: false,
+            editVisible: false,
+          })
+        }
+      })
+    }
+    // init datatables
+    for (const key in data.datatables) {
+      const dt = data.datatables[key]
+      if (!dt.name) {
+        dt.name = key
+      }
+      if (!dt.text) {
+        dt.text = titleCase(dt.name)
+      }
+      dt.columns.forEach(col => {
+        if (!col.hasOwnProperty('addVisible')) {
+          col.addVisible = true
+        }
+        if (!col.hasOwnProperty('editVisible')) {
+          col.editVisible = true
+        }
+      })
+    }
+    return data
   },
   computed: {
     currentTable() { return this.datatables[this.current] },
@@ -826,58 +862,12 @@ export default {
       immediate: true,
       handler(val, oldVal) {
         this.rows = []
+        this.dtSortType = 'desc'
         this.getData()
       }
     },
   },
   created() {
-    // set for datatable with company_id
-    for (const key in this.datatables) {
-      const dt = this.datatables[key]
-      dt.columns.forEach(col => {
-        if (dateTimeFields.includes(col.name)) {
-          this.$set(col, 'valueProcessor', ({value}) => format(new Date(value), 'yyyy-MM-dd HH:mm:ss'))
-        }
-      })
-      // set company_id
-      const colCompanyId = dt.columns.find(v => v.name === 'company_id')
-      if (colCompanyId) {
-        this.$set(colCompanyId, 'addDisabled', true)
-        this.$set(colCompanyId, 'editDisabled', true)
-        const oldC = dt.oncreating
-        dt.oncreating = (data) => {
-          data.company_id = this.$store.state.user.company_id
-          oldC && oldC(data)
-        }
-      }
-      // invisible create user, update user
-      dt.columns.forEach(col => {
-        if (col.name === 'create_user' || col.name === 'update_user') {
-          this.$set(col, 'visible', false)
-          this.$set(col, 'addVisible', false)
-          this.$set(col, 'editVisible', false)
-        }
-      })
-    }
-    // init datatables
-    for (const key in this.datatables) {
-      const dt = this.datatables[key]
-      if (!dt.name) {
-        this.$set(dt, 'name', key)
-      }
-      if (!dt.text) {
-        this.$set(dt, 'text', titleCase(dt.name))
-      }
-      dt.columns.forEach(col => {
-        if (!col.hasOwnProperty('addVisible')) {
-          this.$set(col, 'addVisible', true)
-        }
-        if (!col.hasOwnProperty('editVisible')) {
-          this.$set(col, 'editVisible', true)
-        }
-      })
-      initColumns(this, dt.columns)
-    }
     // get datatables with columns
     // const dataTables = {}
     // for (const key in this.datatables) {
@@ -937,7 +927,6 @@ export default {
           await t
         }
         this.rows = data.JSON
-        initRows(this, this.rows, this.currentColumns)
         this.loading = false
       }).catch((e) => {
         if (!e.__CANCEL__) {
@@ -947,7 +936,6 @@ export default {
         }
       })
     },
-    onSort(e) { sortRows(e, this.rows, this.currentColumns) },
     add() {
       const newRow = {}
       this.currentColumns.forEach(col => { newRow[col.name] = null })

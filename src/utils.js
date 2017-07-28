@@ -148,20 +148,25 @@ export function axiosAutoProxy(http, url, method, data) {
   //   return http[method](url, data)
   // }
 }
-
 export function initColumns(vm, columns) {
   // auto generate column display name
   for (const col of columns) {
-    if (col.visible == null) {
-      vm.$set(col, 'visible', true)
-    }
     if (!col.text) {
       vm.$set(col, 'text', titleCase(col.name))
     }
-    if (!col.width) {
-      const len = col.text.length
-      vm.$set(col, 'width', `${len > 3 ? (100 + (len - 6) * 5) : '60'}px`)
+    if (col.visible == null) {
+      vm.$set(col, 'visible', true)
     }
+    if (col.sortAble == null) {
+      vm.$set(col, 'sortAble', true)
+    }
+    if (col.type == null) {
+      vm.$set(col, 'type', 'default')
+    }
+    // if (!col.width) {
+    //   const len = col.text.length
+    //   vm.$set(col, 'width', `${len > 3 ? (100 + (len - 6) * 5) : '60'}px`)
+    // }
   }
 }
 
@@ -174,6 +179,9 @@ export function initRows(vm, rows, columns, table) {
   for (const row of rows) {
     if (row.visible == null) {
       vm.$set(row, 'visible', true)
+    }
+    if (row.checked == null) {
+      vm.$set(row, 'checked', false)
     }
     for (const col of columns) {
       if (col.valueProcessor) {
@@ -209,21 +217,24 @@ export function beforeSave(row, cols) {
 export function sortRows(event, rows, columns) {
   const col = columns.find(col => col.name === event.name)
   const sortBy = col.sortBy || event.name
-  const sorted = rows.sort((a, b) => {
-    const aa = a[sortBy]
-    const bb = b[sortBy]
-    if (aa < bb) {
-      return -1
-    } else if (aa === bb) {
-      return 0
-    } else {
-      return 1
-    }
-  })
-  if (event.type === 'desc') {
-    sorted.reverse()
+  if (col.locale) {
+    rows.sort((a, b) => (a[sortBy] || '').substr(1).localeCompare((b[sortBy] || '').substr(1)))
+  } else {
+    rows.sort((a, b) => {
+      const aa = a[sortBy]
+      const bb = b[sortBy]
+      if (aa < bb) {
+        return -1
+      } else if (aa === bb) {
+        return 0
+      } else {
+        return 1
+      }
+    })
   }
-  return sorted
+  if (event.type === 'desc') {
+    rows.reverse()
+  }
 }
 
 export function generateExcel(JSONData, FileName, ShowLabel) {
