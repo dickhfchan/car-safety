@@ -5,7 +5,7 @@
         <h2 class="md-title">{{$t('driverScoreAndAlertCountPer100KM')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <Data-Table :rows="rows1" :columns="columns1" sortBy="start_date_formatted" sortType="desc"></Data-Table>
+          <Report2-Data-Table :report2="self" :rows="rows1" :columns="columns1" sortBy="start_date_formatted" sortType="desc"></Report2-Data-Table>
 
           <div class="absolute-backdrop center-wrapper" v-show="loading1">
             <md-spinner md-indeterminate></md-spinner>
@@ -99,15 +99,17 @@ import { generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
 import { format } from 'date-functions'
 import Chartist from 'chartist'
 import DataTable from '../components/DataTable.vue'
+import Report2DataTable from '../components/Report2DataTable.vue'
 import '@/assets/css/_chartist-settings.scss'
 import 'chartist/dist/scss/chartist.scss'
 
 const dateFormat = 'yyyy-MM-dd'
 
 export default {
-  components: { DataTable },
+  components: { DataTable, Report2DataTable },
   data() {
     return {
+      self: this,
       title: this.$t('driverScoreAndAlert'),
       loading1: false,
       loading2: false,
@@ -335,7 +337,7 @@ export default {
     getColorStyle(rows, row, col, order = 'asc') {
       if (col.name === 'total_score') {
         const max = Math.max(...rows.map(row => row['scoreRank']))
-        const color = this.getRankColor(row[col.name], max, order)
+        const color = this.getRankColor(row['scoreRank'], max, order)
         return { backgroundColor: color }
       }
     },

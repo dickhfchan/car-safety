@@ -31,7 +31,7 @@
         <h2 class="md-title">{{$t('ranking')}}</h2>
 
         <div class="relative overflow-hidden-y">
-          <Data-Table :rows="rows1Ranking" :columns="columns1" sortBy="name" sortType="asc"></Data-Table>
+          <D2-Data-Table :d2="self" :rows="rows1Ranking" :columns="columns1" sortBy="name" sortType="asc"></D2-Data-Table>
 
           <div class="absolute-backdrop center-wrapper" v-show="loading">
             <md-spinner md-indeterminate></md-spinner>
@@ -57,6 +57,7 @@
 import { retry } from 'helper-js'
 import { generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
 import DataTable from '../components/DataTable.vue'
+import D2DataTable from '../components/D2DataTable.vue'
 
 function GetRound(num, len) {
   return Math.round(num * Math.pow(10, len)) / Math.pow(10, len)
@@ -65,9 +66,10 @@ function GetRound(num, len) {
 const notScoreCols = ['name', '車牌']
 
 export default {
-  components: { DataTable },
+  components: { DataTable, D2DataTable },
   data() {
     return {
+      self: this,
       title: this.$t('totalScoreAndAlert'),
       columns1: [
         {
