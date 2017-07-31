@@ -93,6 +93,7 @@ export default {
   driverScoreAndAlertCount: '司机评分及警报次数',
   chart1: '图表1',
   chart2: '图表2',
+  driverScore: '司机评分',
   driver: '司机',
   // RealTime.vue
   realTime: '实时',

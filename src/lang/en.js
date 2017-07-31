@@ -93,6 +93,7 @@ export default {
   driverScoreAndAlertCount: 'Driver Score And Alert Count',
   chart1: 'Chart1',
   chart2: 'Chart2',
+  driverScore: 'Driver Score',
   driver: 'Driver',
   // RealTime.vue
   realTime: 'Real Time',

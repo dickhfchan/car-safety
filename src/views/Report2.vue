@@ -30,7 +30,7 @@
       <md-layout md-flex>
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">{{$t('chart1')}}</h2>
+            <h2 class="md-title">{{$t('driverScore')}}</h2>
 
             <div class="relative">
               <div :id="chart1ID" class="w-100 chart1"></div>
@@ -46,7 +46,7 @@
       <md-layout md-flex class="">
         <md-card  class="card-1 flex-1">
           <md-card-content>
-            <h2 class="md-title">{{$t('chart2')}}</h2>
+            <h2 class="md-title">{{$t('warningCountHistoryPer100KM')}}</h2>
 
             <div class="relative">
               <div :id="chart2ID" class="w-100 chart2" ref="chart2"></div>
@@ -236,7 +236,7 @@ export default {
     }
   },
   computed: {
-    countColumns1() { return this.columns1.slice(3) },
+    countColumns1() { return this.columns1.slice(2).filter(col => col.name !== 'drv_distance') },
     dateRange() { return this.$store.state.dateRangeInReport2 }
   },
   watch: {
