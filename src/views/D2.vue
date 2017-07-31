@@ -55,7 +55,7 @@
 </template>
 <script>
 import { retry } from 'helper-js'
-import { generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
+import { exportExcel, newDate, getRankColor, getRanks } from '../utils.js'
 import DataTable from '../components/DataTable.vue'
 import D2DataTable from '../components/D2DataTable.vue'
 
@@ -233,19 +233,7 @@ export default {
         return { backgroundColor: color }
       }
     },
-    exportExcel(rows, columns, title) {
-      const cols = columns
-      const data = rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          const val = row[col.name]
-          r.push(col.formatter ? col.formatter(val) : val)
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, title, titleLabels)
-    }
+    exportExcel,
   }
 }
 </script>

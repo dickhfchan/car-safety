@@ -92,7 +92,8 @@
           <Alert-Information ref="alertInformation"></Alert-Information>
           <div class="card-buttons">
             <md-switch class="md-primary" v-model="isAlertInfoShowInMap" @click.native="toggleShowInMap" v-show="showInMapToggleVisible">{{$t('showInMap')}}</md-switch>
-            <md-button class="md-icon-button" @click.native="$refs.alertInformation.exportExcel()">
+            <md-button class="md-icon-button"
+            @click.native="$refs.alertInformation.exportExcel($refs.alertInformation.rows, $refs.alertInformation.columns, $t('alertInformation'))">
               <md-icon>get_app</md-icon>
               <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
             </md-button>

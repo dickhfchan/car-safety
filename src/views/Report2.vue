@@ -95,7 +95,7 @@
 </template>
 <script>
 import { retry, windowLoaded } from 'helper-js'
-import { generateExcel, newDate, getRankColor, getRanks } from '../utils.js'
+import { exportExcel, newDate, getRankColor, getRanks } from '../utils.js'
 import { format } from 'date-functions'
 import Chartist from 'chartist'
 import DataTable from '../components/DataTable.vue'
@@ -341,19 +341,7 @@ export default {
         return { backgroundColor: color }
       }
     },
-    exportExcel(rows, columns, title) {
-      const cols = columns
-      const data = rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          const val = row[col.name]
-          r.push(col.formatter ? col.formatter(val) : val)
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, title, titleLabels)
-    },
+    exportExcel,
     renderChart1() {
       var ctx = document.getElementById(this.chart1ID)
       try {

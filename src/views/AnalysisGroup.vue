@@ -13,7 +13,7 @@
 
       <div class="card-buttons">
         <md-switch class="md-primary" v-model="scoreColumnVisible">{{$t('scoreColumn')}}</md-switch>
-        <md-button class="md-icon-button" @click.native="exportExcel">
+        <md-button class="md-icon-button" @click.native="exportExcel(rows, columns, $t('dataListByGroup'))">
           <md-icon>get_app</md-icon>
           <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
         </md-button>
@@ -30,7 +30,7 @@
 import DataTable from '../components/DataTable.vue'
 import { retry } from 'helper-js'
 import { format } from 'date-functions'
-import { generateExcel } from '../utils.js'
+import { exportExcel } from '../utils.js'
 
 export default {
   components: { DataTable },
@@ -171,19 +171,7 @@ export default {
         throw e
       })
     },
-    exportExcel() {
-      const cols = this.columns
-      const data = this.rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          const val = row[col.name]
-          r.push(col.formatter ? col.formatter(val) : val)
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, this.$t('loadFailed'), titleLabels)
-    }
+    exportExcel,
   }
 }
 </script>

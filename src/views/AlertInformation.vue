@@ -23,7 +23,7 @@ import { retry, waitFor, camelCase, binarySearch } from 'helper-js'
 import { format } from 'date-functions'
 import runtime from '@/runtime.js'
 import mapIcons from '../map-icons.js'
-import { initColumns, initRows as initRowsOld, generateExcel } from '../utils.js'
+import { initColumns, initRows as initRowsOld, exportExcel } from '../utils.js'
 import config from '@/config.js'
 import AlertInformationTable from '../components/AlertInformationTable.vue'
 
@@ -65,7 +65,8 @@ export default {
         {
           name: 'sequence',
           text: '#',
-          valueProcessor: ({row, rows}) => rows.indexOf(row) + 1
+          valueProcessor: ({row, rows}) => rows.indexOf(row) + 1,
+          exportAble: false,
         },
         {
           'name': 'warning_vdo_id',
@@ -374,18 +375,7 @@ ${this.$t('endSpd')}:    ${row.end_spd} KM/h
         })
       }
     },
-    exportExcel() {
-      const cols = this.columns.filter(col => col.name !== 'sequence')
-      const data = this.rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          r.push(row[col.name])
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'Alert Information', titleLabels)
-    },
+    exportExcel,
     playAlertVideo(row) {
       this.videoSrc = config.serverBaseUrl.replace(/\/$/, '') + `/video/${row.warning_vdo_id}`
       this.$refs.dialogVideo.open()

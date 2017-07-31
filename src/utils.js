@@ -389,7 +389,7 @@ export function sortRowsByProp(rows, prop) {
 }
 
 export function exportExcel(rows, columns, title) {
-  const cols = columns
+  const cols = columns.filter(col => col.exportAble !== false && col.visible !== false)
   const data = rows.map(row => {
     const r = []
     cols.forEach(col => {

@@ -25,7 +25,7 @@
             <md-option :value="2">{{$t('lastWeek')}}</md-option>
             <md-option :value="3">{{$t('lastMonth')}}</md-option>
          </md-select>
-          <md-button class="md-icon-button" @click.native="exportExcel">
+          <md-button class="md-icon-button" @click.native="exportExcel(rows, columns, $t('D1'))">
             <md-icon>get_app</md-icon>
             <md-tooltip md-direction="bottom">{{$t('export')}}</md-tooltip>
           </md-button>
@@ -77,7 +77,7 @@
 <script>
 import { retry } from 'helper-js'
 import { format, subDays, subMonth, getMonthStart } from 'date-functions'
-import { generateExcel, newDate } from '../utils.js'
+import { exportExcel, newDate } from '../utils.js'
 import Chartist from 'chartist'
 import DataTable from '../components/DataTable.vue'
 import '@/assets/css/_chartist-settings.scss'
@@ -253,19 +253,7 @@ export default {
       })
       this.rows = groupedRows
     },
-    exportExcel() {
-      const cols = this.columns
-      const data = this.rows.map(row => {
-        const r = []
-        cols.forEach(col => {
-          const val = row[col.name]
-          r.push(col.formatter ? col.formatter(val) : val)
-        })
-        return r
-      })
-      const titleLabels = cols.map(col => col.text)
-      generateExcel(data, 'D1', titleLabels)
-    },
+    exportExcel,
     renderChart1() {
       var ctx = document.getElementById(this.chart1ID)
       if (this.chart1) {
