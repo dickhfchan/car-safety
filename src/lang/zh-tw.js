@@ -30,6 +30,7 @@ export default {
   signIn: '登錄',
   loginSubtitle: '開始回話前請登錄',
   loginFailed: '登錄失敗',
+  oldPasswordError: ':name錯誤',
   // menu
   dashboard: '儀表盤',
   users: '用戶',

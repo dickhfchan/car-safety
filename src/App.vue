@@ -199,6 +199,20 @@ export default {
       },
       changePassword: {
         fields: {
+          oldPassword: {
+            text: this.$t('oldPassword'),
+            rules: 'required|oldPassword',
+            customRules: {
+              oldPassword: ({value}) => {
+                const t = window.localStorage.getItem('authInfo')
+                const authInfo = t && JSON.parse(t)
+                return authInfo.password === value
+              },
+            },
+            messages: {
+              oldPassword: this.$t('oldPasswordError'),
+            },
+          },
           newPassword: {
             text: this.$t('newPassword'),
             rules: 'required|lengthBetween:3,16',

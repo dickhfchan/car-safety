@@ -23,6 +23,7 @@ export default {
   oldPassword: '旧密码',
   newPassword: '新密码',
   RepeatNewPassword: '确认新密码',
+  oldPasswordError: ':name错误',
   // login
   email: '邮箱',
   username: '用户名',

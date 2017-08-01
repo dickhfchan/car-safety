@@ -23,6 +23,7 @@ export default {
   oldPassword: 'Old Password',
   newPassword: 'New Password',
   RepeatNewPassword: 'Repeat New Password',
+  oldPasswordError: 'The :name is not correct.',
   // login
   email: 'Email',
   username: 'Username',
