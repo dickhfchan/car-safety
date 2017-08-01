@@ -199,10 +199,6 @@ export default {
       },
       changePassword: {
         fields: {
-          oldPassword: {
-            text: this.$t('oldPassword'),
-            rules: 'required',
-          },
           newPassword: {
             text: this.$t('newPassword'),
             rules: 'required|lengthBetween:3,16',

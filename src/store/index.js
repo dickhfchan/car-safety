@@ -180,10 +180,10 @@ const store = new Vuex.Store({
       })
     },
     logout({commit, state}) {
-      commit('authenticated', false)
-      commit('user', {})
-      window.localStorage.removeItem('authInfo')
       runtime.app.$router.push({name: 'login', params: {companyCode: state.companyCode}})
+      commit('authenticated', false)
+      commit('user', null)
+      window.localStorage.removeItem('authInfo')
     },
     getTrips (context) {
       const {state} = context
