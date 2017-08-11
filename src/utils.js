@@ -200,8 +200,15 @@ export function getRowData(row, cols) {
 }
 export function beforeSave(row, cols) {
   dateTimeFields.forEach(fld => {
-    if (row[fld]) {
-      row[fld] = newDate(row[fld]).getTime() / 1000
+    if (row.hasOwnProperty(fld)) {
+      try {
+        row[fld] = Math.round(newDate(row[fld]).getTime() / 1000)
+      } catch (e) {
+        if (e.message === 'unexpected param format') {
+          const col = cols.find(col => col.name === fld)
+          throw Error(`Unexpected format of ${col.text}. The format should be yyyy-MM-dd HH:mm:ss`)
+        }
+      }
     }
   })
   cols.forEach(col => {
@@ -330,10 +337,23 @@ export function loadGoogleMap(ak) {
  * @return [type]       [description]
  */
 export function newDate(str) {
-  const t = str.split(' ')
-  const args = t[0].split('-').map(v => parseInt(v))
+  if (!str) {
+    return new Date()
+  }
+  const m = (str || '').match(/^(\d{4}-\d{1,2}-\d{1,2})( \d{1,2}:\d{1,2}:\d{1,2})?$/)
+  if (!m) {
+    throw Error('unexpected param format')
+  }
+  const args = m[1].split('-').map(v => parseInt(v))
   args[1]-- // convert month to 0 -11
-  t[1].split(':').forEach(v => { args.push(parseInt(v)) })
+  // HH:mm:ss
+  if (m[2]) {
+    m[2].substr(1).split(':').forEach(v => { args.push(parseInt(v)) })
+  } else {
+    args.push(0)
+    args.push(0)
+    args.push(0)
+  }
   return new Date(...args)
 }
 

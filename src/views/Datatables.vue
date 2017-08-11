@@ -212,7 +212,6 @@ export default {
             this.getGroupDtl.then(({data}) => {
               const mapping = {}
               data.JSON.forEach(item => { mapping[item.driver_id] = item.drv_grp_id })
-              console.log(mapping)
               rows.forEach(row => { row.group_id = mapping[row.driver_id] })
             })
           },
@@ -396,7 +395,7 @@ export default {
               'name': 'lang'
             },
             {
-              'name': 'last_login_ts'
+              'name': 'last_login_ts',
             },
             {
               'name': 'map'
@@ -436,6 +435,7 @@ export default {
               const col = dt.columns.find(c => c.name === 'group_id')
               col.addOptions = data
             })
+            newRow.last_login_ts = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
           },
           onediting: (rowData) => {
             const dt = this.datatables.user_account
@@ -650,7 +650,6 @@ export default {
             this.getGroupDtl.then(({data}) => {
               const mapping = {}
               data.JSON.forEach(item => { mapping[item.vrm_id] = item.vrm_grp_id })
-              console.log(mapping)
               rows.forEach(row => { row.group_id = mapping[row.vrm_id] })
             })
           },
@@ -795,6 +794,9 @@ export default {
         type: 'actions',
         sortAble: false,
         cellClass: 'datatables-actions',
+        addVisible: false,
+        editVisible: false,
+        notInDatabase: true,
       })
       dt.columns.forEach(col => {
         if (dateTimeFields.includes(col.name)) {
@@ -961,7 +963,12 @@ export default {
       if (!this.validate(newRow)) {
         return
       }
-      beforeSave(newRow, this.currentColumns)
+      try {
+        beforeSave(newRow, this.currentColumns)
+      } catch (e) {
+        this.$alert(e.message)
+        return
+      }
       const t = this.currentTable.beforeSaveNew && this.currentTable.beforeSaveNew(newRow)
       if (t) {
         if (isPromise(t)) {
@@ -1001,7 +1008,13 @@ export default {
           await t
         }
       }
-      axiosAutoProxy(this.$http, this.api, 'post', beforeSave(editingRow, this.currentColumns)).then(({data}) => {
+      try {
+        beforeSave(editingRow, this.currentColumns)
+      } catch (e) {
+        this.$alert(e.message)
+        return
+      }
+      axiosAutoProxy(this.$http, this.api, 'post', editingRow).then(({data}) => {
         if (data.indexOf('error') === 0) {
           this.$alert(this.$t('failed'))
         } else if (data.toLowerCase().indexOf('succe') > -1) {
